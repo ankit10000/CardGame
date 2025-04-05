@@ -19,7 +19,7 @@ export default function App() {
           screenOptions={{
             drawerStyle: {
               backgroundColor: '#2E2E2E', // dark slate background for modern feel
-              marginTop: 100,
+              marginTop: 55,
               marginRight: 40,
               borderRadius: 20,
               width: 240,

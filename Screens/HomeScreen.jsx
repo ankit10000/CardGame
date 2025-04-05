@@ -34,7 +34,7 @@ export default function HomeScreen() {
 
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#2E2E2E', marginTop: 50 }}>
+    <View style={{ flex: 1, backgroundColor: '#2E2E2E' }}>
       {/* Top Header */}
       <View style={styles.header}>
         {/* Drawer Icon */}
@@ -43,7 +43,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {/* Title */}
-        <Text style={styles.headerTitle}>Welcome</Text>
+        <Text style={styles.headerTitle}>Gama0001</Text>
 
         {/* Right Side Icons */}
         <View style={styles.headerRight}>
@@ -57,7 +57,7 @@ export default function HomeScreen() {
 
       <ScrollView style={styles.container}>
         {/* Subheader */}
-        <View style={{ overflow: 'hidden', height: 40, marginBottom: 12 }}>
+        <View style={{ overflow: 'hidden', height: 50, marginBottom: 8 }}>
           <Animated.Text
             style={[
               styles.subHeader,
