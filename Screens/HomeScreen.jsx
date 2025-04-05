@@ -244,20 +244,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTime: {
-    color: '#ccc',
-    fontSize: 13,
+    color: '#BDBDBD',
+    fontSize: 12,
   },
   closedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#D32F2F',
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   closedText: {
     color: '#fff',
-    fontSize: 12,
     marginLeft: 4,
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });
