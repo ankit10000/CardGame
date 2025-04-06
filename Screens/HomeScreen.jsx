@@ -1,264 +1,408 @@
-import React, { useRef, useEffect } from 'react';
-import { Animated } from 'react-native';
+import React from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import { Linking } from 'react-native';
 
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import { MaterialIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+const COLORS = {
+  primaryPurple: '#5d2f8e',
+  lightPurple: '#7e4ab5',
+  backgroundPink: '#b96b67',
+  cardPink: '#9E5353',
+  textWhite: '#ffffff',
+  textDark: '#333333',
+  textGray: '#555555',
+  closedRed: '#fff',
+  gradientStart: '#f7d977',
+  gradientEnd: '#e5a550',
+  iconGreen: '#4CAF50',
+  iconRed: '#F44336',
+};
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+const marketData = [
+  {
+    id: '1',
+    name: 'SRIDEVI MORNING',
+    numbers: '126-94-248',
+    open: '09:30 AM',
+    close: '10:30 AM',
+    status: 'CLOSED',
+  },
+  {
+    id: '2',
+    name: 'KARNATAKA DAY',
+    numbers: '148-31-489',
+    open: '10:00 AM',
+    close: '11:00 AM',
+    status: 'CLOSED',
+  },
+  {
+    id: '3',
+    name: 'MILAN MORNING',
+    numbers: '889-53-256',
+    open: '10:10 AM',
+    close: '11:10 AM',
+    status: 'CLOSED',
+  },
+  {
+    id: '4',
+    name: 'KALYAN MORNING',
+    numbers: '489-15-348',
+    open: '11:00 AM',
+    close: '12:00 PM',
+    status: 'CLOSED',
+  },
+  {
+    id: '5',
+    name: 'MADHUR MORNING',
+    numbers: '190-03-139',
+    open: '11:30 AM',
+    close: '12:30 PM',
+    status: 'CLOSED',
+  },
+];
 
-  const games = [
-    { title: 'SRIDEVI MORNING', numbers: '250-78-440', open: '09:30 AM', close: '10:30 AM' },
-    { title: 'KARNATAKA DAY', numbers: '679-22-138', open: '10:00 AM', close: '11:00 AM' },
-    { title: 'MILAN MORNING', numbers: '178-60-460', open: '10:10 AM', close: '11:10 AM' },
-    { title: 'KALYAN MORNING', numbers: '468-81-119', open: '11:00 AM', close: '12:00 PM' },
-  ];
-  // Inside your HomeScreen component, before return:
-  const scrollX = useRef(new Animated.Value(0)).current;
+const MarketItem = ({ item }) => (
+  <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+    <View style={styles.cardIconContainer}>
+      <Ionicons name="stats-chart" size={30} color={COLORS.textWhite} />
+    </View>
+    <View style={styles.cardDetails}>
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.cardNumbers}>{item.numbers}</Text>
+      <View style={styles.cardTimes}>
+        <Text style={styles.cardTimeText}>Open: {item.open}</Text>
+        <Text style={styles.cardTimeSeparator}>|</Text>
+        <Text style={styles.cardTimeText}>Close: {item.close}</Text>
+      </View>
+    </View>
+    <View style={styles.cardStatusContainer}>
+      <View style={styles.closedIconCircle}>
+        <Icon name="close" size={20} color={COLORS.closedRed} />
+      </View>
+      <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(scrollX, {
-        toValue: 1,
-        duration: 5000,
-        useNativeDriver: true,
+const HomeScreen = () => {
+
+  const handleWhatsApp = () => {
+    const phoneNumber = '+911234567890';
+    const url = `whatsapp://send?phone=${phoneNumber}`;
+
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          alert('WhatsApp is not installed on your device');
+        } else {
+          return Linking.openURL(url);
+        }
       })
-    ).start();
-  }, []);
+      .catch((err) => console.error('Error:', err));
+  };
 
-  const translateX = scrollX.interpolate({
-    inputRange: [0, 1],
-    outputRange: [300, -300], // You can adjust based on text width
-  });
+  const handleCall = () => {
+    const phoneNumber = 'tel:+911234567890';
+    Linking.openURL(phoneNumber).catch((err) => console.error('Error:', err));
+  };
 
 
+
+  const navigation = useNavigation();
   return (
-    <View style={{ flex: 1, backgroundColor: '#2E2E2E' }}>
-      {/* Top Header */}
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#313332" />
       <View style={styles.header}>
-        {/* Drawer Icon */}
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={28} color="#FFD700" />
+          <Ionicons name="menu" size={28} color="#fff" />
         </TouchableOpacity>
-
-        {/* Title */}
-        <Text style={styles.headerTitle}>Gama0001</Text>
-
-        {/* Right Side Icons */}
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerButton}>
-            <FontAwesome5 name="wallet" size={16} color="#FFD700" />
-            <Text style={styles.headerButtonText}>Add Fund</Text>
-          </TouchableOpacity>
-
-        </View>
+        <Text style={styles.headerTitle}>Milaan matka 777</Text>
+        <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('AddFund')}>
+          <View style={styles.walletContainer}>
+            <Icon name="account-balance-wallet" size={20} color={COLORS.gradientEnd} />
+            <Text style={styles.walletText}>0</Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.container}>
-        {/* Subheader */}
-        <View style={{ overflow: 'hidden', height: 50, marginBottom: 8 }}>
-          <Animated.Text
-            style={[
-              styles.subHeader,
-              {
-                transform: [{ translateX }],
-              },
-            ]}
-          >
-            Kitni Bar Bhi Withdrawal le skte hai
-          </Animated.Text>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.bannerContainer}>
+          <Image
+            source={require('../assets/slide1.png')}
+            style={styles.bannerImage}
+            resizeMode="contain"
+          />
         </View>
 
-
-        {/* Banner Image */}
-        <Image
-          source={{ uri: 'https://img.freepik.com/free-photo/indian-hindu-goddess-durga-statue-generative-ai_169016-29328.jpg' }}
-          style={styles.banner}
-        />
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.button}>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => navigation.navigate('AddFund')}>
+            <Icon name="account-balance-wallet" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Add Fund</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => navigation.navigate('Withdraw')}>
+            <Ionicons name="card-outline" size={20} color={COLORS.iconRed} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Withdraw</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.button}>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={handleWhatsApp}>
+            <Ionicons name="logo-whatsapp" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Chat Now</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={handleCall}>
+            <Icon name="call" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Call Now</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Starline */}
-        <TouchableOpacity style={styles.starline}>
-          <Text style={styles.starlineText}>Starline</Text>
-          <MaterialIcons name="arrow-forward-ios" size={16} color="#fff" />
+
+        <TouchableOpacity activeOpacity={0.8}>
+          <LinearGradient
+            colors={[COLORS.gradientStart, COLORS.gradientEnd]}
+            style={styles.starlineBar}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          >
+            <Text style={styles.starlineText}>Starline</Text>
+            <View style={styles.arrowCircle}>
+              <Icon name="arrow-forward-ios" size={16} color={COLORS.primaryPurple} />
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
-        {/* Game Cards */}
-        {games.map((item, index) => (
-          <View key={index} style={styles.cardWrapper}>
-            {/* Side Bar (Symbol) */}
-            <View style={styles.cardSymbol}>
-              <MaterialIcons name="bar-chart" size={24} color="#FFD700" />
-            </View>
+        <FlatList
+          data={marketData}
+          renderItem={({ item }) => <MarketItem item={item} />}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContainer}
+          scrollEnabled={false}
+        />
 
-            {/* Main Card Content */}
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardNumbers}>{item.numbers}</Text>
-              <View style={styles.cardFooter}>
-                <Text style={styles.cardTime}>Open: {item.open} | Close: {item.close}</Text>
-                <View style={styles.closedBadge}>
-                  <MaterialIcons name="close" size={16} color="#fff" />
-                  <Text style={styles.closedText}>CLOSED</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        ))}
+
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 15,
+    backgroundColor: COLORS.backgroundPink,
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#383838',
+    backgroundColor: "#934b47",
     paddingHorizontal: 15,
     paddingVertical: 12,
-    justifyContent: 'space-between',
+    height: 60,
   },
-  headerTitle: {
-    color: '#FFD700',
-    fontSize: 18,
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerRight: {
-    flexDirection: 'row',
-  },
-  headerButton: {
+  headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  headerTitle: {
+    color: COLORS.textWhite,
+    fontSize: 20,
+    fontWeight: 'bold',
     marginLeft: 15,
   },
-  headerButtonText: {
-    color: '#FFD700',
-    marginLeft: 4,
-    fontSize: 12,
+  headerRight: {
   },
-  subHeader: {
-    textAlign: 'center',
-    color: '#FFD700',
-    fontSize: 16,
-    fontWeight: '600',
-    marginVertical: 12,
-  },
-  banner: {
-    width: '100%',
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  actionButtons: {
+  walletContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+    alignItems: 'center',
+    backgroundColor: COLORS.textWhite,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  walletText: {
+    color: COLORS.textDark,
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginLeft: 5,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  bannerContainer: {
+    marginHorizontal: 15,
+    marginTop: 10,
+  },
+  bannerTextContainer: {
+  },
+  bannerTextLine1: {
+    backgroundColor: '#c83737',
+    color: COLORS.textWhite,
+    fontWeight: 'bold',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    fontSize: 16,
+    marginBottom: 5,
+    alignSelf: 'flex-start',
+  },
+  bannerTextLine2: {
+    backgroundColor: '#c83737',
+    color: COLORS.textWhite,
+    fontWeight: 'bold',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    fontSize: 16,
+    alignSelf: 'flex-start',
+  },
+  bannerImage: {
+    width: 380,
+    height: 90,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 10,
+    marginTop: 15,
   },
   button: {
     flex: 1,
-    backgroundColor: '#444',
-    paddingVertical: 14,
-    marginHorizontal: 5,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primaryPurple,
+    paddingVertical: 12,
+    borderRadius: 25,
+    marginHorizontal: 5,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  buttonIcon: {
+    marginRight: 8,
   },
   buttonText: {
-    color: '#FFD700',
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: COLORS.textWhite,
+    fontSize: 15,
+    fontWeight: '500',
   },
-  starline: {
+  starlineBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#6A1B9A',
-    padding: 12,
-    borderRadius: 10,
-    marginVertical: 14,
+    marginHorizontal: 10,
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
   },
   starlineText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: COLORS.primaryPurple,
     fontSize: 16,
+    fontWeight: 'bold',
   },
-  cardWrapper: {
-    flexDirection: 'row',
-    backgroundColor: '#383838',
-    borderRadius: 10,
-    marginBottom: 15,
-    overflow: 'hidden',
-    elevation: 2,
-  },
-  cardSymbol: {
-    width: 50,
-    backgroundColor: '#444',
+  arrowCircle: {
+    backgroundColor: COLORS.textWhite,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  listContainer: {
+    paddingHorizontal: 10,
+    paddingTop: 15,
+    paddingBottom: 10,
+  },
   card: {
-    flex: 1,
+    backgroundColor: COLORS.cardPink,
+    borderRadius: 10,
     padding: 15,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  cardIconContainer: {
+    marginRight: 15,
+  },
+  cardDetails: {
+    flex: 1,
+    marginRight: 10,
   },
   cardTitle: {
-    color: '#FFD700',
+    fontSize: 15,
     fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 6,
+    color: COLORS.textWhite,
+    marginBottom: 4,
   },
   cardNumbers: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    marginBottom: 10,
-    letterSpacing: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.textWhite,
+    marginBottom: 8,
   },
-  cardFooter: {
+  cardTimes: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  cardTime: {
-    color: '#BDBDBD',
+  cardTimeText: {
     fontSize: 12,
+    color: COLORS.textWhite,
+    opacity: 0.9,
   },
-  closedBadge: {
-    flexDirection: 'row',
+  cardTimeSeparator: {
+    fontSize: 12,
+    color: COLORS.textWhite,
+    marginHorizontal: 5,
+    opacity: 0.9,
+  },
+  cardStatusContainer: {
     alignItems: 'center',
-    backgroundColor: '#D32F2F',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+  },
+  closedIconCircle: {
+    backgroundColor: "#e31202",
+
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5,
   },
   closedText: {
-    color: '#fff',
-    marginLeft: 4,
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
+    color: COLORS.closedRed,
+  },
+  bottomSection: {
+    backgroundColor: COLORS.cardPink,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  bottomSectionText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: COLORS.textWhite,
   },
 });
+
+export default HomeScreen;
