@@ -16,6 +16,7 @@ import DetailScreen from './Screens/DetailScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SignUpScreen from './Screens/SignupScreen';
 import LoginScreen from './Screens/LoginScreen';
+import PanelChart from './Screens/PanelChart';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,6 +92,8 @@ export default function App() {
           <Stack.Screen name="CallNow" component={CallNowScreen} />
           <Stack.Screen name="Starline" component={StarlineScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="PanelChart" component={PanelChart} />
         </Stack.Navigator>
 
       </NavigationContainer>

@@ -12,52 +12,52 @@ import {
     KeyboardAvoidingView,
     Platform
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Using MaterialIcons
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-// --- Color Palette (approximated) ---
+
 const COLORS = {
-    headerBackground: '#934b47', // Maroon/brown from previous headers
+    headerBackground: '#934b47', 
     headerText: '#ffffff',
-    background: '#f4f7f9', // Very light grey background
+    background: '#f4f7f9', 
     cardBackground: '#ffffff',
     inputBorder: '#e0e0e0',
     inputPlaceholder: '#999999',
     inputText: '#333333',
     minAmountText: '#444444',
-    amountButtonBackground: '#f8f9fa', // Very light grey/off-white
+    amountButtonBackground: '#f8f9fa', 
     amountButtonBorder: '#e9ecef',
     amountButtonText: '#343a40',
-    amountButtonSelectedBackground: '#ddeeff', // Example selected color
-    amountButtonSelectedBorder: '#aaccff',    // Example selected border
-    payButtonBackground: '#1d5da8', // Blue color from button
+    amountButtonSelectedBackground: '#ddeeff', 
+    amountButtonSelectedBorder: '#aaccff',    
+    payButtonBackground: '#1d5da8', 
     payButtonText: '#ffffff',
-    walletIcon: '#e5a550', // Orange/brown color for wallet icon
-    walletTextBackground: '#d3d3d3', // Light grey background for wallet text
+    walletIcon: '#e5a550', 
+    walletTextBackground: '#d3d3d3', 
     walletTextColor: '#333',
 };
 
-// --- Predefined Amounts ---
+
 const PREDEFINED_AMOUNTS = [500, 1000, 2000, 5000, 10000, 50000, 100000];
 const MIN_AMOUNT = 500;
 
 const AddFundsScreen = () => {
     const navigation = useNavigation();
-    const [amount, setAmount] = useState(''); // Store amount from TextInput
-    const [selectedAmount, setSelectedAmount] = useState(null); // Store selected predefined amount
+    const [amount, setAmount] = useState(''); 
+    const [selectedAmount, setSelectedAmount] = useState(null); 
 
     const handleAmountSelect = (value) => {
         setSelectedAmount(value);
-        setAmount(String(value)); // Update TextInput as well
+        setAmount(String(value)); 
     };
 
     const handleTextInputChange = (text) => {
-        // Allow only numbers
+        
         const numericValue = text.replace(/[^0-9]/g, '');
         setAmount(numericValue);
-        // Deselect predefined amount if user types manually
+        
         if (selectedAmount !== null && numericValue !== String(selectedAmount)) {
             setSelectedAmount(null);
         }
@@ -74,11 +74,11 @@ const AddFundsScreen = () => {
             return;
         }
         console.log('Processing payment for:', numericAmount);
-        // Add your payment gateway integration logic here
+        
         alert(`Proceeding to pay ₹${numericAmount}`);
     };
 
-    // Function to format amount with commas (Indian style)
+    
     const formatCurrency = (value) => {
         if (!value) return '';
         const numStr = String(value);
@@ -92,14 +92,12 @@ const AddFundsScreen = () => {
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor={"#313332"} />
 
-            {/* --- Custom Header --- */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={26} color={COLORS.headerText} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Add Funds</Text>
-                <TouchableOpacity style={styles.headerButton}>
-                    {/* Wallet display - adjust value as needed */}
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                       <Icon name="account-balance-wallet" size={20} color={COLORS.walletIcon} />
                       <Text style={styles.walletText}>0</Text>
@@ -115,7 +113,6 @@ const AddFundsScreen = () => {
                     contentContainerStyle={styles.scrollContent}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* --- Card Container --- */}
                     <View style={styles.card}>
                         <Text style={styles.fadedCardTitle}>Enter Amount</Text>
                         <TextInput
@@ -124,14 +121,13 @@ const AddFundsScreen = () => {
                             placeholderTextColor={COLORS.inputPlaceholder}
                             value={amount}
                             onChangeText={handleTextInputChange}
-                            keyboardType="numeric" // Use numeric keyboard
+                            keyboardType="numeric" 
                         />
 
                         <Text style={styles.minAmountText}>
                             Enter minimum amount ₹{formatCurrency(MIN_AMOUNT)}
                         </Text>
 
-                        {/* --- Predefined Amount Buttons --- */}
                         <View style={styles.amountButtonsContainer}>
                             {PREDEFINED_AMOUNTS.map((value) => {
                                 const isSelected = selectedAmount === value;
@@ -140,7 +136,7 @@ const AddFundsScreen = () => {
                                         key={value}
                                         style={[
                                             styles.amountButton,
-                                            isSelected && styles.amountButtonSelected // Apply selected style
+                                            isSelected && styles.amountButtonSelected 
                                         ]}
                                         onPress={() => handleAmountSelect(value)}
                                         activeOpacity={0.7}
@@ -156,7 +152,6 @@ const AddFundsScreen = () => {
                             })}
                         </View>
 
-                        {/* --- Pay Now Button --- */}
                         <TouchableOpacity
                             style={styles.payButton}
                             onPress={handlePayNow}
@@ -189,8 +184,8 @@ const styles = StyleSheet.create({
         height: 60,
     },
     headerButton: {
-        padding: 5, // Add padding for easier touch
-        minWidth: 40, // Ensure minimum touch area
+        padding: 5, 
+        minWidth: 40, 
         alignItems: 'center',
     },
     headerTitle: {
@@ -198,15 +193,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    walletContainer: { // Reusing style from previous examples
+    walletContainer: { 
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: COLORS.headerText, // White background
+      backgroundColor: COLORS.headerText, 
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 15,
     },
-    walletText: { // Reusing style
+    walletText: { 
         color: COLORS.walletTextColor,
         fontWeight: 'bold',
         fontSize: 14,
@@ -215,30 +210,30 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         padding: 20,
-        alignItems: 'center', // Center card horizontally
-        paddingTop: 30, // Add space below header
+        alignItems: 'center', 
+        paddingTop: 30, 
     },
     card: {
         backgroundColor: COLORS.cardBackground,
         borderRadius: 15,
         padding: 20,
-        width: '100%', // Card takes full width of padding
-        maxWidth: 500, // Max width for larger screens
+        width: '100%', 
+        maxWidth: 500, 
         alignItems: 'center',
-        elevation: 3, // Android shadow
-        shadowColor: '#000', // iOS shadow
+        elevation: 3, 
+        shadowColor: '#000', 
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.15,
         shadowRadius: 3,
     },
-     fadedCardTitle: { // The subtle title above the input
-        color: '#cccccc', // Very light grey
+     fadedCardTitle: { 
+        color: '#cccccc', 
         fontSize: 14,
-        marginBottom: -10, // Position it closer/overlap input slightly
-        zIndex: 0, // Ensure it's behind input if overlapping visually helps
+        marginBottom: -10, 
+        zIndex: 0, 
      },
     input: {
-        backgroundColor: COLORS.cardBackground, // White background
+        backgroundColor: COLORS.cardBackground, 
         borderWidth: 1,
         borderColor: COLORS.inputBorder,
         borderRadius: 8,
@@ -247,10 +242,10 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         fontSize: 16,
         color: COLORS.inputText,
-        textAlign: 'left', // Align text to left
-        marginTop: 15, // Give space from the faded title
+        textAlign: 'left', 
+        marginTop: 15, 
         marginBottom: 15,
-        zIndex: 1, // Ensure input is visually on top
+        zIndex: 1, 
     },
     minAmountText: {
         fontSize: 14,
@@ -260,10 +255,10 @@ const styles = StyleSheet.create({
     },
     amountButtonsContainer: {
         flexDirection: 'row',
-        flexWrap: 'wrap', // Allow buttons to wrap to next line
-        justifyContent: 'space-between', // Distribute space
+        flexWrap: 'wrap', 
+        justifyContent: 'space-between', 
         width: '100%',
-        marginBottom: 20, // Space before Pay button
+        marginBottom: 20, 
     },
     amountButton: {
         backgroundColor: COLORS.amountButtonBackground,
@@ -272,9 +267,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 15,
-        margin: 5, // Spacing between buttons
-        // Calculate width dynamically or set fixed based on design
-        minWidth: (width - 40 - 40 - 30) / 3, // Approx width for 3 buttons per row (padding - cardPadding - margins)
+        margin: 5, 
+        
+        minWidth: (width - 40 - 40 - 30) / 3, 
         alignItems: 'center',
         elevation: 1,
         shadowColor: '#000',
@@ -292,17 +287,17 @@ const styles = StyleSheet.create({
         color: COLORS.amountButtonText,
     },
     amountButtonTextSelected: {
-        // Optional: change text color when selected
-        // color: '#0056b3',
+        
+        
     },
     payButton: {
         backgroundColor: COLORS.payButtonBackground,
         borderRadius: 8,
         paddingVertical: 14,
         paddingHorizontal: 40,
-        width: '80%', // Make button wider
+        width: '80%', 
         alignItems: 'center',
-        marginTop: 15, // Space above pay button
+        marginTop: 15, 
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },

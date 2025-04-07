@@ -14,11 +14,11 @@ import {
     Dimensions
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native'; // For navigation
+import { useNavigation } from '@react-navigation/native'; 
 
 const { width, height } = Dimensions.get('window');
 
-// --- Color Palette (approximated, adjusted slightly for login buttons if needed) ---
+
 const COLORS = {
     statusBar: '#313332',
     gradientTop: '#fce5e3',
@@ -27,9 +27,9 @@ const COLORS = {
     inputBackground: '#ffffff',
     placeholderText: '#666666',
     buttonText: '#ffffff',
-    // Slightly adjusted gradient for Login screen buttons based on image
-    buttonGradientStart: '#9a704a', // Slightly lighter brown top
-    buttonGradientEnd: '#c8a87e',   // Lighter tan bottom
+    
+    buttonGradientStart: '#9a704a', 
+    buttonGradientEnd: '#c8a87e',   
     logoTextBackground: '#e63946',
     logoTextColor: '#ffffff',
     logoNumberColor: '#333333',
@@ -38,7 +38,7 @@ const COLORS = {
 
 const LoginScreen = () => {
     const navigation = useNavigation();
-    // State for input fields - using mobileName based on placeholder
+    
     const [mobileName, setMobileName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -46,12 +46,12 @@ const LoginScreen = () => {
         console.log('Logging In:', { mobileName, password });
         navigation.replace('MainDrawer');
 
-        // alert('Login button pressed!'); // Placeholder
+        
     };
 
     const handleRegisterPress = () => {
         console.log('Navigate to Sign Up');
-        navigation.navigate('SignUp'); // Navigate to the SignUp screen
+        navigation.navigate('SignUp'); 
     };
 
     return (
@@ -72,7 +72,7 @@ const LoginScreen = () => {
                         {/* --- Logo Area (Same as Sign Up) --- */}
                         <View style={styles.logoContainer}>
                             <Image
-                                source={require('../assets/slide1.png')} // <-- UPDATE THIS PATH if needed
+                                source={require('../assets/slide1.png')} 
                                 style={styles.logoImage}
                                 resizeMode="contain"
                             />
@@ -90,12 +90,12 @@ const LoginScreen = () => {
                             {/* --- Updated Inputs --- */}
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Mobile Name" // As per image
+                                placeholder="Enter Mobile Name" 
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={mobileName}
                                 onChangeText={setMobileName}
                                 autoCapitalize="none"
-                                // Consider keyboardType='phone-pad' if it's always a number
+                                
                             />
 
                             <TextInput
@@ -104,7 +104,7 @@ const LoginScreen = () => {
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry // Hide password
+                                secureTextEntry 
                             />
 
                             {/* --- Login Button --- */}
@@ -143,7 +143,7 @@ const LoginScreen = () => {
     );
 };
 
-// --- Styles (Mostly reused from SignUp, minor adjustments possible) ---
+
 const styles = StyleSheet.create({
     flexContainer: {
         flex: 1,

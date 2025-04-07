@@ -50,7 +50,7 @@ const WithdrawalScreen = ({ navigation }) => {
           <Icon name="arrow-back" size={26} color={"#ffffff"} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Withdrawal</Text>
-        <TouchableOpacity style={styles.headerButton}>
+        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
           <View style={styles.walletContainer}>
             <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
             <Text style={styles.walletText}>0</Text>
@@ -67,8 +67,8 @@ const WithdrawalScreen = ({ navigation }) => {
               resizeMode="contain"
             />
             <View style={styles.logoTextContainer}>
-              <Text style={styles.logoTextGama}>Gama</Text>
-              <Text style={styles.logoText567}>567</Text>
+              <Text style={styles.logoTextGama}>Milaan matka</Text>
+              <Text style={styles.logoText567}>777</Text>
             </View>
           </View>
 

@@ -74,11 +74,14 @@ const marketData = [
   },
 ];
 
-const MarketItem = ({ item }) => (
-  <TouchableOpacity style={styles.card} activeOpacity={0.8}>
-    <View style={styles.cardIconContainer}>
-      <Ionicons name="stats-chart" size={30} color={COLORS.textWhite} />
-    </View>
+const MarketItem = ({ item, navigation }) => (
+  <View style={styles.card} activeOpacity={0.8}>
+    <TouchableOpacity onPress={() => navigation.navigate('PanelChart', { item })} activeOpacity={0.8}>
+      <View style={styles.cardIconContainer}>
+        <Ionicons name="stats-chart" size={30} color={COLORS.textWhite} />
+      </View>
+    </TouchableOpacity>
+
     <View style={styles.cardDetails}>
       <Text style={styles.cardTitle}>{item.name}</Text>
       <Text style={styles.cardNumbers}>{item.numbers}</Text>
@@ -94,7 +97,7 @@ const MarketItem = ({ item }) => (
       </View>
       <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
     </View>
-  </TouchableOpacity>
+  </View>
 );
 
 const HomeScreen = () => {
@@ -119,9 +122,9 @@ const HomeScreen = () => {
     Linking.openURL(phoneNumber).catch((err) => console.error('Error:', err));
   };
 
-
-
   const navigation = useNavigation();
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#313332" />
@@ -184,7 +187,7 @@ const HomeScreen = () => {
 
         <FlatList
           data={marketData}
-          renderItem={({ item }) => <MarketItem item={item} />}
+          renderItem={({ item }) => <MarketItem item={item} navigation={navigation} />}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.listContainer}
           scrollEnabled={false}
