@@ -25,6 +25,7 @@ const COLORS = {
   textDark: '#333333',
   textGray: '#555555',
   closedRed: '#fff',
+  openGreen: '#4CAF50',
   gradientStart: '#f7d977',
   gradientEnd: '#e5a550',
   iconGreen: '#4CAF50',
@@ -38,7 +39,7 @@ const marketData = [
     numbers: '126-94-248',
     open: '09:30 AM',
     close: '10:30 AM',
-    status: 'CLOSED',
+    status: 'Running',
   },
   {
     id: '2',
@@ -70,7 +71,7 @@ const marketData = [
     numbers: '190-03-139',
     open: '11:30 AM',
     close: '12:30 PM',
-    status: 'CLOSED',
+    status: 'Running',
   },
 ];
 
@@ -91,12 +92,21 @@ const MarketItem = ({ item, navigation }) => (
         <Text style={styles.cardTimeText}>Close: {item.close}</Text>
       </View>
     </View>
-    <View style={styles.cardStatusContainer}>
-      <View style={styles.closedIconCircle}>
-        <Icon name="close" size={20} color={COLORS.closedRed} />
+    {item.status === 'CLOSED' ? (
+      <View style={styles.cardStatusContainer}>
+        <View style={styles.closedIconCircle}>
+          <Icon name="close" size={20} color={COLORS.closedRed} />
+        </View>
+        <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
       </View>
-      <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
-    </View>
+    ) : (
+      <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}>
+        <View style={styles.OpenIconCircle}>
+          <Icon name="refresh" size={20} color={COLORS.closedRed} />
+        </View>
+        <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
+      </TouchableOpacity>
+    )}
   </View>
 );
 
@@ -380,6 +390,16 @@ const styles = StyleSheet.create({
   },
   closedIconCircle: {
     backgroundColor: "#e31202",
+
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  OpenIconCircle: {
+    backgroundColor: COLORS.openGreen,
 
     width: 34,
     height: 34,

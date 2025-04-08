@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SignUpScreen from './Screens/SignupScreen';
 import LoginScreen from './Screens/LoginScreen';
 import PanelChart from './Screens/PanelChart';
+import GamesScreen from './Screens/GamesScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -94,6 +95,7 @@ export default function App() {
           <Stack.Screen name="Detail" component={DetailScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="PanelChart" component={PanelChart} />
+          <Stack.Screen name="Games" component={GamesScreen} />
         </Stack.Navigator>
 
       </NavigationContainer>
