@@ -8,25 +8,31 @@ import {
     ScrollView,
     TextInput,
     TouchableOpacity,
-    Alert,
+    Alert, // For update feedback
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ProfileScreen = ({ navigation }) => {
+const PaymentDetailsScreen = ({ navigation }) => {
     // --- State for input fields ---
     // Replace initial values with data fetched for the user
-    const [name, setName] = useState('ankit12'); // Example data
-    const [email, setEmail] = useState('info@example.com'); // Example data
-    const [mobile, setMobile] = useState('9636819197'); // Example data
+    const [paytm, setPaytm] = useState('');
+    const [phonepe, setPhonepe] = useState('');
+    const [googlePay, setGooglePay] = useState('');
+    const [accountNumber, setAccountNumber] = useState('');
+    const [ifsc, setIfsc] = useState('');
+    const [bankName, setBankName] = useState('');
+    const [accountHolderName, setAccountHolderName] = useState('');
 
     const handleUpdate = () => {
-        // --- Add logic to save the updated profile details via API ---
-        // Note: Usually email/mobile might not be updatable or require verification
-        console.log('Updating Profile:', { name, email, mobile });
-        Alert.alert('Success', 'Profile updated successfully!');
+        // --- Add logic to save the updated details via API ---
+        console.log('Updating Payment Details:', {
+            paytm, phonepe, googlePay, accountNumber, ifsc, bankName, accountHolderName
+        });
+        Alert.alert('Success', 'Payment details updated successfully!');
+        // Potentially navigate back or show success message
     };
 
     return (
@@ -38,7 +44,7 @@ const ProfileScreen = ({ navigation }) => {
                  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Profile</Text>
+                <Text style={styles.headerTitle}>Payment Details</Text>
                  <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
@@ -51,41 +57,82 @@ const ProfileScreen = ({ navigation }) => {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoidingView}
             >
-                 <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.formContainer}>
+                        {/* UPI Details */}
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Name</Text>
+                            <Text style={styles.label}>Paytm</Text>
                             <TextInput
                                 style={styles.input}
-                                value={name}
-                                onChangeText={setName}
-                                placeholder="Enter your name"
+                                value={paytm}
+                                onChangeText={setPaytm}
+                                placeholder="Enter Paytm UPI ID or Number"
                                 placeholderTextColor="#ccc"
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Email</Text>
+                            <Text style={styles.label}>Phonepe</Text>
                             <TextInput
                                 style={styles.input}
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                placeholder="Enter your email"
+                                value={phonepe}
+                                onChangeText={setPhonepe}
+                                placeholder="Enter PhonePe UPI ID or Number"
                                 placeholderTextColor="#ccc"
-                                // editable={false} // Consider if email should be editable
                             />
                         </View>
-                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Mobile</Text>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Google Pay</Text>
                             <TextInput
                                 style={styles.input}
-                                value={mobile}
-                                // onChangeText={setMobile} // Usually mobile isn't changed here
-                                keyboardType="phone-pad"
-                                placeholder="Enter your mobile number"
+                                value={googlePay}
+                                onChangeText={setGooglePay}
+                                placeholder="Enter Google Pay UPI ID or Number"
                                 placeholderTextColor="#ccc"
-                                editable={false} // Mobile often non-editable after signup
+                            />
+                        </View>
+
+                        {/* Bank Account Details */}
+                        <Text style={styles.sectionTitle}>Account Details</Text>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Account Number</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={accountNumber}
+                                onChangeText={setAccountNumber}
+                                keyboardType="numeric"
+                                placeholder="Enter Account Number"
+                                placeholderTextColor="#ccc"
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>IFSC Code</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={ifsc}
+                                onChangeText={setIfsc}
+                                autoCapitalize="characters" // Common for IFSC
+                                placeholder="Enter IFSC Code"
+                                placeholderTextColor="#ccc"
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Bank Name</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={bankName}
+                                onChangeText={setBankName}
+                                placeholder="Enter Bank Name"
+                                placeholderTextColor="#ccc"
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Account Holder Name</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={accountHolderName}
+                                onChangeText={setAccountHolderName}
+                                placeholder="Enter Account Holder Name"
+                                placeholderTextColor="#ccc"
                             />
                         </View>
 
@@ -94,7 +141,7 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.updateButtonText}>Update</Text>
                         </TouchableOpacity>
                     </View>
-                 </ScrollView>
+                </ScrollView>
             </KeyboardAvoidingView>
 
         </SafeAreaView>
@@ -106,7 +153,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F0F2F5',
     },
-     header: { /* ... same as AccountStatementScreen ... */
+    header: { /* ... same as AccountStatementScreen ... */
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -160,8 +207,7 @@ walletContainer: {
     },
     scrollContainer: {
         padding: 15,
-        flexGrow: 1, // Ensure scrollview takes height
-        justifyContent: 'center', // Center content vertically if less content
+        paddingBottom: 30, // Extra padding at bottom
     },
     formContainer: {
         backgroundColor: '#fff',
@@ -169,6 +215,16 @@ walletContainer: {
         padding: 20,
         borderWidth: 1,
         borderColor: '#E0E0E0',
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginTop: 20,
+        marginBottom: 15,
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+        paddingTop: 15,
     },
     inputGroup: {
         marginBottom: 15,
@@ -186,9 +242,9 @@ walletContainer: {
         paddingHorizontal: 10,
         paddingVertical: 10,
         fontSize: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#fff', // Ensure input background is white
     },
-     updateButton: {
+    updateButton: {
         backgroundColor: '#0056b3', // Dark Blue
         paddingVertical: 14,
         borderRadius: 8,
@@ -202,4 +258,4 @@ walletContainer: {
     },
 });
 
-export default ProfileScreen;
+export default PaymentDetailsScreen;
