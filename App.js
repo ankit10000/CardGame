@@ -40,7 +40,6 @@ import AccountStatementScreen from './Screens/AccountStatementScreen'; // Placeh
 import GameRatesScreen from './Screens/GameRatesScreen'; // Placeholder
 import HowToPlayScreen from './Screens/HowToPlayScreen'; // Placeholder
 import PrivacyPolicyScreen from './Screens/PrivacyPolicyScreen'; // Placeholder
-import NoticeScreen from './Screens/NoticeScreen'; // Placeholder
 // Logout might be handled differently (e.g., function call), but can be a screen placeholder
 // import LogoutHandler from './utils/LogoutHandler'; // Or a component triggering logout
 import {
@@ -189,20 +188,7 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Notice"
-        component={NoticeScreen} // Use your actual Notice screen
-        options={{
-          drawerIcon: ({ color, size }) => (
-            // Using Material Icons 'close' for the X symbol
-            // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-            // <MaterialIcon name="close" size={size} color={color} />
-            // Or using MCommunityIcons 'close-box-outline' or 'bell-outline' etc.
-             <Icon name="close-box-outline" size={size} color={color} />
-             // Or maybe 'information-outline'
-          ),
-        }}
-      />
+     
       <Drawer.Screen
         name="Logout"
         // component={LoginScreen} // Navigate back to Login on press (better handled via onPress)
@@ -271,7 +257,6 @@ export default function App() {
           <Stack.Screen name="GameRates" component={GameRatesScreen} />
           <Stack.Screen name="HowToPlay" component={HowToPlayScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
-          <Stack.Screen name="Notice" component={NoticeScreen} />
 
         </Stack.Navigator>
       </NavigationContainer>

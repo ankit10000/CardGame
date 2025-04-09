@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
     SafeAreaView,
-    ScrollView,
     View,
     Text,
     TouchableOpacity,
@@ -9,39 +8,39 @@ import {
     StyleSheet,
     StatusBar,
     Platform,
-    FlatList, // Use FlatList for the added items
-    Alert,    // For basic validation feedback
+    FlatList,
+    Alert,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// Optional: Import an icon library
-import Icon from 'react-native-vector-icons/MaterialIcons';
-// import FeatherIcon from 'react-native-vector-icons/Feather';
 
-// Helper function to format date
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+
+
 const formatDate = (date) => {
     if (!date) return '';
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
     return `${day} / ${month} / ${year}`;
 };
 
 
 const HalfSangamScreen = ({ navigation }) => {
-    // Date Picker State
-    const [date, setDate] = useState(new Date(2025, 3, 7)); // April is month 3
+
+    const [date, setDate] = useState(new Date(2025, 3, 7));
     const [showDatePicker, setShowDatePicker] = useState(false);
 
-    // Input State
+
     const [openPanna, setOpenPanna] = useState('');
     const [closeDigit, setCloseDigit] = useState('');
     const [points, setPoints] = useState('');
 
-    // List State
+
     const [addedItems, setAddedItems] = useState([]);
 
-    // --- Date Picker Handler ---
+
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setShowDatePicker(Platform.OS === 'ios');
@@ -55,25 +54,25 @@ const HalfSangamScreen = ({ navigation }) => {
         setShowDatePicker(true);
     };
 
-    // --- Input Handlers ---
+
     const handleOpenPannaChange = (value) => {
-        // Allow only 3 digits
+
         setOpenPanna(value.replace(/[^0-9]/g, '').slice(0, 3));
     };
 
     const handleCloseDigitChange = (value) => {
-        // Allow only 1 digit
+
         setCloseDigit(value.replace(/[^0-9]/g, '').slice(0, 1));
     };
 
     const handlePointsChange = (value) => {
-        // Allow only numbers
+
         setPoints(value.replace(/[^0-9]/g, ''));
     };
 
-    // --- Add Item Handler ---
+
     const handleAddItem = () => {
-        // Basic Validation
+
         if (!openPanna || openPanna.length !== 3) {
             Alert.alert('Invalid Input', 'Please enter a valid 3-digit Open Panna.');
             return;
@@ -88,7 +87,7 @@ const HalfSangamScreen = ({ navigation }) => {
         }
 
         const newItem = {
-            id: Date.now().toString(), // Simple unique ID for keyExtractor
+            id: Date.now().toString(),
             sangam: `${openPanna}-${closeDigit}`,
             points: points,
             gameType: 'Half Sangam',
@@ -96,13 +95,13 @@ const HalfSangamScreen = ({ navigation }) => {
 
         setAddedItems(prevItems => [...prevItems, newItem]);
 
-        // Clear input fields
+
         setOpenPanna('');
         setCloseDigit('');
         setPoints('');
     };
 
-    // --- Submit Handler ---
+
     const handleSubmit = () => {
         if (addedItems.length === 0) {
             Alert.alert('No Bids', 'Please add at least one bid before submitting.');
@@ -111,14 +110,14 @@ const HalfSangamScreen = ({ navigation }) => {
         console.log("Submitting Bids:");
         console.log("Date:", formatDate(date));
         console.log("Bids:", addedItems);
-        // --- Add actual submission logic here (e.g., API call) ---
+
 
         Alert.alert("Bids Submitted", `Submitted ${addedItems.length} bids for ${formatDate(date)} (check console).`);
-        // Optionally clear the list after submission
-        // setAddedItems([]);
+
+
     };
 
-    // --- Render Item for FlatList ---
+
     const renderItem = ({ item }) => (
         <View style={styles.listItem}>
             <Text style={[styles.listItemText, styles.listColSangam]}>{item.sangam}</Text>
@@ -152,7 +151,7 @@ const HalfSangamScreen = ({ navigation }) => {
                         <Text style={styles.dateText}>{formatDate(date)}</Text>
                     </View>
                     <TouchableOpacity style={styles.changeButton} onPress={showDatepicker}>
-                        <Text style={styles.changeButtonText}>Change</Text>
+                        <Icon name="calendar-today" size={20} color="#555" />
                     </TouchableOpacity>
                 </View>
 
@@ -184,7 +183,7 @@ const HalfSangamScreen = ({ navigation }) => {
                             keyboardType="numeric"
                             value={openPanna}
                             onChangeText={handleOpenPannaChange}
-                            maxLength={3} // Enforce max length visually
+                            maxLength={3}
                             placeholder="Enter 3 digits"
                             placeholderTextColor="#ccc"
                         />
@@ -196,7 +195,7 @@ const HalfSangamScreen = ({ navigation }) => {
                             keyboardType="numeric"
                             value={closeDigit}
                             onChangeText={handleCloseDigitChange}
-                            maxLength={1} // Enforce max length visually
+                            maxLength={1}
                             placeholder="Enter 1 digit"
                             placeholderTextColor="#ccc"
                         />
@@ -249,9 +248,9 @@ const HalfSangamScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F8F9FA', // Light background
+        backgroundColor: '#F8F9FA',
     },
-    // Header Styles (similar to previous)
+
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -297,12 +296,12 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold',
     },
-    // --- Content Area ---
+
     contentContainer: {
-        flex: 1, // Takes up remaining space
+        flex: 1,
         padding: 15,
     },
-    // --- Date Section ---
+
     dateContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -310,20 +309,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 8,
         paddingHorizontal: 10,
-        paddingVertical: 5, // Reduced padding
+        paddingVertical: 5,
         borderWidth: 1,
         borderColor: '#ccc',
     },
     dateDisplay: {
-        flex: 1, // Take available space
-        paddingVertical: 8, // Match input height feel
+        flex: 1,
+        paddingVertical: 8,
     },
     dateText: {
         fontSize: 16,
         color: '#333',
     },
     changeButton: {
-        backgroundColor: '#0056b3', // Darker blue
+
         paddingVertical: 8,
         paddingHorizontal: 15,
         borderRadius: 5,
@@ -334,7 +333,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    // --- iOS Done Button ---
+
     iosPickerDoneButtonContainer: {
         alignItems: 'flex-end',
         paddingRight: 15,
@@ -351,7 +350,7 @@ const styles = StyleSheet.create({
         color: '#007AFF',
         fontWeight: '600',
     },
-    // --- Form Section ---
+
     form: {
         marginBottom: 20,
     },
@@ -363,11 +362,11 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         color: '#444',
-        width: 100, // Fixed width for labels
+        width: 100,
         marginRight: 10,
     },
     textInput: {
-        flex: 1, // Take remaining width
+        flex: 1,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
@@ -377,29 +376,29 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     addButton: {
-        backgroundColor: '#0056b3', // Darker Blue
+        backgroundColor: '#0056b3',
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
-        marginTop: 10, // Add some space above Add button
+        marginTop: 10,
     },
     addButtonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    // --- List Section ---
+
     listContainer: {
-        flex: 1, // Allow list to take remaining space
+        flex: 1,
         borderWidth: 1,
         borderColor: '#e0e0e0',
         borderRadius: 8,
-        backgroundColor: '#fff', // White background for the list area
-        overflow: 'hidden', // Ensures children stay within bounds
+        backgroundColor: '#fff',
+        overflow: 'hidden',
     },
     listHeader: {
         flexDirection: 'row',
-        backgroundColor: '#f0f0f0', // Light grey header
+        backgroundColor: '#f0f0f0',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderBottomWidth: 1,
@@ -415,15 +414,15 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee', // Lighter separator
+        borderBottomColor: '#eee',
     },
     listItemText: {
         fontSize: 14,
         color: '#555',
     },
-    // Column widths for List Header and Items
+
     listColSangam: {
-        flex: 2, // Adjust flex ratios as needed
+        flex: 2,
         textAlign: 'left',
     },
     listColPoints: {
@@ -440,15 +439,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#888',
     },
-    // --- Bottom Submit Button ---
+
     bottomSubmitContainer: {
         padding: 15,
         borderTopWidth: 1,
         borderTopColor: '#eee',
-        backgroundColor: '#F8F9FA', // Match safe area background
+        backgroundColor: '#F8F9FA',
     },
     submitButton: {
-        backgroundColor: '#0056b3', // Darker Blue
+        backgroundColor: '#0056b3',
         paddingVertical: 15,
         borderRadius: 8,
         alignItems: 'center',

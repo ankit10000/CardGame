@@ -5,13 +5,13 @@ import {
     Text,
     StyleSheet,
     StatusBar,
-    ScrollView, // Using ScrollView as list is static and likely short
+    ScrollView,
     TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-// --- Placeholder Data ---
+
 const gameRatesData = [
     { id: '1', name: 'Single Digit', rate: '10 KA 95' },
     { id: '2', name: 'Jodi', rate: '10 KA 950' },
@@ -24,7 +24,7 @@ const gameRatesData = [
     { id: '9', name: 'DP Motor', rate: '10 KA 2800' },
     { id: '10', name: 'SP DP TP', rate: '10 KA 950' },
 ];
-// --- End Placeholder Data ---
+
 
 
 const GameRatesScreen = ({ navigation }) => {
@@ -34,11 +34,11 @@ const GameRatesScreen = ({ navigation }) => {
 
             {/* Header */}
             <View style={styles.header}>
-                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Game Rates</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
@@ -51,7 +51,7 @@ const GameRatesScreen = ({ navigation }) => {
                 <View style={styles.contentBox}>
                     <Text style={styles.title}>Main Game Win Ratio For All Bids</Text>
                     {gameRatesData.map((item) => (
-                         <View key={item.id} style={styles.rateItem}>
+                        <View key={item.id} style={styles.rateItem}>
                             <Text style={styles.rateName}>{item.name}:</Text>
                             <Text style={styles.rateValue}>{item.rate}</Text>
                         </View>
@@ -68,15 +68,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F0F2F5',
     },
-     header: { /* ... same as AccountStatementScreen ... */
+    header: { /* ... same as AccountStatementScreen ... */
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
-walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',

@@ -11,21 +11,21 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-// --- Placeholder Data ---
+
 const historyOptions = [
-    { id: '1', title: 'Bid History', targetScreen: 'BidHistoryDetail' }, // Replace targetScreen with actual route names
+    { id: '1', title: 'Bid History', targetScreen: 'BidHistoryDetail' },
     { id: '2', title: 'Starline Bid History', targetScreen: 'StarlineBidHistoryDetail' },
     { id: '3', title: 'Starline Result Bid History', targetScreen: 'StarlineResultHistoryDetail' },
     { id: '4', title: 'Fund History', targetScreen: 'FundHistoryDetail' },
 ];
-// --- End Placeholder Data ---
+
 
 
 const HistoryScreen = ({ navigation }) => {
 
     const handleNavigation = (targetScreen) => {
         if (targetScreen) {
-            // --- Navigate to the specific history detail screen ---
+
             navigation.navigate(targetScreen);
             console.log(`Navigating to ${targetScreen}`);
         } else {
@@ -49,11 +49,11 @@ const HistoryScreen = ({ navigation }) => {
 
             {/* Header */}
             <View style={styles.header}>
-                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>History</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
@@ -62,7 +62,7 @@ const HistoryScreen = ({ navigation }) => {
             </View>
 
             {/* Content */}
-             <FlatList
+            <FlatList
                 data={historyOptions}
                 renderItem={renderHistoryItem}
                 keyExtractor={(item) => item.id}
@@ -82,11 +82,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
-walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',
@@ -127,7 +127,7 @@ walletContainer: {
         fontSize: 10,
         fontWeight: 'bold',
     },
-     listContainer: {
+    listContainer: {
         padding: 15,
     },
     itemContainer: {

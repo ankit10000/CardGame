@@ -8,7 +8,7 @@ import {
     ScrollView,
     TextInput,
     TouchableOpacity,
-    Alert, // For update feedback
+    Alert,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
@@ -16,8 +16,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const PaymentDetailsScreen = ({ navigation }) => {
-    // --- State for input fields ---
-    // Replace initial values with data fetched for the user
+
+
     const [paytm, setPaytm] = useState('');
     const [phonepe, setPhonepe] = useState('');
     const [googlePay, setGooglePay] = useState('');
@@ -27,12 +27,12 @@ const PaymentDetailsScreen = ({ navigation }) => {
     const [accountHolderName, setAccountHolderName] = useState('');
 
     const handleUpdate = () => {
-        // --- Add logic to save the updated details via API ---
+
         console.log('Updating Payment Details:', {
             paytm, phonepe, googlePay, accountNumber, ifsc, bankName, accountHolderName
         });
         Alert.alert('Success', 'Payment details updated successfully!');
-        // Potentially navigate back or show success message
+
     };
 
     return (
@@ -41,11 +41,11 @@ const PaymentDetailsScreen = ({ navigation }) => {
 
             {/* Header */}
             <View style={styles.header}>
-                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Payment Details</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
@@ -110,7 +110,7 @@ const PaymentDetailsScreen = ({ navigation }) => {
                                 style={styles.input}
                                 value={ifsc}
                                 onChangeText={setIfsc}
-                                autoCapitalize="characters" // Common for IFSC
+                                autoCapitalize="characters"
                                 placeholder="Enter IFSC Code"
                                 placeholderTextColor="#ccc"
                             />
@@ -157,11 +157,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
-walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',
@@ -207,7 +207,7 @@ walletContainer: {
     },
     scrollContainer: {
         padding: 15,
-        paddingBottom: 30, // Extra padding at bottom
+        paddingBottom: 30,
     },
     formContainer: {
         backgroundColor: '#fff',
@@ -242,10 +242,10 @@ walletContainer: {
         paddingHorizontal: 10,
         paddingVertical: 10,
         fontSize: 16,
-        backgroundColor: '#fff', // Ensure input background is white
+        backgroundColor: '#fff',
     },
     updateButton: {
-        backgroundColor: '#0056b3', // Dark Blue
+        backgroundColor: '#0056b3',
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',

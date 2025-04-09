@@ -11,19 +11,40 @@ import {
     Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-// Updated points options for Jodi screen
+
 const pointsOptions = [5, 10, 20, 50, 100, 200, 500, 1000];
 
-// Generate Jodi digits (00 to 99)
+
 const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'));
 
 const JodiScreen = ({ navigation }) => {
-    // State to hold input values for each Jodi number
+    const [date, setDate] = useState(new Date(2025, 3, 7));
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDatePicker(Platform.OS === 'ios');
+        setDate(currentDate);
+        if (Platform.OS === 'android') {
+            setShowDatePicker(false);
+        }
+    };
+    const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day} / ${month} / ${year}`;
+    };
     const [jodiValues, setJodiValues] = useState({});
 
     const handleJodiInputChange = (jodiNumber, value) => {
-        // Basic validation to allow only numbers
+
         if (/^\d*$/.test(value)) {
             setJodiValues(prev => ({ ...prev, [jodiNumber]: value }));
         }
@@ -70,9 +91,28 @@ const JodiScreen = ({ navigation }) => {
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
-                </View>
+                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>{formatDate(date)}</Text>
+                    <Icon name="calendar-today" size={20} color="#555" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={'date'}
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChangeDate}
+                    />
+                )}
+                {showDatePicker && Platform.OS === 'ios' && (
+                    <View style={styles.iosPickerDoneButtonContainer}>
+                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
+                            <Text style={styles.iosPickerDoneText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Dropdown removed as it's not in the Jodi screen image */}
 
@@ -80,7 +120,7 @@ const JodiScreen = ({ navigation }) => {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Select Points for Betting</Text>
                     <View style={styles.pointsContainer}>
-                        {pointsOptions.map((points) => ( // Using updated pointsOptions
+                        {pointsOptions.map((points) => (
                             <TouchableOpacity
                                 key={points}
                                 style={[
@@ -101,20 +141,19 @@ const JodiScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Select Digits Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Select Digits</Text>
                     <Text style={styles.selectAllText}>Select All Digits</Text>
                     <View style={styles.digitsContainer}>
-                        {jodiDigits.map((jodiNumber) => ( // Mapping over jodiDigits
+                        {jodiDigits.map((jodiNumber) => (
                             <View key={jodiNumber} style={styles.digitInputContainer}>
                                 <Text style={styles.digitLabel}>{jodiNumber}</Text> {/* Displaying 00, 01, etc. */}
                                 <TextInput
                                     style={styles.digitInput}
                                     keyboardType="numeric"
                                     placeholder=""
-                                    value={jodiValues[jodiNumber] || ''} // Using jodiNumber as key
-                                    onChangeText={(text) => handleJodiInputChange(jodiNumber, text)} // Passing jodiNumber
+                                    value={jodiValues[jodiNumber] || ''}
+                                    onChangeText={(text) => handleJodiInputChange(jodiNumber, text)}
                                     maxLength={4}
                                     textAlign="center"
                                 />
@@ -143,7 +182,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f0f4f7',
     },
-    // --- Header Styles (same as before) ---
+
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -163,6 +202,20 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    datePickerContainer: {
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     badgeContainer: {
         position: 'absolute',
@@ -184,15 +237,15 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold',
     },
-    // --- ScrollView Content ---
+
     scrollView: {
         flex: 1,
     },
     scrollContent: {
         padding: 20,
-        paddingBottom: 100, // Increased padding to avoid footer overlap with more digits
+        paddingBottom: 100,
     },
-    // --- Date Container (same as before) ---
+
     dateContainer: {
         backgroundColor: '#FFFFFF',
         paddingHorizontal: 15,
@@ -200,13 +253,13 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#e0e0e0',
-        marginBottom: 25, // Adjusted margin as dropdown is removed
+        marginBottom: 25,
     },
     dateText: {
         fontSize: 16,
         color: '#333',
     },
-    // --- Sections (same as before) ---
+
     section: {
         marginBottom: 25,
     },
@@ -217,7 +270,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    // --- Points Selection (same styles, different data) ---
+
     pointsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -240,7 +293,7 @@ const styles = StyleSheet.create({
         color: '#333',
         fontWeight: '500',
     },
-    // --- Digits Selection (same styles, different data) ---
+
     selectAllText: {
         fontSize: 14,
         color: '#555',
@@ -253,7 +306,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     digitInputContainer: {
-        width: '22%', // Keeps 4 columns
+        width: '22%',
         marginBottom: 15,
         alignItems: 'center',
     },
@@ -274,9 +327,9 @@ const styles = StyleSheet.create({
         color: '#333',
         width: '100%',
         textAlign: 'center',
-        height: 50, // Keep consistent height
+        height: 50,
     },
-    // --- Footer Buttons (same as before) ---
+
     footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

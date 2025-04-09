@@ -16,15 +16,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {
-    // --- State for input fields ---
-    // Replace initial values with data fetched for the user
-    const [name, setName] = useState('ankit12'); // Example data
-    const [email, setEmail] = useState('info@example.com'); // Example data
-    const [mobile, setMobile] = useState('9636819197'); // Example data
+
+
+    const [name, setName] = useState('ankit12');
+    const [email, setEmail] = useState('info@example.com');
+    const [mobile, setMobile] = useState('9636819197');
 
     const handleUpdate = () => {
-        // --- Add logic to save the updated profile details via API ---
-        // Note: Usually email/mobile might not be updatable or require verification
+
+
         console.log('Updating Profile:', { name, email, mobile });
         Alert.alert('Success', 'Profile updated successfully!');
     };
@@ -35,11 +35,11 @@ const ProfileScreen = ({ navigation }) => {
 
             {/* Header */}
             <View style={styles.header}>
-                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Profile</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
@@ -51,7 +51,7 @@ const ProfileScreen = ({ navigation }) => {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.keyboardAvoidingView}
             >
-                 <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.formContainer}>
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Name</Text>
@@ -73,19 +73,19 @@ const ProfileScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                                 placeholder="Enter your email"
                                 placeholderTextColor="#ccc"
-                                // editable={false} // Consider if email should be editable
+
                             />
                         </View>
-                         <View style={styles.inputGroup}>
+                        <View style={styles.inputGroup}>
                             <Text style={styles.label}>Mobile</Text>
                             <TextInput
                                 style={styles.input}
                                 value={mobile}
-                                // onChangeText={setMobile} // Usually mobile isn't changed here
+
                                 keyboardType="phone-pad"
                                 placeholder="Enter your mobile number"
                                 placeholderTextColor="#ccc"
-                                editable={false} // Mobile often non-editable after signup
+                                editable={false}
                             />
                         </View>
 
@@ -94,7 +94,7 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.updateButtonText}>Update</Text>
                         </TouchableOpacity>
                     </View>
-                 </ScrollView>
+                </ScrollView>
             </KeyboardAvoidingView>
 
         </SafeAreaView>
@@ -106,15 +106,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F0F2F5',
     },
-     header: { /* ... same as AccountStatementScreen ... */
+    header: { /* ... same as AccountStatementScreen ... */
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
-walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',
@@ -160,8 +160,8 @@ walletContainer: {
     },
     scrollContainer: {
         padding: 15,
-        flexGrow: 1, // Ensure scrollview takes height
-        justifyContent: 'center', // Center content vertically if less content
+        flexGrow: 1,
+        justifyContent: 'center',
     },
     formContainer: {
         backgroundColor: '#fff',
@@ -188,8 +188,8 @@ walletContainer: {
         fontSize: 16,
         backgroundColor: '#fff',
     },
-     updateButton: {
-        backgroundColor: '#0056b3', // Dark Blue
+    updateButton: {
+        backgroundColor: '#0056b3',
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',

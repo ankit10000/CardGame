@@ -11,44 +11,44 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
-    Dimensions // To help with responsive sizing
+    Dimensions
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native'; // Optional: for Login button
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-// --- Color Palette (approximated) ---
+
 const COLORS = {
-    statusBar: '#313332', // Dark Purple from top bar
-    gradientTop: '#fce5e3', // Lighter pink/peach top
-    gradientBottom: '#f7d7d5', // Slightly darker pink/peach bottom
-    cardBackground: '#d4a34a', // Mustard yellow/brown card
+    statusBar: '#313332',
+    gradientTop: '#fce5e3',
+    gradientBottom: '#f7d7d5',
+    cardBackground: '#d4a34a',
     inputBackground: '#ffffff',
     placeholderText: '#666666',
     buttonText: '#ffffff',
-    buttonGradientStart: '#8b5e3c', // Darker brown for button gradient
-    buttonGradientEnd: '#d9c4a9',   // Lighter tan for button gradient
-    logoTextBackground: '#e63946', // Red background for 'Gama'
+    buttonGradientStart: '#8b5e3c',
+    buttonGradientEnd: '#d9c4a9',
+    logoTextBackground: '#e63946',
     logoTextColor: '#ffffff',
-    logoNumberColor: '#333333', // Dark color for '567'
-    secondaryText: '#f0f0f0', // Lighter text for 'Already have an account?'
+    logoNumberColor: '#333333',
+    secondaryText: '#f0f0f0',
 };
 
 const SignUpScreen = () => {
-    const navigation = useNavigation(); // Hook for navigation (optional)
+    const navigation = useNavigation();
     const [username, setUsername] = useState('');
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignUp = () => {
         console.log('Signing Up:', { username, mobile, password });
-        // Add your actual sign-up logic here (API call, etc.)
+
     };
 
     const handleLoginPress = () => {
         console.log('Navigate to Login');
-        navigation.navigate('Login'); 
+        navigation.navigate('Login');
     };
 
     return (
@@ -59,17 +59,17 @@ const SignUpScreen = () => {
             <SafeAreaView style={styles.flexContainer}>
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.statusBar} />
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : undefined} // Adjust behavior as needed
+                    behavior={Platform.OS === "ios" ? "padding" : undefined}
                     style={styles.flexContainer}
                 >
                     <ScrollView
                         contentContainerStyle={styles.scrollViewContent}
-                        keyboardShouldPersistTaps="handled" // Dismiss keyboard on tap outside inputs
+                        keyboardShouldPersistTaps="handled"
                     >
                         {/* --- Logo Area --- */}
                         <View style={styles.logoContainer}>
                             <Image
-                                source={require('../assets/slide1.png')} // <-- UPDATE THIS PATH
+                                source={require('../assets/slide1.png')}
                                 style={styles.logoImage}
                                 resizeMode="contain"
                             />
@@ -98,7 +98,7 @@ const SignUpScreen = () => {
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={mobile}
                                 onChangeText={setMobile}
-                                keyboardType="phone-pad" // Use appropriate keyboard type
+                                keyboardType="phone-pad"
                             />
 
                             <TextInput
@@ -107,7 +107,7 @@ const SignUpScreen = () => {
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry // Hide password characters
+                                secureTextEntry
                             />
 
                             {/* --- Sign Up Button --- */}
@@ -115,7 +115,7 @@ const SignUpScreen = () => {
                                 <LinearGradient
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
                                     style={styles.button}
-                                    start={{ x: 0.5, y: 0 }} // Gradient top to bottom
+                                    start={{ x: 0.5, y: 0 }}
                                     end={{ x: 0.5, y: 1 }}
                                 >
                                     <Text style={styles.buttonText}>Sign Up</Text>
@@ -127,9 +127,9 @@ const SignUpScreen = () => {
                             {/* --- Login Button --- */}
                             <TouchableOpacity onPress={handleLoginPress} style={styles.buttonContainer} activeOpacity={0.8}>
                                 <LinearGradient
-                                     // Slightly different gradient or same? Adjust as needed
+
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
-                                    style={[styles.button, styles.loginButton]} // Can add specific login button styles
+                                    style={[styles.button, styles.loginButton]}
                                     start={{ x: 0.5, y: 0 }}
                                     end={{ x: 0.5, y: 1 }}
                                 >
@@ -144,7 +144,7 @@ const SignUpScreen = () => {
     );
 };
 
-// --- Updated styles for better design ---
+
 const styles = StyleSheet.create({
     flexContainer: {
         flex: 1,

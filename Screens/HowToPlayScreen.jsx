@@ -22,7 +22,7 @@ const HowToPlayScreen = ({ navigation }) => {
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>How to Play</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
@@ -32,24 +32,24 @@ const HowToPlayScreen = ({ navigation }) => {
 
             {/* Content */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                 <View style={styles.contentBox}>
-                     <Text style={styles.title}>How To Play</Text>
-                     <Text style={styles.paragraph}>
-                         Download our application from Google Play Store or from our official website.
-                     </Text>
-                     <Text style={styles.paragraph}>
-                         Register with your Mobile Number, Email ID, User Name with our platform.
-                     </Text>
-                     <Text style={styles.paragraph}>
-                         Login with the application using Mobile Number and Password with your secure PIN code.
-                     </Text>
-                     <Text style={styles.paragraph}>
-                         Select the Game type, select your favourite number and start to Play Game.
-                     </Text>
-                     <Text style={styles.paragraph}>
-                         Get a chance to win upto 10 Lac Points.
-                     </Text>
-                 </View>
+                <View style={styles.contentBox}>
+                    <Text style={styles.title}>How To Play</Text>
+                    <Text style={styles.paragraph}>
+                        Download our application from Google Play Store or from our official website.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Register with your Mobile Number, Email ID, User Name with our platform.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Login with the application using Mobile Number and Password with your secure PIN code.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Select the Game type, select your favourite number and start to Play Game.
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Get a chance to win upto 10 Lac Points.
+                    </Text>
+                </View>
             </ScrollView>
 
         </SafeAreaView>
@@ -61,15 +61,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F0F2F5',
     },
-     header: { /* ... same as AccountStatementScreen ... */
+    header: { /* ... same as AccountStatementScreen ... */
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
-walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',
@@ -120,17 +120,17 @@ walletContainer: {
         borderWidth: 1,
         borderColor: '#E0E0E0',
     },
-     title: {
+    title: {
         fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 20,
-        // textAlign: 'center', // Keep left aligned as per image
+
     },
     paragraph: {
         fontSize: 16,
         color: '#555',
-        lineHeight: 24, // Improve readability
+        lineHeight: 24,
         marginBottom: 15,
     }
 });

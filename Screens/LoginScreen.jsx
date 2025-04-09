@@ -14,7 +14,7 @@ import {
     Dimensions
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,9 +27,9 @@ const COLORS = {
     inputBackground: '#ffffff',
     placeholderText: '#666666',
     buttonText: '#ffffff',
-    
-    buttonGradientStart: '#9a704a', 
-    buttonGradientEnd: '#c8a87e',   
+
+    buttonGradientStart: '#9a704a',
+    buttonGradientEnd: '#c8a87e',
     logoTextBackground: '#e63946',
     logoTextColor: '#ffffff',
     logoNumberColor: '#333333',
@@ -38,7 +38,7 @@ const COLORS = {
 
 const LoginScreen = () => {
     const navigation = useNavigation();
-    
+
     const [mobileName, setMobileName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -46,12 +46,12 @@ const LoginScreen = () => {
         console.log('Logging In:', { mobileName, password });
         navigation.replace('MainDrawer');
 
-        
+
     };
 
     const handleRegisterPress = () => {
         console.log('Navigate to Sign Up');
-        navigation.navigate('SignUp'); 
+        navigation.navigate('SignUp');
     };
 
     return (
@@ -69,10 +69,9 @@ const LoginScreen = () => {
                         contentContainerStyle={styles.scrollViewContent}
                         keyboardShouldPersistTaps="handled"
                     >
-                        {/* --- Logo Area (Same as Sign Up) --- */}
                         <View style={styles.logoContainer}>
                             <Image
-                                source={require('../assets/slide1.png')} 
+                                source={require('../assets/slide1.png')}
                                 style={styles.logoImage}
                                 resizeMode="contain"
                             />
@@ -82,20 +81,17 @@ const LoginScreen = () => {
                             </Text>
                         </View>
 
-                        {/* --- Log In Card --- */}
                         <View style={styles.card}>
-                            {/* --- Updated Title --- */}
                             <Text style={styles.cardTitle}>Log In</Text>
 
-                            {/* --- Updated Inputs --- */}
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Mobile Name" 
+                                placeholder="Enter Mobile Name"
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={mobileName}
                                 onChangeText={setMobileName}
                                 autoCapitalize="none"
-                                
+
                             />
 
                             <TextInput
@@ -104,10 +100,9 @@ const LoginScreen = () => {
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry 
+                                secureTextEntry
                             />
 
-                            {/* --- Login Button --- */}
                             <TouchableOpacity onPress={handleLogin} style={styles.buttonContainer} activeOpacity={0.8}>
                                 <LinearGradient
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
@@ -115,15 +110,12 @@ const LoginScreen = () => {
                                     start={{ x: 0.5, y: 0 }}
                                     end={{ x: 0.5, y: 1 }}
                                 >
-                                    {/* --- Updated Text --- */}
                                     <Text style={styles.buttonText}>Login</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
 
-                            {/* --- Updated Secondary Text --- */}
                             <Text style={styles.secondaryText}>Don't have an account yet?</Text>
 
-                            {/* --- New Register Button --- */}
                             <TouchableOpacity onPress={handleRegisterPress} style={styles.buttonContainer} activeOpacity={0.8}>
                                 <LinearGradient
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
@@ -131,7 +123,6 @@ const LoginScreen = () => {
                                     start={{ x: 0.5, y: 0 }}
                                     end={{ x: 0.5, y: 1 }}
                                 >
-                                    {/* --- Updated Text --- */}
                                     <Text style={styles.buttonText}>New Register</Text>
                                 </LinearGradient>
                             </TouchableOpacity>

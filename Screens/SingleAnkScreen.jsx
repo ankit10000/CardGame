@@ -7,16 +7,38 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
-    StatusBar, // Import StatusBar
-    Platform // To handle platform specific styles if needed
+    StatusBar,
+    Platform
 } from 'react-native';
-import Icon1 from 'react-native-vector-icons/Ionicons'; // Example using Ionicons
-import Icon from 'react-native-vector-icons/MaterialIcons'; // For the cart/box icon
+import Icon1 from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
-const digits = Array.from({ length: 10 }, (_, i) => i.toString()); // ['0', '1', ..., '9']
+const digits = Array.from({ length: 10 }, (_, i) => i.toString());
 
 const SingleAnkScreen = ({ navigation }) => {
+    const [date, setDate] = useState(new Date(2025, 3, 7));
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDatePicker(Platform.OS === 'ios');
+        setDate(currentDate);
+        if (Platform.OS === 'android') {
+            setShowDatePicker(false);
+        }
+    };
+    const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day} / ${month} / ${year}`;
+    };
     const [digitValues, setDigitValues] = useState({});
 
     const handleDigitChange = (digit, value) => {
@@ -44,9 +66,28 @@ const SingleAnkScreen = ({ navigation }) => {
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
-                </View>
+                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>{formatDate(date)}</Text>
+                    <Icon name="calendar-today" size={20} color="#555" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={'date'}
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChangeDate}
+                    />
+                )}
+                {showDatePicker && Platform.OS === 'ios' && (
+                    <View style={styles.iosPickerDoneButtonContainer}>
+                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
+                            <Text style={styles.iosPickerDoneText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Dropdown Mock */}
                 <TouchableOpacity style={styles.dropdown}>
@@ -77,10 +118,10 @@ const SingleAnkScreen = ({ navigation }) => {
                                 <TextInput
                                     style={styles.digitInput}
                                     keyboardType="numeric"
-                                    placeholder="" // No placeholder needed as per image
+                                    placeholder=""
                                     value={digitValues[digit] || ''}
                                     onChangeText={(text) => handleDigitChange(digit, text)}
-                                    maxLength={4} // Assume a max length, adjust as needed
+                                    maxLength={4}
                                     textAlign="center"
                                 />
                             </View>
@@ -105,22 +146,22 @@ const SingleAnkScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#f0f4f7', // Light background for the body
+        backgroundColor: '#f0f4f7',
     },
-    // --- Header Styles ---
+
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Purple color from image
-        paddingVertical: Platform.OS === 'ios' ? 15 : 12, // Adjust padding for different OS
+        backgroundColor: '#934b47',
+        paddingVertical: Platform.OS === 'ios' ? 15 : 12,
         paddingHorizontal: 15,
-        height: 60, // Fixed header height
+        height: 60,
     },
     headerButton: {
-        padding: 5, // Add padding for easier tapping
-        position: 'relative', // Needed for badge positioning
-        flexDirection: 'row', // Align icon and badge horizontally
+        padding: 5,
+        position: 'relative',
+        flexDirection: 'row',
         alignItems: 'center',
     },
     headerTitle: {
@@ -130,9 +171,9 @@ const styles = StyleSheet.create({
     },
     badgeContainer: {
         position: 'absolute',
-        top: -5, // Adjust position
-        right: -8, // Adjust position
-        backgroundColor: '#FFFFFF', // White background for badge
+        top: -5,
+        right: -8,
+        backgroundColor: '#FFFFFF',
         borderRadius: 10,
         paddingHorizontal: 5,
         paddingVertical: 1,
@@ -141,22 +182,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#6a1b9a' // Match header background
+        borderColor: '#6a1b9a'
     },
     badgeText: {
-        color: '#6a1b9a', // Match header background
+        color: '#6a1b9a',
         fontSize: 10,
         fontWeight: 'bold',
     },
-    // --- ScrollView Content ---
+
     scrollView: {
         flex: 1,
     },
     scrollContent: {
         padding: 20,
-        paddingBottom: 100, // Ensure content doesn't hide behind footer
+        paddingBottom: 100,
     },
-    // --- Date & Dropdown ---
+
     dateContainer: {
         backgroundColor: '#FFFFFF',
         paddingHorizontal: 15,
@@ -180,15 +221,15 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#e0e0e0',
-        marginBottom: 25, // Increased margin bottom
-        width: '50%', // Adjust width as needed or align differently
-        alignSelf: 'flex-end', // Align to the right
+        marginBottom: 25,
+        width: '50%',
+        alignSelf: 'flex-end',
     },
     dropdownText: {
         fontSize: 16,
         color: '#333',
     },
-    // --- Sections ---
+
     section: {
         marginBottom: 25,
     },
@@ -199,13 +240,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    // --- Points Selection ---
+
     pointsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-around', // Distribute items evenly
+        justifyContent: 'space-around',
     },
-    walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',
@@ -214,38 +255,52 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     pointButton: {
-        backgroundColor: '#f8f9fa', // Very light gray background
+        backgroundColor: '#f8f9fa',
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#e0e0e0',
-        minWidth: 70, // Ensure minimum width
+        minWidth: 70,
         alignItems: 'center',
         marginBottom: 10,
-        marginHorizontal: 5, // Add horizontal margin for spacing
+        marginHorizontal: 5,
     },
     pointButtonText: {
         fontSize: 14,
         color: '#333',
         fontWeight: '500',
     },
-    // --- Digits Selection ---
+
     selectAllText: {
         fontSize: 14,
         color: '#555',
         marginBottom: 15,
-        marginLeft: 5, // Align slightly with the grid start
+        marginLeft: 5,
+    },
+    datePickerContainer: {
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     digitsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between', // Adjust spacing between items
+        justifyContent: 'space-between',
     },
     digitInputContainer: {
-        width: '22%', // Adjust width to fit 4 items per row with spacing
+        width: '22%',
         marginBottom: 15,
-        alignItems: 'center', // Center label and input vertically within the container
+        alignItems: 'center',
     },
     digitLabel: {
         fontSize: 14,
@@ -256,26 +311,26 @@ const styles = StyleSheet.create({
     digitInput: {
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        borderColor: '#b0bec5', // Slightly darker border for inputs
+        borderColor: '#b0bec5',
         borderRadius: 8,
-        paddingVertical: Platform.OS === 'ios' ? 12 : 8, // Adjust padding for input height
+        paddingVertical: Platform.OS === 'ios' ? 12 : 8,
         paddingHorizontal: 10,
         fontSize: 16,
         color: '#333',
-        width: '100%', // Take full width of its container
-        textAlign: 'center', // Center text inside input
-        height: 50, // Fixed height for inputs
+        width: '100%',
+        textAlign: 'center',
+        height: 50,
     },
-    // --- Footer Buttons ---
+
     footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 15,
         paddingHorizontal: 20,
-        backgroundColor: '#f0f4f7', // Match body background
+        backgroundColor: '#f0f4f7',
         borderTopWidth: 1,
         borderTopColor: '#e0e0e0',
-        position: 'absolute', // Fixed position at the bottom
+        position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
@@ -284,15 +339,15 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
-        flex: 1, // Make buttons take equal space
+        flex: 1,
         alignItems: 'center',
-        marginHorizontal: 5, // Add spacing between buttons
+        marginHorizontal: 5,
     },
     resetButton: {
-        backgroundColor: '#546e7a', // Dark bluish-gray
+        backgroundColor: '#546e7a',
     },
     submitButton: {
-        backgroundColor: '#1e88e5', // Blue color
+        backgroundColor: '#1e88e5',
     },
     footerButtonText: {
         color: '#FFFFFF',

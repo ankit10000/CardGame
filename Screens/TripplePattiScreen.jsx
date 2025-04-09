@@ -9,25 +9,20 @@ import {
     StyleSheet,
     StatusBar,
     Dimensions,
-    Platform, // Import Platform
+    Platform,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // For the cart/box icon
-
-// import PickerSelect from 'react-native-picker-select';
-// import DateTimePicker from '@react-native-community/datetimepicker'; // Import DatePicker
-// Optional: Import an icon library
-// import Icon from 'react-native-vector-icons/MaterialIcons';
-// import FeatherIcon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width } = Dimensions.get('window');
 const PADDING = 15;
-const INPUT_ITEM_WIDTH = (width - PADDING * 5) / 4; // Adjust based on desired padding and columns
+const INPUT_ITEM_WIDTH = (width - PADDING * 5) / 4;
 
-// Helper function to format date
+
 const formatDate = (date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
     return `${day} / ${month} / ${year}`;
 };
@@ -38,29 +33,29 @@ const TripplePattiScreen = ({ navigation }) => {
     const [selectedMarket, setSelectedMarket] = useState('OPEN');
     const [digitInputs, setDigitInputs] = useState({});
 
-    // --- Date Picker State ---
-    const [date, setDate] = useState(new Date(2025, 3, 7)); // April is month 3 (0-indexed)
+
+    const [date, setDate] = useState(new Date(2025, 3, 7));
     const [showDatePicker, setShowDatePicker] = useState(false);
-    // --- End Date Picker State ---
+
 
     const pointOptions = [10, 20, 50, 100, 200, 500, 1000];
 
-    // --- Updated Digits Data ---
+
     const digitGroups = [
         {
-            title: 'Select All Digits', // Updated Subtitle
-            digits: ['000', '111', '222', '333', '444', '555', '666', '777', '888', '999'], // Updated Digits
+            title: 'Select All Digits',
+            digits: ['000', '111', '222', '333', '444', '555', '666', '777', '888', '999'],
         },
     ];
-    // --- End Updated Digits Data ---
 
 
-    // --- Date Picker Handler ---
+
+
     const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date; // Keep current date if user cancels
-        setShowDatePicker(Platform.OS === 'ios'); // Keep visible on iOS until done
+        const currentDate = selectedDate || date;
+        setShowDatePicker(Platform.OS === 'ios');
         setDate(currentDate);
-        // On Android, the picker closes automatically after selection/cancel
+
         if (Platform.OS === 'android') {
             setShowDatePicker(false);
         }
@@ -69,7 +64,7 @@ const TripplePattiScreen = ({ navigation }) => {
     const showDatepicker = () => {
         setShowDatePicker(true);
     };
-    // --- End Date Picker Handler ---
+
 
     const handlePointSelect = (points) => {
         setSelectedPoints(points);
@@ -83,8 +78,8 @@ const TripplePattiScreen = ({ navigation }) => {
     const resetBid = () => {
         setSelectedPoints(null);
         setDigitInputs({});
-        setDate(new Date(2025, 3, 7)); // Reset date if needed
-        // Optionally reset dropdown if needed: setSelectedMarket('OPEN');
+        setDate(new Date(2025, 3, 7));
+
     };
 
     const submitBid = () => {
@@ -93,7 +88,7 @@ const TripplePattiScreen = ({ navigation }) => {
         console.log("Market:", selectedMarket);
         console.log("Selected Points:", selectedPoints);
         console.log("Digit Inputs:", digitInputs);
-        // Add actual submission logic here (e.g., API call)
+
         alert("Bid Submitted (check console)");
     };
 
@@ -114,25 +109,25 @@ const TripplePattiScreen = ({ navigation }) => {
             </View>
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+
                 {/* Date Picker Trigger */}
                 <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
                     <Text style={styles.dateText}>{formatDate(date)}</Text>
+
                     {/* Optional: Add a calendar icon here */}
-                    {/* <Icon name="calendar-today" size={20} color="#555" /> */}
+                    <Icon name="calendar-today" size={20} color="#555" />
                 </TouchableOpacity>
 
-                {/* Date Picker Modal/Component */}
-                {/* {showDatePicker && (
+                {showDatePicker && (
                     <DateTimePicker
                         testID="dateTimePicker"
                         value={date}
-                        mode={'date'} // Can be 'date', 'time', 'datetime'
+                        mode={'date'}
                         is24Hour={true}
-                        display="default" // 'default', 'spinner', 'calendar', 'clock'
+                        display="default"
                         onChange={onChangeDate}
                     />
-                 )} */}
-                {/* On iOS, add a "Done" button if using 'spinner' or if needed */}
+                )}
                 {showDatePicker && Platform.OS === 'ios' && (
                     <View style={styles.iosPickerDoneButtonContainer}>
                         <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
@@ -141,26 +136,6 @@ const TripplePattiScreen = ({ navigation }) => {
                     </View>
                 )}
 
-
-                {/* Market Dropdown */}
-                {/* <View style={styles.dropdownContainer}>
-                    <PickerSelect
-                        value={selectedMarket}
-                        onValueChange={(value) => setSelectedMarket(value)}
-                        items={[
-                            { label: 'OPEN', value: 'OPEN' },
-                            { label: 'CLOSE', value: 'CLOSE' },
-                        ]}
-                        style={pickerSelectStyles}
-                        useNativeAndroidPickerStyle={false}
-                        Icon={() => {
-                             return <Text style={styles.pickerIcon}>▼</Text>;
-                            // return <Icon name="arrow-drop-down" size={24} color="#888" />;
-                        }}
-                    />
-                </View> */}
-
-                {/* Points Selection */}
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Select Points for Betting</Text>
                     <View style={styles.pointsGrid}>
@@ -184,12 +159,12 @@ const TripplePattiScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Digits Selection */}
+
                 <View style={[styles.sectionContainer, { marginBottom: 0 }]}>
                     <Text style={styles.sectionTitle}>Select Digits</Text>
                 </View>
 
-                {/* Use the updated digitGroups data */}
+
                 {digitGroups.map((group, index) => (
                     <View key={index} style={styles.sectionContainer}>
                         <Text style={styles.subSectionTitle}>{group.title}</Text>
@@ -213,7 +188,7 @@ const TripplePattiScreen = ({ navigation }) => {
 
             </ScrollView>
 
-            {/* Bottom Action Buttons */}
+
             <View style={styles.bottomActions}>
                 <TouchableOpacity style={[styles.actionButton, styles.resetButton]} onPress={resetBid}>
                     <Text style={styles.actionButtonText}>Reset BID</Text>
@@ -226,17 +201,17 @@ const TripplePattiScreen = ({ navigation }) => {
     );
 };
 
-// --- Styles (mostly same as before, with additions/mods for Date Picker) ---
+
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#fff', // Changed background to white to match image better
+        backgroundColor: '#fff',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Purple/Maroon color from image
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: PADDING,
     },
@@ -281,9 +256,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 100, // Ensure space for bottom buttons
+        paddingBottom: 100,
     },
-    // --- Date Picker Styles ---
+
     datePickerContainer: {
         marginHorizontal: PADDING,
         marginTop: PADDING,
@@ -293,18 +268,18 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         backgroundColor: '#fff',
-        flexDirection: 'row', // To potentially add an icon later
-        justifyContent: 'space-between', // To potentially add an icon later
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
     dateText: {
         fontSize: 16,
         color: '#333',
     },
-    iosPickerDoneButtonContainer: { // Style for iOS 'Done' button container
+    iosPickerDoneButtonContainer: {
         alignItems: 'flex-end',
         paddingRight: PADDING,
-        backgroundColor: '#f0f0f0', // Or match your theme
+        backgroundColor: '#f0f0f0',
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
@@ -314,10 +289,10 @@ const styles = StyleSheet.create({
     },
     iosPickerDoneText: {
         fontSize: 16,
-        color: '#007AFF', // iOS blue
+        color: '#007AFF',
         fontWeight: '600',
     },
-    // --- End Date Picker Styles ---
+
     dropdownContainer: {
         paddingHorizontal: PADDING,
         paddingVertical: PADDING,
@@ -337,23 +312,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 15,
         color: '#333',
-        textAlign: 'center', // Center the main titles
+        textAlign: 'center',
     },
     subSectionTitle: {
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 10,
         color: '#444',
-        // Removed textAlign: 'center' if only subsection titles should be left-aligned
+
     },
     pointsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        marginHorizontal: -2, // Adjust to control spacing if needed
+        marginHorizontal: -2,
     },
     pointButton: {
-        backgroundColor: '#f0f0f0', // Lighter grey background for buttons
+        backgroundColor: '#f0f0f0',
         paddingVertical: 12,
         borderRadius: 8,
         marginBottom: 10,
@@ -362,7 +337,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
     },
     pointButtonSelected: {
-        backgroundColor: '#934b47', // Theme color for selection
+        backgroundColor: '#934b47',
     },
     pointButtonText: {
         fontSize: 14,
@@ -391,7 +366,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         borderWidth: 1,
-        borderColor: '#aaa', // Slightly darker border for inputs
+        borderColor: '#aaa',
         borderRadius: 5,
         paddingHorizontal: 10,
         paddingVertical: 8,
@@ -408,7 +383,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: PADDING,
-        backgroundColor: '#fff', // Match screen background
+        backgroundColor: '#fff',
         borderTopWidth: 1,
         borderTopColor: '#eee',
     },
@@ -420,11 +395,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     resetButton: {
-        backgroundColor: '#343A40', // Darker Reset Button
+        backgroundColor: '#343A40',
         marginRight: PADDING / 2,
     },
     submitButton: {
-        backgroundColor: '#0056b3', // Darker Submit Button
+        backgroundColor: '#0056b3',
         marginLeft: PADDING / 2,
     },
     actionButtonText: {
@@ -442,7 +417,7 @@ const styles = StyleSheet.create({
     },
 });
 
-// Styles for react-native-picker-select (can remain the same)
+
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
         fontSize: 16,

@@ -11,7 +11,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 const { width } = Dimensions.get('window');
@@ -62,7 +62,7 @@ const WithdrawalScreen = ({ navigation }) => {
         <View style={styles.card}>
           <View style={styles.logoContainer}>
             <Image
-              source={require('../assets/slide1.png')} 
+              source={require('../assets/slide1.png')}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 5,
-    minWidth: 40, 
+    minWidth: 40,
     alignItems: 'center',
   },
   headerTitle: {
@@ -151,10 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  walletContainer: { 
+  walletContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: "#ffffff", 
+    backgroundColor: "#ffffff",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 15,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 10,
     padding: cardPadding,
-    elevation: 3, 
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 100,
-    height: 70, 
+    height: 70,
     marginBottom: 5,
   },
   logoTextContainer: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
-    paddingHorizontal: 5, 
+    paddingHorizontal: 5,
   },
   infoText: {
     textAlign: 'center',

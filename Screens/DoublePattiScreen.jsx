@@ -8,19 +8,42 @@ import {
     TextInput,
     StyleSheet,
     StatusBar,
-    Dimensions, // To help with grid layout
+    Platform,
+    Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // For the cart/box icon
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 const { width } = Dimensions.get('window');
 const PADDING = 15;
-const INPUT_ITEM_WIDTH = (width - PADDING * 5) / 4; // Adjust based on desired padding and columns
+const INPUT_ITEM_WIDTH = (width - PADDING * 5) / 4;
 
 const DoublePattiScreen = ({ navigation }) => {
+    const [date, setDate] = useState(new Date(2025, 3, 7));
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDatePicker(Platform.OS === 'ios');
+        setDate(currentDate);
+        if (Platform.OS === 'android') {
+            setShowDatePicker(false);
+        }
+    };
+    const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day} / ${month} / ${year}`;
+    };
     const [selectedPoints, setSelectedPoints] = useState(null);
     const [selectedMarket, setSelectedMarket] = useState('OPEN');
-    const [digitInputs, setDigitInputs] = useState({}); // Store input values like { '550': '10', '668': '' }
+    const [digitInputs, setDigitInputs] = useState({});
 
     const pointOptions = [10, 20, 50, 100, 200, 500, 1000];
 
@@ -40,7 +63,7 @@ const DoublePattiScreen = ({ navigation }) => {
     };
 
     const handleInputChange = (digit, value) => {
-        // Allow only numbers
+
         const numericValue = value.replace(/[^0-9]/g, '');
         setDigitInputs(prev => ({ ...prev, [digit]: numericValue }));
     };
@@ -48,7 +71,7 @@ const DoublePattiScreen = ({ navigation }) => {
     const resetBid = () => {
         setSelectedPoints(null);
         setDigitInputs({});
-        // Optionally reset dropdown if needed: setSelectedMarket('OPEN');
+
     };
 
     const submitBid = () => {
@@ -56,7 +79,7 @@ const DoublePattiScreen = ({ navigation }) => {
         console.log("Market:", selectedMarket);
         console.log("Selected Points:", selectedPoints);
         console.log("Digit Inputs:", digitInputs);
-        // Add actual submission logic here (e.g., API call)
+
         alert("Bid Submitted (check console)");
     };
 
@@ -77,9 +100,28 @@ const DoublePattiScreen = ({ navigation }) => {
             </View>
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
-                </View>
+                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>{formatDate(date)}</Text>
+                    <Icon name="calendar-today" size={20} color="#555" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={'date'}
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChangeDate}
+                    />
+                )}
+                {showDatePicker && Platform.OS === 'ios' && (
+                    <View style={styles.iosPickerDoneButtonContainer}>
+                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
+                            <Text style={styles.iosPickerDoneText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Select Points for Betting</Text>
@@ -154,16 +196,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Purple/Maroon color from image
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: PADDING,
     },
     headerButton: {
         padding: 5,
-        minWidth: 40, // Ensure touchable area
+        minWidth: 40,
         alignItems: 'center',
     },
-    headerIconText: { // Simple text fallback for icon
+    headerIconText: {
         fontSize: 24,
         color: '#fff',
     },
@@ -198,8 +240,22 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
+    datePickerContainer: {
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     scrollContent: {
-        paddingBottom: 100, // Ensure space for bottom buttons
+        paddingBottom: 100,
     },
     dateContainer: {
         paddingHorizontal: PADDING,
@@ -214,14 +270,14 @@ const styles = StyleSheet.create({
     dropdownContainer: {
         paddingHorizontal: PADDING,
         paddingVertical: PADDING,
-        // borderWidth: 1, // uncomment to see container
-        // borderColor: 'red',
+
+
     },
-    pickerIcon: { // Simple text fallback for icon
+    pickerIcon: {
         fontSize: 16,
         color: '#555',
-        paddingRight: 10, // Add some padding if needed
-        // alignSelf: 'center' // uncomment to see alignment
+        paddingRight: 10,
+
     },
     sectionContainer: {
         paddingHorizontal: PADDING,
@@ -243,21 +299,21 @@ const styles = StyleSheet.create({
     pointsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between', // Distribute space between items
+        justifyContent: 'space-between',
     },
     pointButton: {
         backgroundColor: '#f0f0f0',
         paddingVertical: 12,
-        paddingHorizontal: 10, // Adjust as needed
+        paddingHorizontal: 10,
         borderRadius: 8,
         marginBottom: 10,
         alignItems: 'center',
-        // Calculate width - adjust calculation based on number of columns and desired gap
-        minWidth: width / 4.8, // Roughly 4 columns with some spacing
-        marginHorizontal: 2, // Small gap between buttons
+
+        minWidth: width / 4.8,
+        marginHorizontal: 2,
     },
     pointButtonSelected: {
-        backgroundColor: '#934b47', // Use theme color for selection
+        backgroundColor: '#934b47',
     },
     pointButtonText: {
         fontSize: 14,
@@ -270,13 +326,13 @@ const styles = StyleSheet.create({
     digitsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginHorizontal: -PADDING / 2, // Counteract item padding for alignment
+        marginHorizontal: -PADDING / 2,
     },
     digitInputContainer: {
         width: INPUT_ITEM_WIDTH,
         marginBottom: PADDING,
-        marginHorizontal: PADDING / 2, // Add horizontal spacing between items
-        alignItems: 'center', // Center label and input vertically
+        marginHorizontal: PADDING / 2,
+        alignItems: 'center',
     },
     digitLabel: {
         fontSize: 14,
@@ -292,7 +348,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         fontSize: 14,
         textAlign: 'center',
-        width: '100%', // Take full width of container
+        width: '100%',
         backgroundColor: '#fff',
     },
     bottomActions: {
@@ -303,23 +359,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: PADDING,
-        backgroundColor: '#fff', // Or a slightly off-white color
+        backgroundColor: '#fff',
         borderTopWidth: 1,
         borderTopColor: '#eee',
     },
     actionButton: {
-        flex: 1, // Make buttons take equal width
+        flex: 1,
         paddingVertical: 15,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
     },
     resetButton: {
-        backgroundColor: '#6c757d', // Greyish color
+        backgroundColor: '#6c757d',
         marginRight: PADDING / 2,
     },
     submitButton: {
-        backgroundColor: '#007bff', // Blue color
+        backgroundColor: '#007bff',
         marginLeft: PADDING / 2,
     },
     actionButtonText: {
@@ -327,7 +383,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',

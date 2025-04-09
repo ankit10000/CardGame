@@ -9,9 +9,8 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons'; // Or your preferred icon library
 
-// --- Placeholder Data ---
+
 const statementData = [
     {
         id: '1',
@@ -31,17 +30,17 @@ const statementData = [
         id: '3',
         referenceId: '#1988432',
         amount: 2000,
-        status: 'Success', // Added for variety
+        status: 'Success',
         date: '04 Apr 2025 11:15',
     },
 ];
-// --- End Placeholder Data ---
 
-// Define Status Colors
+
+
 const statusColors = {
-    Pending: '#FFA500', // Orange
-    Rejected: '#FF0000', // Red
-    Success: '#28A745', // Green
+    Pending: '#FFA500',
+    Rejected: '#FF0000',
+    Success: '#28A745',
 };
 
 
@@ -104,13 +103,13 @@ const AccountStatementScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F0F2F5', // Light grey background
+        backgroundColor: '#F0F2F5',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Same as other headers
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
@@ -128,13 +127,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         position: 'relative',
-        padding: 5, // Add padding for touch area
+        padding: 5,
     },
     badge: {
         position: 'absolute',
-        top: -2, // Adjust position
-        right: -5, // Adjust position
-        backgroundColor: '#FFA500', // Orange badge
+        top: -2,
+        right: -5,
+        backgroundColor: '#FFA500',
         borderRadius: 10,
         minWidth: 20,
         height: 20,
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#888',
     },
-    walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ffffff',

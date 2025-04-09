@@ -13,21 +13,21 @@ const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const COLORS = {
     headerBackground: '#934b47',
     headerText: '#ffffff',
-    background: '#f4f7f9', 
+    background: '#f4f7f9',
     cardBackground: '#ffffff',
     inputBorder: '#e0e0e0',
     inputPlaceholder: '#999999',
     inputText: '#333333',
     minAmountText: '#444444',
-    amountButtonBackground: '#f8f9fa', 
+    amountButtonBackground: '#f8f9fa',
     amountButtonBorder: '#e9ecef',
     amountButtonText: '#343a40',
-    amountButtonSelectedBackground: '#ddeeff', 
-    amountButtonSelectedBorder: '#aaccff',   
-    payButtonBackground: '#1d5da8', 
+    amountButtonSelectedBackground: '#ddeeff',
+    amountButtonSelectedBorder: '#aaccff',
+    payButtonBackground: '#1d5da8',
     payButtonText: '#ffffff',
-    walletIcon: '#e5a550', 
-    walletTextBackground: '#d3d3d3', 
+    walletIcon: '#e5a550',
+    walletTextBackground: '#d3d3d3',
     walletTextColor: '#333',
 };
 const PanelChart = () => {
@@ -116,7 +116,7 @@ const PanelChart = () => {
     );
 };
 
-// --- Styles ---
+
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    walletContainer: { 
+    walletContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: COLORS.headerText,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 15,
     },
-    walletText: { 
+    walletText: {
         color: COLORS.walletTextColor,
         fontWeight: 'bold',
         fontSize: 14,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     },
     enhancedCell: {
         elevation: 3,
-        shadowColor: '#000', 
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,

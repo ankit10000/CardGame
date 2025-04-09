@@ -18,24 +18,20 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
 
-            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Privacy Policy</Text>
-                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
                         <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
                         <Text style={styles.walletText}>0</Text>
                     </View>
                 </TouchableOpacity>
             </View>
-
-            {/* Content */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                 <View style={styles.contentBox}>
-                    {/* --- Start of Privacy Policy Text --- */}
+                <View style={styles.contentBox}>
 
                     {/* Initial Titles */}
                     <Text style={styles.mainTitle}>Privacy Policy for Milan Star</Text>
@@ -75,16 +71,16 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     <Text style={styles.definitionItem}>
                         <Text style={styles.definitionTerm}>Company</Text> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Milan Star.
                     </Text>
-                     <Text style={styles.definitionItem}>
+                    <Text style={styles.definitionItem}>
                         <Text style={styles.definitionTerm}>Country</Text> refers to: Rajasthan, India
                     </Text>
-                     <Text style={styles.definitionItem}>
+                    <Text style={styles.definitionItem}>
                         <Text style={styles.definitionTerm}>Device</Text> means any device that can access the Service such as a computer, a cellphone or a digital tablet.
                     </Text>
                     <Text style={styles.definitionItem}>
                         <Text style={styles.definitionTerm}>Personal Data</Text> is any information that relates to an identified or identifiable individual.
                     </Text>
-                     <Text style={styles.definitionItem}>
+                    <Text style={styles.definitionItem}>
                         <Text style={styles.definitionTerm}>Service</Text> refers to the Application.
                     </Text>
                     <Text style={styles.definitionItem}>
@@ -97,7 +93,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         <Text style={styles.definitionTerm}>You</Text> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.
                     </Text>
 
-                     {/* Collecting and Using Your Personal Data */}
+                    {/* Collecting and Using Your Personal Data */}
                     <Text style={styles.sectionTitle}>Collecting and Using Your Personal Data</Text>
                     <Text style={styles.subTitle}>Types of Data Collected</Text>
                     <Text style={styles.subSubTitle}>Personal Data</Text>
@@ -117,9 +113,9 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.
                     </Text>
                     <Text style={styles.paragraph}>
-                         When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.
+                        When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.
                     </Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.
                     </Text>
 
@@ -128,7 +124,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     <Text style={styles.paragraph}>
                         The Company may use Personal Data for the following purposes:
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>To provide and maintain our Service,</Text> including to monitor the usage of our Service.
                     </Text>
                     <Text style={styles.listItemSpaced}>
@@ -137,13 +133,13 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>For the performance of a contract:</Text> the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased or of any other contract with Us through the Service.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>To contact You:</Text> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application's push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>To provide You</Text> with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless You have opted not to receive such information.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>To manage Your requests:</Text> To attend and manage Your requests to Us.
                     </Text>
                     <Text style={styles.listItemSpaced}>
@@ -153,26 +149,26 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         <Text style={styles.bold}>For other purposes:</Text> We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.
                     </Text>
 
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         We may share Your personal information in the following situations:
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>With Service Providers:</Text> We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>For business transfers:</Text> We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.
                     </Text>
                     <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>With Affiliates:</Text> We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>With business partners:</Text> We may share Your information with Our business partners to offer You certain products, services or promotions.
                     </Text>
-                     <Text style={styles.listItemSpaced}>
+                    <Text style={styles.listItemSpaced}>
                         <Text style={styles.bold}>With other users:</Text> when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.
                     </Text>
                     <Text style={styles.listItemSpaced}>
-                         <Text style={styles.bold}>With Your consent:</Text> We may disclose Your personal information for any other purpose with Your consent.
+                        <Text style={styles.bold}>With Your consent:</Text> We may disclose Your personal information for any other purpose with Your consent.
                     </Text>
 
                     {/* Retention of Your Personal Data */}
@@ -181,11 +177,11 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.
                     </Text>
                     <Text style={styles.paragraph}>
-                         The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.
+                        The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.
                     </Text>
 
                     {/* Transfer of Your Personal Data */}
-                     <Text style={styles.sectionTitle}>Transfer of Your Personal Data</Text>
+                    <Text style={styles.sectionTitle}>Transfer of Your Personal Data</Text>
                     <Text style={styles.paragraph}>
                         Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.
                     </Text>
@@ -193,10 +189,10 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.
                     </Text>
                     <Text style={styles.paragraph}>
-                         The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.
+                        The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.
                     </Text>
 
-                     {/* Delete Your Personal Data */}
+                    {/* Delete Your Personal Data */}
                     <Text style={styles.sectionTitle}>Delete Your Personal Data</Text>
                     <Text style={styles.paragraph}>
                         You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You.
@@ -204,17 +200,17 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     <Text style={styles.paragraph}>
                         Our Service may give You the ability to delete certain information about You from within the Service.
                     </Text>
-                     <Text style={styles.paragraph}>
-                         You may update, amend, or delete Your information at any time by signing in to Your Account, if you have one, and visiting the account settings section that allows you to manage Your personal information. You may also contact Us to request access to, correct, or delete any personal information that You have provided to Us.
+                    <Text style={styles.paragraph}>
+                        You may update, amend, or delete Your information at any time by signing in to Your Account, if you have one, and visiting the account settings section that allows you to manage Your personal information. You may also contact Us to request access to, correct, or delete any personal information that You have provided to Us.
                     </Text>
-                     <Text style={styles.paragraph}>
-                         Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.
+                    <Text style={styles.paragraph}>
+                        Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so.
                     </Text>
 
-                     {/* Disclosure of Your Personal Data */}
+                    {/* Disclosure of Your Personal Data */}
                     <Text style={styles.sectionTitle}>Disclosure of Your Personal Data</Text>
                     <Text style={styles.subTitle}>Business Transactions</Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.
                     </Text>
                     <Text style={styles.subTitle}>Law enforcement</Text>
@@ -222,27 +218,27 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                         Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).
                     </Text>
                     <Text style={styles.subTitle}>Other legal requirements</Text>
-                     <Text style={styles.paragraph}>
-                         The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:
+                    <Text style={styles.paragraph}>
+                        The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:
                     </Text>
                     {/* Using simple list items here */}
-                     <Text style={styles.listItemBullet}>Comply with a legal obligation</Text>
+                    <Text style={styles.listItemBullet}>Comply with a legal obligation</Text>
                     <Text style={styles.listItemBullet}>Protect and defend the rights or property of the Company</Text>
                     <Text style={styles.listItemBullet}>Prevent or investigate possible wrongdoing in connection with the Service</Text>
-                     <Text style={styles.listItemBullet}>Protect the personal safety of Users of the Service or the public</Text>
+                    <Text style={styles.listItemBullet}>Protect the personal safety of Users of the Service or the public</Text>
                     <Text style={styles.listItemBullet}>Protect against legal liability</Text>
 
-                     <Text style={styles.subTitle}>Security of Your Personal Data</Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.subTitle}>Security of Your Personal Data</Text>
+                    <Text style={styles.paragraph}>
                         The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.
                     </Text>
 
                     {/* Children's Privacy */}
                     <Text style={styles.sectionTitle}>Children's Privacy</Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.
                     </Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.
                     </Text>
 
@@ -251,19 +247,19 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     <Text style={styles.paragraph}>
                         Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.
                     </Text>
-                     <Text style={styles.paragraph}>
-                         We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.
+                    <Text style={styles.paragraph}>
+                        We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.
                     </Text>
 
                     {/* Changes to this Privacy Policy */}
                     <Text style={styles.sectionTitle}>Changes to this Privacy Policy</Text>
-                     <Text style={styles.paragraph}>
-                         We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.
+                    <Text style={styles.paragraph}>
+                        We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.
                     </Text>
-                     <Text style={styles.paragraph}>
-                         We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.
+                    <Text style={styles.paragraph}>
+                        We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.
                     </Text>
-                     <Text style={styles.paragraph}>
+                    <Text style={styles.paragraph}>
                         You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
                     </Text>
 
@@ -276,11 +272,11 @@ const PrivacyPolicyScreen = ({ navigation }) => {
 
                     {/* Footer Note */}
                     <Text style={styles.footerNote}>
-                         Generated using Free Privacy Policy Generator
+                        Generated using Free Privacy Policy Generator
                     </Text>
 
                     {/* --- End of Privacy Policy Text --- */}
-                 </View>
+                </View>
             </ScrollView>
 
         </SafeAreaView>
@@ -292,7 +288,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F8F9FA', // Light background
     },
-     header: { /* ... same as previous screens ... */
+    header: { /* ... same as previous screens ... */
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -380,7 +376,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
     },
-     subSubTitle: {
+    subSubTitle: {
         fontSize: 15,
         fontWeight: '600', // Semi-bold
         color: '#444',
@@ -410,7 +406,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         marginLeft: 15, // Indent list items
     },
-     listItemSpaced: { // For lists where each item is more paragraph-like
+    listItemSpaced: { // For lists where each item is more paragraph-like
         fontSize: 15,
         color: '#555',
         lineHeight: 23,

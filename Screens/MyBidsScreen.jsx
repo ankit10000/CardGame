@@ -1,4 +1,4 @@
-// Screens/MyBidsScreen.jsx
+
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -7,48 +7,47 @@ import {
     Text,
     StyleSheet,
     StatusBar,
-    FlatList, // Keep FlatList for potential future data display
+    FlatList,
     TouchableOpacity,
-    ActivityIndicator, // To show loading state
+    ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-// No interface needed in JSX
+
 
 const MyBidsScreen = ({ navigation }) => {
-    const [bids, setBids] = useState([]); // Start with an empty array
-    const [isLoading, setIsLoading] = useState(true); // State to manage loading indicator
+    const [bids, setBids] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // --- Simulate fetching data ---
+
     useEffect(() => {
-        // Replace this with your actual API call to fetch bid history
+
         const fetchBids = async () => {
             setIsLoading(true);
             try {
-                // Example: const response = await api.get('/user/bid-history');
-                // Simulate API call delay
+
+
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
-                // Set state based on response
-                // For this example, we assume the API returns an empty array
-                const fetchedBids = []; // Replace with actual data: response.data;
+
+
+                const fetchedBids = [];
                 setBids(fetchedBids);
 
             } catch (error) {
                 console.error("Failed to fetch bid history:", error);
-                // Handle error state if needed
+
             } finally {
-                setIsLoading(false); // Stop loading indicator
+                setIsLoading(false);
             }
         };
 
         fetchBids();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
-    // --- Render Item (Placeholder for when data exists) ---
-    const renderBidItem = ({ item }) => { // Removed type annotation for item
-        // This part will be used if bids array is not empty
+
+    const renderBidItem = ({ item }) => {
+
         return (
             <View style={styles.itemContainer}>
                 {/* Example structure for a bid item */}
@@ -62,7 +61,7 @@ const MyBidsScreen = ({ navigation }) => {
         );
     };
 
-    // --- Render Content based on loading and data ---
+
     const renderContent = () => {
         if (isLoading) {
             return <ActivityIndicator size="large" color="#6A0DAD" style={styles.loader} />;
@@ -72,7 +71,7 @@ const MyBidsScreen = ({ navigation }) => {
             return <Text style={styles.emptyText}>Record Not Found!</Text>;
         }
 
-        // If data exists, render the list (kept for completeness)
+
         return (
             <FlatList
                 data={bids}
@@ -113,13 +112,13 @@ const MyBidsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F0F2F5', // Light grey background consistent with image
+        backgroundColor: '#F0F2F5',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47', // Header color from previous examples
+        backgroundColor: '#934b47',
         paddingVertical: 12,
         paddingHorizontal: 15,
     },
@@ -165,24 +164,24 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     contentArea: {
-        flex: 1, // Take remaining space
-        padding: 15, // Add padding around the content
-        justifyContent: 'flex-start', // Align content to the top
-        alignItems: 'flex-start', // Align content to the left
+        flex: 1,
+        padding: 15,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
     },
     loader: {
         marginTop: 50,
-        alignSelf: 'center', // Center loader horizontally
+        alignSelf: 'center',
     },
     emptyText: {
         fontSize: 16,
-        color: '#555', // Dark grey color for the text
+        color: '#555',
         fontWeight: '500',
-        marginTop: 10, // Add some margin from the top
+        marginTop: 10,
     },
-    // Styles for the list and items (if data existed)
+
     listContainer: {
-        // Padding already handled by contentArea
+
     },
     itemContainer: {
         backgroundColor: '#fff',
@@ -194,4 +193,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MyBidsScreen; // Make sure to export
+export default MyBidsScreen; 

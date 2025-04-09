@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon1 from 'react-native-vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const singlePattiData = [
     {
@@ -38,7 +39,28 @@ const NUM_COLUMNS = 4;
 const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
 
 
-const SinglePattiScreen = ({navigation}) => {
+const SinglePattiScreen = ({ navigation }) => {
+    const [date, setDate] = useState(new Date(2025, 3, 7));
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDatePicker(Platform.OS === 'ios');
+        setDate(currentDate);
+        if (Platform.OS === 'android') {
+            setShowDatePicker(false);
+        }
+    };
+    const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day} / ${month} / ${year}`;
+    };
     const [pattiValues, setPattiValues] = useState({});
 
     const handlePattiInputChange = useCallback((pattiNumber, value) => {
@@ -58,17 +80,36 @@ const SinglePattiScreen = ({navigation}) => {
                 <Text style={styles.headerTitle}>Single Patti</Text> {/* Updated Title */}
                 <TouchableOpacity style={styles.headerButton}>
                     <View style={styles.walletContainer}>
-                                                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                                                        <Text style={styles.walletText}>0</Text>
-                                                    </View>
+                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
+                        <Text style={styles.walletText}>0</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
-                </View>
+                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>{formatDate(date)}</Text>
+                    <Icon name="calendar-today" size={20} color="#555" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={'date'}
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChangeDate}
+                    />
+                )}
+                {showDatePicker && Platform.OS === 'ios' && (
+                    <View style={styles.iosPickerDoneButtonContainer}>
+                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
+                            <Text style={styles.iosPickerDoneText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Dropdown Mock */}
                 <TouchableOpacity style={styles.dropdown}>
@@ -132,6 +173,20 @@ const SinglePattiScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+    datePickerContainer: {
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     safeArea: {
         flex: 1,
         backgroundColor: '#f0f4f7',

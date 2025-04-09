@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     SafeAreaView,
-    ScrollView, // Keep ScrollView to wrap the form + list header
+    ScrollView,
     View,
     Text,
     TouchableOpacity,
@@ -13,35 +13,35 @@ import {
     Alert,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// Optional: Import an icon library
-import Icon from 'react-native-vector-icons/MaterialIcons';
-// import FeatherIcon from 'react-native-vector-icons/Feather';
 
-// Helper function to format date
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+
+
 const formatDate = (date) => {
     if (!date) return '';
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
     return `${day} / ${month} / ${year}`;
 };
 
 
 const FullSangamScreen = ({ navigation }) => {
-    // Date Picker State
-    const [date, setDate] = useState(new Date(2025, 3, 7)); // April is month 3
+
+    const [date, setDate] = useState(new Date(2025, 3, 7));
     const [showDatePicker, setShowDatePicker] = useState(false);
 
-    // Input State
+
     const [openPanna, setOpenPanna] = useState('');
-    const [closePanna, setClosePanna] = useState(''); // Changed from closeDigit
+    const [closePanna, setClosePanna] = useState('');
     const [points, setPoints] = useState('');
 
-    // List State
+
     const [addedItems, setAddedItems] = useState([]);
 
-    // --- Date Picker Handler ---
+
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setShowDatePicker(Platform.OS === 'ios');
@@ -52,37 +52,34 @@ const FullSangamScreen = ({ navigation }) => {
     };
 
     const showDatepicker = () => {
-        // On this screen, the date seems non-editable based on the image (no change button)
-        // If it should be editable, uncomment the line below and add a trigger (like TouchableOpacity around the date text)
-        // setShowDatePicker(true);
-        Alert.alert("Date", "Date is fixed for this view or change button is missing."); // Inform user if date change is intended but not implemented
+        setShowDatePicker(true);
     };
 
-    // --- Input Handlers ---
+
     const handleOpenPannaChange = (value) => {
-        // Allow only 3 digits
+
         setOpenPanna(value.replace(/[^0-9]/g, '').slice(0, 3));
     };
 
-    const handleClosePannaChange = (value) => { // Renamed handler
-        // Allow only 3 digits
-        setClosePanna(value.replace(/[^0-9]/g, '').slice(0, 3)); // Changed length to 3
+    const handleClosePannaChange = (value) => {
+
+        setClosePanna(value.replace(/[^0-9]/g, '').slice(0, 3));
     };
 
     const handlePointsChange = (value) => {
-        // Allow only numbers
+
         setPoints(value.replace(/[^0-9]/g, ''));
     };
 
-    // --- Add Item Handler ---
+
     const handleAddItem = () => {
-        // Basic Validation
+
         if (!openPanna || openPanna.length !== 3) {
             Alert.alert('Invalid Input', 'Please enter a valid 3-digit Open Panna.');
             return;
         }
-        if (!closePanna || closePanna.length !== 3) { // Updated validation
-            Alert.alert('Invalid Input', 'Please enter a valid 3-digit Close Panna.'); // Updated message
+        if (!closePanna || closePanna.length !== 3) {
+            Alert.alert('Invalid Input', 'Please enter a valid 3-digit Close Panna.');
             return;
         }
         if (!points || parseInt(points, 10) <= 0) {
@@ -92,20 +89,20 @@ const FullSangamScreen = ({ navigation }) => {
 
         const newItem = {
             id: Date.now().toString(),
-            sangam: `${openPanna}-${closePanna}`, // Updated sangam format
+            sangam: `${openPanna}-${closePanna}`,
             points: points,
-            gameType: 'Full Sangam', // Updated game type
+            gameType: 'Full Sangam',
         };
 
         setAddedItems(prevItems => [...prevItems, newItem]);
 
-        // Clear input fields
+
         setOpenPanna('');
         setClosePanna('');
         setPoints('');
     };
 
-    // --- Submit Handler ---
+
     const handleSubmit = () => {
         if (addedItems.length === 0) {
             Alert.alert('No Bids', 'Please add at least one bid before submitting.');
@@ -114,14 +111,14 @@ const FullSangamScreen = ({ navigation }) => {
         console.log("Submitting Bids:");
         console.log("Date:", formatDate(date));
         console.log("Bids:", addedItems);
-        // --- Add actual submission logic here (e.g., API call) ---
+
 
         Alert.alert("Bids Submitted", `Submitted ${addedItems.length} bids for ${formatDate(date)} (check console).`);
-        // Optionally clear the list after submission
-        // setAddedItems([]);
+
+
     };
 
-    // --- Render Item for FlatList ---
+
     const renderItem = ({ item }) => (
         <View style={styles.listItem}>
             <Text style={[styles.listItemText, styles.listColSangam]}>{item.sangam}</Text>
@@ -130,14 +127,16 @@ const FullSangamScreen = ({ navigation }) => {
         </View>
     );
 
-    // Combine Header + List Content for FlatList header/footer
+
     const ListHeaderComponent = () => (
         <>
             {/* Date Display Area */}
-            <View style={styles.dateContainer}>
-                {/* Making the date text non-touchable as per image */}
+            <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
                 <Text style={styles.dateText}>{formatDate(date)}</Text>
-            </View>
+
+                {/* Optional: Add a calendar icon here */}
+                <Icon name="calendar-today" size={20} color="#555" />
+            </TouchableOpacity>
 
             {/* Date Picker Modal/Component (kept for potential future use) */}
             {showDatePicker && (
@@ -178,9 +177,9 @@ const FullSangamScreen = ({ navigation }) => {
                         style={styles.textInput}
                         keyboardType="numeric"
                         value={closePanna}
-                        onChangeText={handleClosePannaChange} // Updated handler
-                        maxLength={3} // Updated length
-                        placeholder="Enter 3 digits" // Updated placeholder
+                        onChangeText={handleClosePannaChange}
+                        maxLength={3}
+                        placeholder="Enter 3 digits"
                         placeholderTextColor="#ccc"
                     />
                 </View>
@@ -233,7 +232,7 @@ const FullSangamScreen = ({ navigation }) => {
                 data={addedItems}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
-                ListHeaderComponent={ListHeaderComponent} // Render form and list header above the items
+                ListHeaderComponent={ListHeaderComponent}
                 ListEmptyComponent={
                     <View style={styles.emptyListContainer}>
                         {/* Show empty text only below the header */}
@@ -258,7 +257,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F8F9FA',
     },
-    // Header Styles (same as before)
+
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -304,33 +303,33 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold',
     },
-    // --- List & Content Area ---
+
     listContainer: {
-        flex: 1, // Takes up remaining space below header, above submit button
+        flex: 1,
     },
     listContentContainer: {
-        paddingHorizontal: 15, // Add horizontal padding to the scrollable content
-        paddingBottom: 15, // Add padding at the bottom of the scroll content
+        paddingHorizontal: 15,
+        paddingBottom: 15,
     },
-    // --- Date Section ---
+
     dateContainer: {
-        // Removed horizontal margin, now handled by listContentContainer padding
-        marginTop: 15, // Add top margin
+
+        marginTop: 15,
         marginBottom: 20,
         backgroundColor: '#fff',
         borderRadius: 8,
-        paddingHorizontal: 10, // Keep internal padding
-        paddingVertical: 12, // Adjusted padding
+        paddingHorizontal: 10,
+        paddingVertical: 12,
         borderWidth: 1,
         borderColor: '#ccc',
-        // Removed flexDirection as it's just text now
-        alignItems: 'flex-start', // Align text to the left
+
+        alignItems: 'flex-start',
     },
     dateText: {
         fontSize: 16,
         color: '#333',
     },
-    // --- iOS Done Button (same as before) ---
+
     iosPickerDoneButtonContainer: {
         alignItems: 'flex-end',
         paddingRight: 15,
@@ -347,7 +346,21 @@ const styles = StyleSheet.create({
         color: '#007AFF',
         fontWeight: '600',
     },
-    // --- Form Section ---
+    datePickerContainer: {
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 20,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
     form: {
         marginBottom: 20,
     },
@@ -384,18 +397,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    // --- List Styles ---
+
     listHeader: {
         flexDirection: 'row',
         backgroundColor: '#f0f0f0',
         paddingVertical: 10,
-        paddingHorizontal: 10, // Internal padding for header text
+        paddingHorizontal: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        borderTopWidth: 1, // Add border separating form and list header
+        borderTopWidth: 1,
         borderTopColor: '#e0e0e0',
-        marginTop: 10, // Space between Add button and list header
-        borderTopLeftRadius: 8, // Round corners to match potential container
+        marginTop: 10,
+        borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
     },
     listHeaderText: {
@@ -406,40 +419,40 @@ const styles = StyleSheet.create({
     listItem: {
         flexDirection: 'row',
         paddingVertical: 10,
-        paddingHorizontal: 10, // Internal padding for item text
+        paddingHorizontal: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        backgroundColor: '#fff', // White background for items
-        marginLeft: -10, // Counteract parent padding for full width separators
+        backgroundColor: '#fff',
+        marginLeft: -10,
         marginRight: -10,
-        paddingLeft: 20, // Adjust padding for content alignment
+        paddingLeft: 20,
         paddingRight: 20,
     },
     listItemText: {
         fontSize: 14,
         color: '#555',
     },
-    // Column widths (same as before)
+
     listColSangam: { flex: 2, textAlign: 'left' },
     listColPoints: { flex: 1, textAlign: 'center' },
     listColGameType: { flex: 2, textAlign: 'right' },
 
     emptyListContainer: {
-        // Container for empty text to allow background styling if needed
-        paddingTop: 20, // Give space below list header
+
+        paddingTop: 20,
         alignItems: 'center',
-        backgroundColor: '#fff', // Match item background
-        borderBottomLeftRadius: 8, // Round corners if it's the last element visually
+        backgroundColor: '#fff',
+        borderBottomLeftRadius: 8,
         borderBottomRightRadius: 8,
-        paddingBottom: 20, // Add padding below text
-        marginLeft: -10, // Counteract parent padding for full width background
+        paddingBottom: 20,
+        marginLeft: -10,
         marginRight: -10,
     },
     emptyListText: {
         fontSize: 16,
         color: '#888',
     },
-    // --- Bottom Submit Button (same as before) ---
+
     bottomSubmitContainer: {
         padding: 15,
         borderTopWidth: 1,

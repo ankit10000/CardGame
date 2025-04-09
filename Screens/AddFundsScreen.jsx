@@ -12,30 +12,30 @@ import {
     KeyboardAvoidingView,
     Platform
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 
 const COLORS = {
-    headerBackground: '#934b47', 
+    headerBackground: '#934b47',
     headerText: '#ffffff',
-    background: '#f4f7f9', 
+    background: '#f4f7f9',
     cardBackground: '#ffffff',
     inputBorder: '#e0e0e0',
     inputPlaceholder: '#999999',
     inputText: '#333333',
     minAmountText: '#444444',
-    amountButtonBackground: '#f8f9fa', 
+    amountButtonBackground: '#f8f9fa',
     amountButtonBorder: '#e9ecef',
     amountButtonText: '#343a40',
-    amountButtonSelectedBackground: '#ddeeff', 
-    amountButtonSelectedBorder: '#aaccff',    
-    payButtonBackground: '#1d5da8', 
+    amountButtonSelectedBackground: '#ddeeff',
+    amountButtonSelectedBorder: '#aaccff',
+    payButtonBackground: '#1d5da8',
     payButtonText: '#ffffff',
-    walletIcon: '#e5a550', 
-    walletTextBackground: '#d3d3d3', 
+    walletIcon: '#e5a550',
+    walletTextBackground: '#d3d3d3',
     walletTextColor: '#333',
 };
 
@@ -45,19 +45,19 @@ const MIN_AMOUNT = 500;
 
 const AddFundsScreen = () => {
     const navigation = useNavigation();
-    const [amount, setAmount] = useState(''); 
-    const [selectedAmount, setSelectedAmount] = useState(null); 
+    const [amount, setAmount] = useState('');
+    const [selectedAmount, setSelectedAmount] = useState(null);
 
     const handleAmountSelect = (value) => {
         setSelectedAmount(value);
-        setAmount(String(value)); 
+        setAmount(String(value));
     };
 
     const handleTextInputChange = (text) => {
-        
+
         const numericValue = text.replace(/[^0-9]/g, '');
         setAmount(numericValue);
-        
+
         if (selectedAmount !== null && numericValue !== String(selectedAmount)) {
             setSelectedAmount(null);
         }
@@ -74,11 +74,11 @@ const AddFundsScreen = () => {
             return;
         }
         console.log('Processing payment for:', numericAmount);
-        
+
         alert(`Proceeding to pay ₹${numericAmount}`);
     };
 
-    
+
     const formatCurrency = (value) => {
         if (!value) return '';
         const numStr = String(value);
@@ -99,15 +99,15 @@ const AddFundsScreen = () => {
                 <Text style={styles.headerTitle}>Add Funds</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <View style={styles.walletContainer}>
-                      <Icon name="account-balance-wallet" size={20} color={COLORS.walletIcon} />
-                      <Text style={styles.walletText}>0</Text>
+                        <Icon name="account-balance-wallet" size={20} color={COLORS.walletIcon} />
+                        <Text style={styles.walletText}>0</Text>
                     </View>
                 </TouchableOpacity>
             </View>
 
             <KeyboardAvoidingView
-                 behavior={Platform.OS === "ios" ? "padding" : "height"}
-                 style={styles.flexContainer}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.flexContainer}
             >
                 <ScrollView
                     contentContainerStyle={styles.scrollContent}
@@ -121,7 +121,7 @@ const AddFundsScreen = () => {
                             placeholderTextColor={COLORS.inputPlaceholder}
                             value={amount}
                             onChangeText={handleTextInputChange}
-                            keyboardType="numeric" 
+                            keyboardType="numeric"
                         />
 
                         <Text style={styles.minAmountText}>
@@ -136,7 +136,7 @@ const AddFundsScreen = () => {
                                         key={value}
                                         style={[
                                             styles.amountButton,
-                                            isSelected && styles.amountButtonSelected 
+                                            isSelected && styles.amountButtonSelected
                                         ]}
                                         onPress={() => handleAmountSelect(value)}
                                         activeOpacity={0.7}
@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
         height: 60,
     },
     headerButton: {
-        padding: 5, 
-        minWidth: 40, 
+        padding: 5,
+        minWidth: 40,
         alignItems: 'center',
     },
     headerTitle: {
@@ -193,15 +193,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    walletContainer: { 
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: COLORS.headerText, 
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 15,
+    walletContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.headerText,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 15,
     },
-    walletText: { 
+    walletText: {
         color: COLORS.walletTextColor,
         fontWeight: 'bold',
         fontSize: 14,
@@ -210,30 +210,30 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         padding: 20,
-        alignItems: 'center', 
-        paddingTop: 30, 
+        alignItems: 'center',
+        paddingTop: 30,
     },
     card: {
         backgroundColor: COLORS.cardBackground,
         borderRadius: 15,
         padding: 20,
-        width: '100%', 
-        maxWidth: 500, 
+        width: '100%',
+        maxWidth: 500,
         alignItems: 'center',
-        elevation: 3, 
-        shadowColor: '#000', 
+        elevation: 3,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.15,
         shadowRadius: 3,
     },
-     fadedCardTitle: { 
-        color: '#cccccc', 
+    fadedCardTitle: {
+        color: '#cccccc',
         fontSize: 14,
-        marginBottom: -10, 
-        zIndex: 0, 
-     },
+        marginBottom: -10,
+        zIndex: 0,
+    },
     input: {
-        backgroundColor: COLORS.cardBackground, 
+        backgroundColor: COLORS.cardBackground,
         borderWidth: 1,
         borderColor: COLORS.inputBorder,
         borderRadius: 8,
@@ -242,10 +242,10 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         fontSize: 16,
         color: COLORS.inputText,
-        textAlign: 'left', 
-        marginTop: 15, 
+        textAlign: 'left',
+        marginTop: 15,
         marginBottom: 15,
-        zIndex: 1, 
+        zIndex: 1,
     },
     minAmountText: {
         fontSize: 14,
@@ -255,10 +255,10 @@ const styles = StyleSheet.create({
     },
     amountButtonsContainer: {
         flexDirection: 'row',
-        flexWrap: 'wrap', 
-        justifyContent: 'space-between', 
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
         width: '100%',
-        marginBottom: 20, 
+        marginBottom: 20,
     },
     amountButton: {
         backgroundColor: COLORS.amountButtonBackground,
@@ -267,9 +267,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 15,
-        margin: 5, 
-        
-        minWidth: (width - 40 - 40 - 30) / 3, 
+        margin: 5,
+
+        minWidth: (width - 40 - 40 - 30) / 3,
         alignItems: 'center',
         elevation: 1,
         shadowColor: '#000',
@@ -287,17 +287,17 @@ const styles = StyleSheet.create({
         color: COLORS.amountButtonText,
     },
     amountButtonTextSelected: {
-        
-        
+
+
     },
     payButton: {
         backgroundColor: COLORS.payButtonBackground,
         borderRadius: 8,
         paddingVertical: 14,
         paddingHorizontal: 40,
-        width: '80%', 
+        width: '80%',
         alignItems: 'center',
-        marginTop: 15, 
+        marginTop: 15,
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
