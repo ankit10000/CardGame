@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import WallettScreen from '../components/WallettScreen';
 const COLORS = {
   primaryPurple: '#5d2f8e',
   lightPurple: '#7e4ab5',
@@ -73,6 +74,14 @@ const marketData = [
     close: '12:30 PM',
     status: 'Running',
   },
+  {
+    id: '6',
+    name: 'PADMAVATI',
+    numbers: '190-03-139',
+    open: '11:30 AM',
+    close: '12:30 PM',
+    status: 'Running',
+  },
 ];
 
 const MarketItem = ({ item, navigation }) => (
@@ -100,7 +109,8 @@ const MarketItem = ({ item, navigation }) => (
         <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
       </View>
     ) : (
-      <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}>
+      <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}
+>
         <View style={styles.OpenIconCircle}>
           <Icon name="refresh" size={20} color={COLORS.closedRed} />
         </View>
@@ -143,11 +153,8 @@ const HomeScreen = () => {
           <Ionicons name="menu" size={28} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Milaan matka 777</Text>
-        <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('AddFund')}>
-          <View style={styles.walletContainer}>
-            <Icon name="account-balance-wallet" size={20} color={COLORS.gradientEnd} />
-            <Text style={styles.walletText}>0</Text>
-          </View>
+        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+          <WallettScreen />
         </TouchableOpacity>
       </View>
 
@@ -210,6 +217,7 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.backgroundPink,
@@ -235,20 +243,8 @@ const styles = StyleSheet.create({
   },
   headerRight: {
   },
-  walletContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.textWhite,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 15,
-  },
-  walletText: {
-    color: COLORS.textDark,
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginLeft: 5,
-  },
+  
+  
   scrollView: {
     flex: 1,
   },

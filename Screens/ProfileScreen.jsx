@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -13,18 +13,53 @@ import {
     Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import WallettScreen from '../components/WallettScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = ({ navigation }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [mobile, setMobile] = useState('');
 
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
-    const [name, setName] = useState('ankit12');
-    const [email, setEmail] = useState('info@example.com');
-    const [mobile, setMobile] = useState('9636819197');
+    const fetchProfile = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            console.log('Token:', token);
+
+            const response = await fetch('http://192.168.1.12:3000/api/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Something went wrong');
+            }
+
+            const data = await response.json();
+            console.log('Profile Data:', data);
+
+            // Set data to state
+            setName(data.name);
+            setEmail(data.email);
+            setMobile(data.number);
+
+            // Optional: store user data in AsyncStorage
+            await AsyncStorage.setItem('user', JSON.stringify(data));
+
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            Alert.alert('Error', 'Failed to load profile data');
+        }
+    };
 
     const handleUpdate = () => {
-
-
         console.log('Updating Profile:', { name, email, mobile });
         Alert.alert('Success', 'Profile updated successfully!');
     };
@@ -40,10 +75,7 @@ const ProfileScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Profile</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -73,7 +105,6 @@ const ProfileScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                                 placeholder="Enter your email"
                                 placeholderTextColor="#ccc"
-
                             />
                         </View>
                         <View style={styles.inputGroup}>
@@ -81,11 +112,10 @@ const ProfileScreen = ({ navigation }) => {
                             <TextInput
                                 style={styles.input}
                                 value={mobile}
-
                                 keyboardType="phone-pad"
                                 placeholder="Enter your mobile number"
                                 placeholderTextColor="#ccc"
-                                editable={false}
+                                editable={false} // As you wanted non-editable
                             />
                         </View>
 
@@ -96,23 +126,20 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#F0F2F5',
-    },
-    header: { /* ... same as AccountStatementScreen ... */
+    safeArea: { flex: 1, backgroundColor: '#F0F2F5' },
+    header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#934b47',
+        paddingHorizontal: 10,
         paddingVertical: 12,
-        paddingHorizontal: 15,
+        height: 60,
     },
     walletContainer: {
         flexDirection: 'row',
@@ -122,42 +149,13 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 15,
     },
-    headerButton: { /* ... same as AccountStatementScreen ... */
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
-    headerTitle: { /* ... same as AccountStatementScreen ... */
+    
+    headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#fff',
     },
-    headerRightIconContainer: { /* ... same as AccountStatementScreen ... */
-        flexDirection: 'row',
-        alignItems: 'center',
-        position: 'relative',
-        padding: 5,
-    },
-    badge: { /* ... same as AccountStatementScreen ... */
-        position: 'absolute',
-        top: -2,
-        right: -5,
-        backgroundColor: '#FFA500',
-        borderRadius: 10,
-        minWidth: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-    },
-    badgeText: { /* ... same as AccountStatementScreen ... */
-        color: '#fff',
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    keyboardAvoidingView: {
-        flex: 1,
-    },
+    keyboardAvoidingView: { flex: 1 },
     scrollContainer: {
         padding: 15,
         flexGrow: 1,
@@ -170,9 +168,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
     },
-    inputGroup: {
-        marginBottom: 15,
-    },
+    inputGroup: { marginBottom: 15 },
     label: {
         fontSize: 15,
         color: '#555',

@@ -11,13 +11,14 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
-    Dimensions
+    Dimensions,
+    Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
-
 
 const COLORS = {
     statusBar: '#313332',
@@ -39,15 +40,43 @@ const SignUpScreen = () => {
     const navigation = useNavigation();
     const [username, setUsername] = useState('');
     const [mobile, setMobile] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleSignUp = () => {
-        console.log('Signing Up:', { username, mobile, password });
+    const handleSignUp = async () => {
+        // Basic validation
+        if (!username || !mobile || !email || !password || !confirmPassword) {
+            Alert.alert('Error', 'Please fill all fields');
+            return;
+        }
 
+        if (password !== confirmPassword) {
+            Alert.alert('Error', 'Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://192.168.1.12:3000/api/auth/register', {
+                name: username,
+                number: mobile,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword,
+                isAdmin: false,
+            });
+
+            console.log('Registration Success:', response.data);
+            Alert.alert('Success', 'Registration successful!', [
+                { text: 'OK', onPress: () => navigation.navigate('Login') },
+            ]);
+        } catch (error) {
+            console.error('Registration Error:', error.response?.data || error.message);
+            Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
+        }
     };
 
     const handleLoginPress = () => {
-        console.log('Navigate to Login');
         navigation.navigate('Login');
     };
 
@@ -59,14 +88,14 @@ const SignUpScreen = () => {
             <SafeAreaView style={styles.flexContainer}>
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.statusBar} />
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : undefined}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                     style={styles.flexContainer}
                 >
                     <ScrollView
                         contentContainerStyle={styles.scrollViewContent}
                         keyboardShouldPersistTaps="handled"
                     >
-                        {/* --- Logo Area --- */}
+                        {/* Logo Area */}
                         <View style={styles.logoContainer}>
                             <Image
                                 source={require('../assets/slide1.png')}
@@ -79,7 +108,7 @@ const SignUpScreen = () => {
                             </Text>
                         </View>
 
-                        {/* --- Sign Up Card --- */}
+                        {/* Sign Up Card */}
                         <View style={styles.card}>
                             <Text style={styles.cardTitle}>Sign Up</Text>
 
@@ -103,6 +132,16 @@ const SignUpScreen = () => {
 
                             <TextInput
                                 style={styles.input}
+                                placeholder="Enter email"
+                                placeholderTextColor={COLORS.placeholderText}
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
+
+                            <TextInput
+                                style={styles.input}
                                 placeholder="Enter password"
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={password}
@@ -110,7 +149,16 @@ const SignUpScreen = () => {
                                 secureTextEntry
                             />
 
-                            {/* --- Sign Up Button --- */}
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Confirm password"
+                                placeholderTextColor={COLORS.placeholderText}
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry
+                            />
+
+                            {/* Sign Up Button */}
                             <TouchableOpacity onPress={handleSignUp} style={styles.buttonContainer} activeOpacity={0.8}>
                                 <LinearGradient
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
@@ -124,10 +172,9 @@ const SignUpScreen = () => {
 
                             <Text style={styles.secondaryText}>Already have an account?</Text>
 
-                            {/* --- Login Button --- */}
+                            {/* Login Button */}
                             <TouchableOpacity onPress={handleLoginPress} style={styles.buttonContainer} activeOpacity={0.8}>
                                 <LinearGradient
-
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
                                     style={[styles.button, styles.loginButton]}
                                     start={{ x: 0.5, y: 0 }}
@@ -143,7 +190,6 @@ const SignUpScreen = () => {
         </LinearGradient>
     );
 };
-
 
 const styles = StyleSheet.create({
     flexContainer: {
@@ -211,45 +257,31 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
-        marginBottom: 18,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        color: '#333',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
+        marginBottom: 16,
     },
     buttonContainer: {
         width: '100%',
-        marginTop: 12,
-        borderRadius: 25,
-        overflow: 'hidden',
+        marginTop: 10,
     },
     button: {
-        paddingVertical: 14,
+        height: 50,
+        borderRadius: 12,
+        justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 25,
     },
     buttonText: {
         color: COLORS.buttonText,
         fontSize: 16,
         fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
     },
     secondaryText: {
+        color: COLORS.secondaryText,
         marginTop: 16,
         marginBottom: 8,
-        color: COLORS.secondaryText,
-        fontSize: 14,
     },
     loginButton: {
         marginTop: 8,
-        borderRadius: 25,
     },
 });
-
 
 export default SignUpScreen;

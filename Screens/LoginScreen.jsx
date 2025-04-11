@@ -11,13 +11,14 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
-    Dimensions
+    Dimensions,
+    Alert
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const { width, height } = Dimensions.get('window');
-
 
 const COLORS = {
     statusBar: '#313332',
@@ -27,7 +28,6 @@ const COLORS = {
     inputBackground: '#ffffff',
     placeholderText: '#666666',
     buttonText: '#ffffff',
-
     buttonGradientStart: '#9a704a',
     buttonGradientEnd: '#c8a87e',
     logoTextBackground: '#e63946',
@@ -38,19 +38,39 @@ const COLORS = {
 
 const LoginScreen = () => {
     const navigation = useNavigation();
+    const [email, setEmail] = useState('');
 
-    const [mobileName, setMobileName] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = () => {
-        console.log('Logging In:', { mobileName, password });
-        navigation.replace('MainDrawer');
+    const handleLogin = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.post('http://192.168.1.12:3000/api/auth/login', {
+                email,
+                password,
+            });
 
+            const { token, user } = response.data;
 
+            // Token save karo AsyncStorage me
+            await AsyncStorage.setItem('token', token);
+            await AsyncStorage.setItem('user', JSON.stringify(user));
+
+            Alert.alert('Success', 'Login successful!');
+
+            // Navigate karo Home Screen ya kisi bhi screen pe
+            navigation.navigate('MainDrawer');
+
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Error', 'Invalid credentials');
+        }finally {
+            setLoading(false); // Add this
+        }
     };
 
     const handleRegisterPress = () => {
-        console.log('Navigate to Sign Up');
         navigation.navigate('SignUp');
     };
 
@@ -86,12 +106,12 @@ const LoginScreen = () => {
 
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Mobile Name"
+                                placeholder="Enter Email"
                                 placeholderTextColor={COLORS.placeholderText}
-                                value={mobileName}
-                                onChangeText={setMobileName}
+                                value={email}
+                                onChangeText={setEmail}
                                 autoCapitalize="none"
-
+                                keyboardType="email-address"
                             />
 
                             <TextInput
@@ -103,14 +123,21 @@ const LoginScreen = () => {
                                 secureTextEntry
                             />
 
-                            <TouchableOpacity onPress={handleLogin} style={styles.buttonContainer} activeOpacity={0.8}>
+                            <TouchableOpacity
+                                onPress={handleLogin}
+                                style={styles.buttonContainer}
+                                activeOpacity={0.8}
+                                disabled={loading}
+                            >
                                 <LinearGradient
                                     colors={[COLORS.buttonGradientStart, COLORS.buttonGradientEnd]}
                                     style={styles.button}
                                     start={{ x: 0.5, y: 0 }}
                                     end={{ x: 0.5, y: 1 }}
                                 >
-                                    <Text style={styles.buttonText}>Login</Text>
+                                    <Text style={styles.buttonText}>
+                                        {loading ? 'Logging In...' : 'Login'}
+                                    </Text>
                                 </LinearGradient>
                             </TouchableOpacity>
 
@@ -134,11 +161,8 @@ const LoginScreen = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
-    flexContainer: {
-        flex: 1,
-    },
+    flexContainer: { flex: 1 },
     scrollViewContent: {
         flexGrow: 1,
         justifyContent: 'center',
@@ -229,15 +253,12 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 1,
     },
+
     secondaryText: {
         marginTop: 16,
         marginBottom: 8,
         color: COLORS.secondaryText,
         fontSize: 14,
-    },
-    loginButton: {
-        marginTop: 8,
-        borderRadius: 25,
     },
 });
 

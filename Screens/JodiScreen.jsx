@@ -11,6 +11,7 @@ import {
     Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
@@ -82,10 +83,7 @@ const JodiScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Jodi</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -192,12 +190,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: 60,
     },
-    headerButton: {
-        padding: 5,
-        position: 'relative',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
+    
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,

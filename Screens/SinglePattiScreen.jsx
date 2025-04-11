@@ -12,6 +12,7 @@ import {
     Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -78,11 +79,8 @@ const SinglePattiScreen = ({ navigation }) => {
                     <Icon name="arrow-back" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Single Patti</Text> {/* Updated Title */}
-                <TouchableOpacity style={styles.headerButton}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 

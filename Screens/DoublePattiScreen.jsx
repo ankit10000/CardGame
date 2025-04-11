@@ -12,6 +12,7 @@ import {
     Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
@@ -92,10 +93,7 @@ const DoublePattiScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Double Patti</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -200,11 +198,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: PADDING,
     },
-    headerButton: {
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
+    
     headerIconText: {
         fontSize: 24,
         color: '#fff',

@@ -13,6 +13,7 @@ import {
     Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
@@ -98,10 +99,7 @@ const AddFundsScreen = () => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Add Funds</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={COLORS.walletIcon} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -183,11 +181,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    headerButton: {
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
+    
     headerTitle: {
         color: COLORS.headerText,
         fontSize: 20,

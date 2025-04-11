@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
@@ -57,10 +58,7 @@ const SingleAnkScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Single Ank</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -158,12 +156,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: 60,
     },
-    headerButton: {
-        padding: 5,
-        position: 'relative',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
+    
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,

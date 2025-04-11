@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect } from 'react';
+import {  useState,useCallback } from 'react';
 import {
     SafeAreaView,
     View,
@@ -12,27 +12,45 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-
+import WallettScreen from '../components/WallettScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MyBidsScreen = ({ navigation }) => {
     const [bids, setBids] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
 
-    useEffect(() => {
+    
 
         const fetchBids = async () => {
             setIsLoading(true);
             try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert('Token Error', 'Token not found');
+                    return;
+                }
+    
+                console.log('Token:', token);
+    
+                const response = await fetch('http://192.168.1.12:3000/api/wallet/get', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
 
-
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-
-
-                const fetchedBids = [];
-                setBids(fetchedBids);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.log('Error response:', errorData);
+                    throw new Error(errorData.message || 'Failed to fetch bids');
+                }
+                const data = await response.json();
+                console.log('Bids Data:', data);
+                setBids(data.transactions);
+                console.log(data.transactions);
 
             } catch (error) {
                 console.error("Failed to fetch bid history:", error);
@@ -42,24 +60,31 @@ const MyBidsScreen = ({ navigation }) => {
             }
         };
 
-        fetchBids();
-    }, []);
-
+useFocusEffect(
+        useCallback(() => {
+            fetchBids();
+        }, [])
+    );
 
     const renderBidItem = ({ item }) => {
 
         return (
-            <View style={styles.itemContainer}>
-                {/* Example structure for a bid item */}
-                {/* <Text>Game: {item.gameName}</Text>
-                <Text>Bid: {item.bidNumber}</Text>
-                <Text>Points: {item.points}</Text>
-                <Text>Date: {item.bidDate}</Text>
-                <Text>Status: {item.status}</Text> */}
-                <Text>Bid ID: {item.id}</Text>
+            <View style={styles.itemContainer} key={item._id}>
+                <Text>Points: {item.amount}</Text>
+                <Text>Status: {item.type}</Text>
+                <Text>Note: {item.note}</Text>
+                <Text>
+                    Date: {new Date(item.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}
+                </Text>
+                {/* <Text>Bid ID: {item._id}</Text> */}
             </View>
-        );
-    };
+        );  };
 
 
     const renderContent = () => {
@@ -93,10 +118,7 @@ const MyBidsScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Bid History</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -119,8 +141,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#934b47',
+        paddingHorizontal: 10,
         paddingVertical: 12,
-        paddingHorizontal: 15,
+        height: 60,
     },
     walletContainer: {
         flexDirection: 'row',
@@ -130,11 +153,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 15,
     },
-    headerButton: {
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
+    
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',

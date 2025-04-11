@@ -11,6 +11,7 @@ import {
     Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -43,9 +44,9 @@ const GridItem = React.memo(({ item, onPress }) => (
     </TouchableOpacity>
 ));
 
-const GamesScreen = ({ navigation }) => {
+const GamesScreen = ({ navigation, route }) => {
 
-
+    const { item } = route.params;
     const handleItemPress = useCallback((item) => {
         if (item.nav) {
             navigation.navigate(item.nav);
@@ -66,12 +67,9 @@ const GamesScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>SRIDEVI MORNING</Text>
+                <Text style={styles.headerTitle}>{item.name}</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -97,8 +95,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#934b47',
+        paddingHorizontal: 10,
         paddingVertical: 12,
-        paddingHorizontal: 15,
+        height: 60,
         height: 60,
     },
     backButton: {

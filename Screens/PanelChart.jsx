@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, Dimensions, TouchableOpacity, } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
 import { chartData } from '../Data/data';
 
@@ -127,11 +128,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    headerButton: {
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
+    
     headerTitle: {
         color: COLORS.headerText,
         fontSize: 20,

@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -54,10 +55,7 @@ const HistoryScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>History</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={"#e5a550"} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
 
@@ -83,8 +81,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#934b47',
+        paddingHorizontal: 10,
         paddingVertical: 12,
-        paddingHorizontal: 15,
+        height: 60,
     },
     walletContainer: {
         flexDirection: 'row',
@@ -94,11 +93,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 15,
     },
-    headerButton: { /* ... same as AccountStatementScreen ... */
-        padding: 5,
-        minWidth: 40,
-        alignItems: 'center',
-    },
+    
     headerTitle: { /* ... same as AccountStatementScreen ... */
         fontSize: 18,
         fontWeight: 'bold',
