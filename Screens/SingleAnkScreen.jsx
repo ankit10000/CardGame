@@ -54,9 +54,9 @@ const SingleAnkScreen = ({ navigation, route }) => {
 
         checkLoginStatus();
     }, []);
-    const [dropdownValue, setDropdownValue] = useState('OPEN');
+    const [dropdownValue, setDropdownValue] = useState('open');
     const [showDropdownOptions, setShowDropdownOptions] = useState(false);
-    const dropdownOptions = ['OPEN', 'CLOSE'];
+    const dropdownOptions = ['open', 'close'];
     const submitBid = async () => {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
@@ -78,7 +78,10 @@ const SingleAnkScreen = ({ navigation, route }) => {
                     digit: Number(digit),
                     amount: digitValues[digit],
                     gameType: items?.name || '',
-                    openingTime: moment().toISOString(), // you can replace with actual selected date/time if needed
+                    isOpenClosed: dropdownValue,
+                    date: moment().format('YYYY-MM-DD'), // you can replace with actual selected date if needed
+                    openingTime: dropdownValue === 'open' ? moment().toISOString() : null,
+                    closingTime: dropdownValue === 'close' ? moment().toISOString() : null,
                 };
 
                 const response = await axios.post(
@@ -107,6 +110,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
             alert(error?.response?.data?.message || 'Something went wrong!');
         }
     };
+    const currentDate = moment().format('DD / MM / YYYY');
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -127,7 +131,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
                 <View style={styles.datePickerContainer}>
-                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
+                <Text style={styles.dateText}>{currentDate}</Text>
                 </View>
 
                 {/* Dropdown Mock */}
