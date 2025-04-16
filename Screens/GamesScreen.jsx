@@ -34,31 +34,30 @@ const renderIcon = (iconType, iconName) => {
 };
 
 
-const GridItem = React.memo(({ item, onPress }) => (
-    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(item)}>
+const GridItem = React.memo(({ i, onPress }) => (
+    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(i)}>
         <View style={styles.iconContainer}>
             {/* Removed unnecessary Text wrapper around Icon */}
-            {renderIcon(item.iconType, item.iconName)}
+            {renderIcon(i.iconType, i.iconName)}
         </View>
-        <Text style={styles.itemText}>{item.label}</Text>
+        <Text style={styles.itemText}>{i.label}</Text>
     </TouchableOpacity>
 ));
 
 const GamesScreen = ({ navigation, route }) => {
 
     const { item } = route.params;
-    const handleItemPress = useCallback((item) => {
-        if (item.nav) {
-            navigation.navigate(item.nav);
+    const handleItemPress = useCallback((i) => {
+        if (i.nav) {
+            navigation.navigate(i.nav, { items: item });
+
         } else {
-            console.warn(`Navigation target not defined for item: ${item.label}`);
+            console.warn(`Navigation target not defined for item: ${i.label}`);
 
         }
     }, [navigation]);
 
-    const handleBackPress = useCallback(() => {
-        navigation.goBack();
-    }, [navigation]);
+ 
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -90,8 +89,8 @@ const GamesScreen = ({ navigation, route }) => {
 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.gridContainer}>
-                    {options.map((item) => (
-                        <GridItem key={item.key} item={item} onPress={handleItemPress} />
+                    {options.map((i) => (
+                        <GridItem key={item.key} i={i} onPress={handleItemPress} />
                     ))}
                 </View>
             </ScrollView>

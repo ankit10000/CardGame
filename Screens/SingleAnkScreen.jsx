@@ -14,9 +14,13 @@ import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import moment from 'moment';
 
 
-const SingleAnkScreen = ({ navigation }) => {
+
+const SingleAnkScreen = ({ navigation, route }) => {
+    const { items } = route.params || {};
 
     const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
     const digits = Array.from({ length: 10 }, (_, i) => i.toString());
@@ -53,6 +57,56 @@ const SingleAnkScreen = ({ navigation }) => {
     const [dropdownValue, setDropdownValue] = useState('OPEN');
     const [showDropdownOptions, setShowDropdownOptions] = useState(false);
     const dropdownOptions = ['OPEN', 'CLOSE'];
+    const submitBid = async () => {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            alert('You are not logged in');
+            return;
+        }
+
+        const selectedDigits = Object.keys(digitValues);
+        if (selectedDigits.length === 0) {
+            alert('Please select at least one digit.');
+            return;
+        }
+
+        try {
+            const results = [];
+
+            for (let digit of selectedDigits) {
+                const payload = {
+                    digit: Number(digit),
+                    amount: digitValues[digit],
+                    gameType: items?.name || '',
+                    openingTime: moment().toISOString(), // you can replace with actual selected date/time if needed
+                };
+
+                const response = await axios.post(
+                    'http://192.168.1.10:3000/api/sigle/place',
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                results.push(response.data);
+            }
+
+            alert('Bids placed successfully!');
+            console.log('Responses:', results);
+
+            // Reset state
+            setDigitValues({});
+            setSelectedPoint(null);
+
+        } catch (error) {
+            console.error('Bid submission error:', error?.response?.data || error.message);
+            alert(error?.response?.data?.message || 'Something went wrong!');
+        }
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -62,6 +116,8 @@ const SingleAnkScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
+
+
                 <Text style={styles.headerTitle}>Single Ank</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <WallettScreen />
@@ -166,9 +222,13 @@ const SingleAnkScreen = ({ navigation }) => {
                 >
                     <Text style={styles.footerButtonText}>Reset BID</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.footerButton, styles.submitButton]}>
+                <TouchableOpacity
+                    style={[styles.footerButton, styles.submitButton]}
+                    onPress={submitBid}
+                >
                     <Text style={styles.footerButtonText}>Submit BID</Text>
                 </TouchableOpacity>
+
             </View>
         </SafeAreaView>
     );
