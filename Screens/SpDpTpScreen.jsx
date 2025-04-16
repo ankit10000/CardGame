@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -223,7 +223,21 @@ const SpDpTpScreen = ({ navigation }) => {
         </>
     );
 
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
 
+        checkLoginStatus();
+    }, []);
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />

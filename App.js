@@ -33,7 +33,6 @@ import FullSangamScreen from './Screens/FullSangamScreen';
 import SpDpTpScreen from './Screens/SpDpTpScreen';
 
 // --- Add Imports for New Drawer Screens (Replace with your actual paths) ---
-import HistoryScreen from './Screens/HistoryScreen'; // Placeholder
 import MyBidsScreen from './Screens/MyBidsScreen'; // Placeholder
 import PaymentDetailsScreen from './Screens/PaymentDetailsScreen'; // Placeholder
 import AccountStatementScreen from './Screens/AccountStatementScreen'; // Placeholder
@@ -45,6 +44,7 @@ import PrivacyPolicyScreen from './Screens/PrivacyPolicyScreen'; // Placeholder
 import {
   StatusBar,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -52,13 +52,20 @@ const Stack = createNativeStackNavigator();
 function DrawerNavigator() {
   // Function to handle logout - You'd trigger this onPress for the Logout item
   // This often involves clearing auth state and navigating to Login
-  const handleLogout = (navigation) => {
+  const handleLogout = async (navigation) => {
     console.log("Logout action triggered");
-    // Add your logout logic here (clear tokens, user data, etc.)
-    // Example: AuthContext.signOut();
-    navigation.replace('Login'); // Navigate back to Login screen, replacing drawer history
-  };
 
+    try {
+        // Token aur user data ko remove karo
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('user');
+
+        // Navigate back to Login screen
+        navigation.replace('Login'); // replace karega taaki user back button se wapas na ja sake
+    } catch (error) {
+        console.log('Error during logout:', error);
+    }
+};
   return (
     <Drawer.Navigator
       initialRouteName="Home" // Changed initial route to Home
@@ -118,15 +125,7 @@ function DrawerNavigator() {
           ),
         }}
       />
-       <Drawer.Screen
-        name="My History"
-        component={HistoryScreen} // Use your actual History screen
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="history" size={size} color={color} />
-          ),
-        }}
-      />
+       
         <Drawer.Screen
         name="My Bid"
         component={MyBidsScreen} // Use your actual Bids screen
@@ -250,7 +249,6 @@ export default function App() {
           <Stack.Screen name="SPDPTP" component={SpDpTpScreen} />
 
            {/* Add New Screens Here if they are part of the main stack */}
-          <Stack.Screen name="History" component={HistoryScreen} />
           {/* <Stack.Screen name="MyBids" component={MyBidsScreen} /> */}
           <Stack.Screen name="PaymentDetails" component={PaymentDetailsScreen} />
           <Stack.Screen name="AccountStatement" component={AccountStatementScreen} />

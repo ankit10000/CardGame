@@ -1,6 +1,6 @@
 // Screens/PrivacyPolicyScreen.tsx
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -15,6 +15,21 @@ import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const PrivacyPolicyScreen = ({ navigation }) => {
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
@@ -295,7 +310,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    
+
     headerTitle: { /* ... same ... */
         fontSize: 18,
         fontWeight: 'bold',

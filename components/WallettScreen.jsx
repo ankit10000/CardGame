@@ -19,7 +19,7 @@ const WalletScreen = () => {
 
             console.log('Token:', token);
 
-            const response = await fetch('http://192.168.1.12:3000/api/wallet/get', {
+            const response = await fetch('http://192.168.1.10:3000/api/wallet/get', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -38,7 +38,6 @@ const WalletScreen = () => {
             setBalance(data.balance);
         } catch (error) {
             console.error('Error fetching wallet:', error);
-            Alert.alert('Error', error.message);
         } finally {
             setLoading(false);
         }
@@ -55,7 +54,7 @@ const WalletScreen = () => {
             <View style={styles.walletContainer}>
                 <Icon name="account-balance-wallet" size={20} color="#e5a550" />
                 <Text style={styles.walletText}>
-                    {loading ? 'Loading...' : `₹ ${balance}`}
+                    {loading ? 'Loading...' : `${balance}`}
                 </Text>
             </View>
         </View>

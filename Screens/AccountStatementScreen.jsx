@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {useState, useCallback
+
+} from 'react';
 import {
     SafeAreaView,
     View,
@@ -10,7 +12,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const statementData = [
     {
@@ -39,37 +42,96 @@ const statementData = [
 
 
 const statusColors = {
-    Pending: '#FFA500',
-    Rejected: '#FF0000',
-    Success: '#28A745',
+    debit: '#FFA500',
+    Success: '#FF0000',
+    credit: '#28A745',
 };
 
 
 const AccountStatementScreen = ({ navigation }) => {
 
     const renderStatementItem = ({ item }) => (
-        <View style={styles.itemContainer}>
+        <View style={styles.itemContainer} key={item.id}>
             <View style={styles.row}>
                 <Text style={styles.label}>Reference ID:</Text>
-                <Text style={styles.value}>{item.referenceId}</Text>
+                <Text style={styles.value}>{item._id}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label}>Transition Amount:</Text>
                 <Text style={styles.value}>{item.amount}</Text>
             </View>
             <View style={styles.row}>
+                <Text style={styles.label}>Note:</Text>
+                <Text style={styles.value}>{item.note}</Text>
+            </View>
+            <View style={styles.row}>
                 <Text style={styles.label}>Status:</Text>
-                <Text style={[styles.value, { color: statusColors[item.status] || '#333' }]}>
-                    {item.status}
+                <Text style={[styles.value, { color: statusColors[item.type] || '#333' }]}>
+                    {item.type}
                 </Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label}>Date:</Text>
-                <Text style={styles.value}>{item.date}</Text>
+                <Text style={styles.value}>
+                     {new Date(item.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}
+                </Text>
             </View>
         </View>
     );
+    const [bids, setBids] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
+
+
+
+    const fetchBids = async () => {
+        setIsLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Token Error', 'Token not found');
+                return;
+            }
+
+            console.log('Token:', token);
+
+            const response = await fetch('http://192.168.1.10:3000/api/wallet/get', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log('Error response:', errorData);
+                throw new Error(errorData.message || 'Failed to fetch bids');
+            }
+            const data = await response.json();
+            console.log('Bids Data:', data);
+            setBids(data.transactions);
+            console.log(data.transactions);
+
+        } catch (error) {
+            console.error("Failed to fetch bid history:", error);
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchBids();
+        }, [])
+    );
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
@@ -87,7 +149,7 @@ const AccountStatementScreen = ({ navigation }) => {
 
             {/* Content */}
             <FlatList
-                data={statementData}
+                data={bids}
                 renderItem={renderStatementItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContainer}

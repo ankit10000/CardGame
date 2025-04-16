@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -29,6 +29,21 @@ const gameRatesData = [
 
 
 const GameRatesScreen = ({ navigation }) => {
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
@@ -83,7 +98,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 15,
     },
-    
+
     headerTitle: { /* ... same as AccountStatementScreen ... */
         fontSize: 18,
         fontWeight: 'bold',

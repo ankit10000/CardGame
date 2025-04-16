@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -41,27 +41,7 @@ const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL 
 
 
 const SinglePattiScreen = ({ navigation }) => {
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-    const formatDate = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day} / ${month} / ${year}`;
-    };
+
     const [pattiValues, setPattiValues] = useState({});
 
     const handlePattiInputChange = useCallback((pattiNumber, value) => {
@@ -69,7 +49,21 @@ const SinglePattiScreen = ({ navigation }) => {
             setPattiValues(prev => ({ ...prev, [pattiNumber]: value }));
         }
     }, []);
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
 
+        checkLoginStatus();
+    }, []);
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Header */}
@@ -86,28 +80,10 @@ const SinglePattiScreen = ({ navigation }) => {
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
-                    <Text style={styles.dateText}>{formatDate(date)}</Text>
-                    <Icon name="calendar-today" size={20} color="#555" />
+                <TouchableOpacity style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
                 </TouchableOpacity>
 
-                {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                    />
-                )}
-                {showDatePicker && Platform.OS === 'ios' && (
-                    <View style={styles.iosPickerDoneButtonContainer}>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                            <Text style={styles.iosPickerDoneText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
 
                 {/* Dropdown Mock */}
                 <TouchableOpacity style={styles.dropdown}>

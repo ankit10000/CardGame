@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -83,6 +83,21 @@ const DoublePattiScreen = ({ navigation }) => {
 
         alert("Bid Submitted (check console)");
     };
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -198,7 +213,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: PADDING,
     },
-    
+
     headerIconText: {
         fontSize: 24,
         color: '#fff',

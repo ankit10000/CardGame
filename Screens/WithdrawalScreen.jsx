@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -40,7 +40,21 @@ const WithdrawalScreen = ({ navigation }) => {
     console.log('Amount:', amount);
     alert(`Withdrawal Requested:\nAmount: ${formatCurrency(Number(amount))}\nTo: ${phonepeId}`);
   };
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          // Token hai to MainDrawer pe navigate kar do
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.log('Error checking login status:', error);
+      }
+    };
 
+    checkLoginStatus();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -139,7 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     height: 60,
   },
-  
+
   headerTitle: {
     color: '#ffffff',
     fontSize: 20,

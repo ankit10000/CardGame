@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -13,40 +13,46 @@ import {
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
-const digits = Array.from({ length: 10 }, (_, i) => i.toString());
 
 const SingleAnkScreen = ({ navigation }) => {
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-    const formatDate = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day} / ${month} / ${year}`;
-    };
-    const [digitValues, setDigitValues] = useState({});
 
-    const handleDigitChange = (digit, value) => {
-        if (/^\d*$/.test(value)) {
-            setDigitValues(prev => ({ ...prev, [digit]: value }));
+    const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
+    const digits = Array.from({ length: 10 }, (_, i) => i.toString());
+
+    const [digitValues, setDigitValues] = useState({});
+    const [selectedPoint, setSelectedPoint] = useState(null);
+
+    const handleDigitPress = (digit) => {
+        if (selectedPoint !== null) {
+            setDigitValues(prev => ({
+                ...prev,
+                [digit]: selectedPoint
+            }));
+        } else {
+            alert('Please select points first!');
         }
     };
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
+    const [dropdownValue, setDropdownValue] = useState('OPEN');
+    const [showDropdownOptions, setShowDropdownOptions] = useState(false);
+    const dropdownOptions = ['OPEN', 'CLOSE'];
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -64,73 +70,100 @@ const SingleAnkScreen = ({ navigation }) => {
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
-                    <Text style={styles.dateText}>{formatDate(date)}</Text>
-                    <Icon name="calendar-today" size={20} color="#555" />
-                </TouchableOpacity>
-
-                {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                    />
-                )}
-                {showDatePicker && Platform.OS === 'ios' && (
-                    <View style={styles.iosPickerDoneButtonContainer}>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                            <Text style={styles.iosPickerDoneText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+                <View style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
+                </View>
 
                 {/* Dropdown Mock */}
-                <TouchableOpacity style={styles.dropdown}>
-                    <Text style={styles.dropdownText}>OPEN</Text>
-                    <Icon1 name="chevron-down" size={20} color="#666" />
-                </TouchableOpacity>
+                <View style={styles.dropdownContainer}>
+                    <TouchableOpacity
+                        style={styles.dropdown}
+                        onPress={() => setShowDropdownOptions(!showDropdownOptions)}
+                    >
+                        <Text style={styles.dropdownText}>{dropdownValue}</Text>
+                        <Icon1 name="chevron-down" size={20} color="#666" />
+                    </TouchableOpacity>
 
-                {/* Select Points Section */}
+                    {showDropdownOptions && (
+                        <View style={styles.dropdownOptions}>
+                            {dropdownOptions.map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    style={styles.dropdownOption}
+                                    onPress={() => {
+                                        setDropdownValue(option);
+                                        setShowDropdownOptions(false);
+                                    }}
+                                >
+                                    <Text style={styles.dropdownOptionText}>{option}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
+                </View>
+
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Select Points for Betting</Text>
                     <View style={styles.pointsContainer}>
                         {pointsOptions.map((points) => (
-                            <TouchableOpacity key={points} style={styles.pointButton}>
-                                <Text style={styles.pointButtonText}>{points}</Text>
+                            <TouchableOpacity
+                                key={points}
+                                style={[
+                                    styles.pointButton,
+                                    selectedPoint === points && { backgroundColor: 'green', borderColor: 'green' } // Selected styling
+                                ]}
+                                onPress={() => setSelectedPoint(points)}
+                            >
+                                <Text style={[styles.pointButtonText, selectedPoint === points && { color: '#fff' }]}>
+                                    {points}
+                                </Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </View>
 
-                {/* Select Digits Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Select Digits</Text>
                     <Text style={styles.selectAllText}>Select All Digits</Text>
                     <View style={styles.digitsContainer}>
                         {digits.map((digit) => (
-                            <View key={digit} style={styles.digitInputContainer}>
+                            <TouchableOpacity
+                                key={digit}
+                                style={[
+                                    styles.digitInputContainer,
+                                    {
+                                        borderColor: '#e0e0e0',
+                                        borderRadius: 8,
+                                        paddingVertical: 12,
+                                    }
+                                ]}
+                                onPress={() => handleDigitPress(digit)}
+                            >
                                 <Text style={styles.digitLabel}>{digit}</Text>
                                 <TextInput
-                                    style={styles.digitInput}
-                                    keyboardType="numeric"
-                                    placeholder=""
-                                    value={digitValues[digit] || ''}
-                                    onChangeText={(text) => handleDigitChange(digit, text)}
-                                    maxLength={4}
-                                    textAlign="center"
+                                    style={[
+                                        styles.digitInput,
+                                        { color: digitValues[digit] ? '#000' : '#aaa' }
+                                    ]}
+                                    editable={false}
+                                    value={digitValues[digit] ? String(digitValues[digit]) : ''}
                                 />
-                            </View>
+                            </TouchableOpacity>
                         ))}
+
                     </View>
                 </View>
             </ScrollView>
 
             {/* Footer Buttons */}
             <View style={styles.footer}>
-                <TouchableOpacity style={[styles.footerButton, styles.resetButton]}>
+                <TouchableOpacity
+                    style={[styles.footerButton, styles.resetButton]}
+                    onPress={() => {
+                        setDigitValues({});
+                        setSelectedPoint(null);
+                    }}
+                >
                     <Text style={styles.footerButtonText}>Reset BID</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.footerButton, styles.submitButton]}>
@@ -142,6 +175,49 @@ const SingleAnkScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    dropdownContainer: {
+        marginBottom: 20,
+        position: 'relative',
+    },
+
+    dropdown: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderColor: '#e0e0e0',
+        borderWidth: 1,
+        padding: 12,
+        borderRadius: 8,
+    },
+
+    dropdownText: {
+        color: '#333',
+        fontSize: 16,
+    },
+
+    dropdownOptions: {
+        position: 'absolute',
+        top: 50,
+        left: 185,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        zIndex: 10,
+        width: '50%',
+    },
+
+    dropdownOption: {
+        padding: 12,
+    },
+
+    dropdownOptionText: {
+        fontSize: 16,
+        color: '#333',
+    },
+
     safeArea: {
         flex: 1,
         backgroundColor: '#f0f4f7',
@@ -156,7 +232,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: 60,
     },
-    
+
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,

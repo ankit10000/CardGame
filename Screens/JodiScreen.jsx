@@ -21,27 +21,7 @@ const pointsOptions = [5, 10, 20, 50, 100, 200, 500, 1000];
 const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'));
 
 const JodiScreen = ({ navigation }) => {
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-    const formatDate = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day} / ${month} / ${year}`;
-    };
+
     const [jodiValues, setJodiValues] = useState({});
 
     const handleJodiInputChange = (jodiNumber, value) => {
@@ -56,7 +36,7 @@ const JodiScreen = ({ navigation }) => {
     };
 
     const handleSubmit = () => {
-        const filledDigits = Object.entries(jodiValues).filter(([key, value]) => value && parseInt(value) > 0);
+        const filledDigits = Object.entries(digitValues).filter(([key, value]) => value && parseInt(value) > 0);
         if (!selectedPoints) {
             alert('Please select points for betting.');
             return;
@@ -70,8 +50,20 @@ const JodiScreen = ({ navigation }) => {
         alert('BID submitted successfully!');
     };
     const handleReset = () => {
-        setJodiValues({});
-    }
+        setDigitValues({});
+        setSelectedPoints(null);
+    };
+const [digitValues, setDigitValues] = useState({});
+    const handleDigitPress = (digit) => {
+        if (selectedPoints !== null) {
+            setDigitValues(prev => ({
+                ...prev,
+                [digit]: selectedPoints
+            }));
+        } else {
+            alert('Please select points first!');
+        }
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -89,28 +81,11 @@ const JodiScreen = ({ navigation }) => {
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
-                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
-                    <Text style={styles.dateText}>{formatDate(date)}</Text>
-                    <Icon name="calendar-today" size={20} color="#555" />
+                <TouchableOpacity style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>07 / 04 / 2025</Text>
                 </TouchableOpacity>
 
-                {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                    />
-                )}
-                {showDatePicker && Platform.OS === 'ios' && (
-                    <View style={styles.iosPickerDoneButtonContainer}>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                            <Text style={styles.iosPickerDoneText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+
 
                 {/* Dropdown removed as it's not in the Jodi screen image */}
 
@@ -125,7 +100,7 @@ const JodiScreen = ({ navigation }) => {
                                     styles.pointButton,
                                     selectedPoints === points && { backgroundColor: '#934b47', borderColor: '#934b47' }
                                 ]}
-                                onPress={() => handlePointSelection(points)}
+                                onPress={() => setSelectedPoints(points)}
                             >
                                 <Text style={[
                                     styles.pointButtonText,
@@ -143,19 +118,29 @@ const JodiScreen = ({ navigation }) => {
                     <Text style={styles.sectionTitle}>Select Digits</Text>
                     <Text style={styles.selectAllText}>Select All Digits</Text>
                     <View style={styles.digitsContainer}>
-                        {jodiDigits.map((jodiNumber) => (
-                            <View key={jodiNumber} style={styles.digitInputContainer}>
-                                <Text style={styles.digitLabel}>{jodiNumber}</Text> {/* Displaying 00, 01, etc. */}
+                        {jodiDigits.map((digit) => (
+                            <TouchableOpacity
+                                key={digit}
+                                style={[
+                                    styles.digitInputContainer,
+                                    {
+                                        borderColor: '#e0e0e0',
+                                        borderRadius: 8,
+                                        paddingVertical: 12,
+                                    }
+                                ]}
+                                onPress={() => handleDigitPress(digit)}
+                            >
+                                <Text style={styles.digitLabel}>{digit}</Text>
                                 <TextInput
-                                    style={styles.digitInput}
-                                    keyboardType="numeric"
-                                    placeholder=""
-                                    value={jodiValues[jodiNumber] || ''}
-                                    onChangeText={(text) => handleJodiInputChange(jodiNumber, text)}
-                                    maxLength={4}
-                                    textAlign="center"
+                                    style={[
+                                        styles.digitInput,
+                                        { color: digitValues[digit] ? '#000' : '#aaa' }
+                                    ]}
+                                    editable={false}
+                                    value={digitValues[digit] ? String(digitValues[digit]) : ''}
                                 />
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </View>
                 </View>
@@ -190,7 +175,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: 60,
     },
-    
+
     headerTitle: {
         color: '#FFFFFF',
         fontSize: 18,

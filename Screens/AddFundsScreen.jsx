@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     StatusBar,
@@ -10,14 +10,16 @@ import {
     ScrollView,
     Dimensions,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
-
 
 const COLORS = {
     headerBackground: '#934b47',
@@ -40,7 +42,6 @@ const COLORS = {
     walletTextColor: '#333',
 };
 
-
 const PREDEFINED_AMOUNTS = [500, 1000, 2000, 5000, 10000, 50000, 100000];
 const MIN_AMOUNT = 500;
 
@@ -55,16 +56,29 @@ const AddFundsScreen = () => {
     };
 
     const handleTextInputChange = (text) => {
-
         const numericValue = text.replace(/[^0-9]/g, '');
         setAmount(numericValue);
-
         if (selectedAmount !== null && numericValue !== String(selectedAmount)) {
             setSelectedAmount(null);
         }
     };
 
-    const handlePayNow = () => {
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
+
+    const handlePayNow = async () => {
         const numericAmount = parseInt(amount, 10);
         if (!numericAmount || isNaN(numericAmount)) {
             alert('Please enter a valid amount.');
@@ -74,11 +88,41 @@ const AddFundsScreen = () => {
             alert(`Minimum amount required is ₹${MIN_AMOUNT}.`);
             return;
         }
-        console.log('Processing payment for:', numericAmount);
 
-        alert(`Proceeding to pay ₹${numericAmount}`);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert("Session Expired", "Please login again.");
+                navigation.navigate('Login');
+                return;
+            }
+
+            const response = await axios.post(
+                'http://192.168.1.10:3000/api/wallet/add',
+                {
+                    amount: numericAmount,
+                    note: 'Initial top-up'
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                Alert.alert("Success", `₹${numericAmount} added to wallet successfully.`);
+                setAmount('');
+                setSelectedAmount(null);
+            } else {
+                Alert.alert("Failed", "Something went wrong. Try again.");
+            }
+        } catch (error) {
+            console.log('Error during payment:', error.response?.data || error.message);
+            Alert.alert("Error", error.response?.data?.message || "Failed to add funds.");
+        }
     };
-
 
     const formatCurrency = (value) => {
         if (!value) return '';
@@ -181,26 +225,12 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    
     headerTitle: {
         color: COLORS.headerText,
         fontSize: 20,
         fontWeight: 'bold',
     },
-    walletContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.headerText,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 15,
-    },
-    walletText: {
-        color: COLORS.walletTextColor,
-        fontWeight: 'bold',
-        fontSize: 14,
-        marginLeft: 5,
-    },
+  
     scrollContent: {
         flexGrow: 1,
         padding: 20,
@@ -262,7 +292,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         margin: 5,
-
         minWidth: (width - 40 - 40 - 30) / 3,
         alignItems: 'center',
         elevation: 1,
@@ -281,8 +310,7 @@ const styles = StyleSheet.create({
         color: COLORS.amountButtonText,
     },
     amountButtonTextSelected: {
-
-
+        fontWeight: '700',
     },
     payButton: {
         backgroundColor: COLORS.payButtonBackground,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -36,7 +36,7 @@ const COLORS = {
 const marketData = [
   {
     id: '1',
-    name: 'SRIDEVI MORNING',
+    name: 'KALYAN MORNING',
     numbers: '126-94-248',
     open: '09:30 AM',
     close: '10:30 AM',
@@ -44,7 +44,7 @@ const marketData = [
   },
   {
     id: '2',
-    name: 'KARNATAKA DAY',
+    name: 'MAIN BAZAR',
     numbers: '148-31-489',
     open: '10:00 AM',
     close: '11:00 AM',
@@ -52,7 +52,7 @@ const marketData = [
   },
   {
     id: '3',
-    name: 'MILAN MORNING',
+    name: 'KARNATAKA DAY',
     numbers: '889-53-256',
     open: '10:10 AM',
     close: '11:10 AM',
@@ -60,7 +60,7 @@ const marketData = [
   },
   {
     id: '4',
-    name: 'KALYAN MORNING',
+    name: 'SRIDEVI MORNING',
     numbers: '489-15-348',
     open: '11:00 AM',
     close: '12:00 PM',
@@ -77,6 +77,14 @@ const marketData = [
   {
     id: '6',
     name: 'PADMAVATI',
+    numbers: '190-03-139',
+    open: '11:30 AM',
+    close: '12:30 PM',
+    status: 'Running',
+  },
+  {
+    id: '7',
+    name: 'MILAN MORNING',
     numbers: '190-03-139',
     open: '11:30 AM',
     close: '12:30 PM',
@@ -110,7 +118,7 @@ const MarketItem = ({ item, navigation }) => (
       </View>
     ) : (
       <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}
->
+      >
         <View style={styles.OpenIconCircle}>
           <Icon name="refresh" size={20} color={COLORS.closedRed} />
         </View>
@@ -143,7 +151,21 @@ const HomeScreen = () => {
   };
 
   const navigation = useNavigation();
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          // Token hai to MainDrawer pe navigate kar do
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.log('Error checking login status:', error);
+      }
+    };
 
+    checkLoginStatus();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -217,7 +239,7 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  
+
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.backgroundPink,
@@ -243,8 +265,8 @@ const styles = StyleSheet.create({
   },
   headerRight: {
   },
-  
-  
+
+
   scrollView: {
     flex: 1,
   },

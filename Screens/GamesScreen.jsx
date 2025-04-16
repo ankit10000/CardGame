@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -59,6 +59,21 @@ const GamesScreen = ({ navigation, route }) => {
     const handleBackPress = useCallback(() => {
         navigation.goBack();
     }, [navigation]);
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>

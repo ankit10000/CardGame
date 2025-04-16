@@ -57,7 +57,7 @@ const SignUpScreen = () => {
         }
 
         try {
-            const response = await axios.post('http://192.168.1.12:3000/api/auth/register', {
+            const response = await axios.post('http://192.168.1.10:3000/api/auth/register', {
                 name: username,
                 number: mobile,
                 email: email,
@@ -79,7 +79,21 @@ const SignUpScreen = () => {
     const handleLoginPress = () => {
         navigation.navigate('Login');
     };
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('MainDrawer');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
 
+        checkLoginStatus();
+    }, []);
     return (
         <LinearGradient
             colors={[COLORS.gradientTop, COLORS.gradientBottom]}

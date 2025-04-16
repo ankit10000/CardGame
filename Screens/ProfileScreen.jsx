@@ -20,17 +20,29 @@ const ProfileScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [mobile, setMobile] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
 
     useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
         fetchProfile();
     }, []);
 
     const fetchProfile = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            console.log('Token:', token);
-
-            const response = await fetch('http://192.168.1.12:3000/api/auth/profile', {
+            const response = await fetch('http://192.168.1.10:3000/api/auth/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -43,14 +55,9 @@ const ProfileScreen = ({ navigation }) => {
             }
 
             const data = await response.json();
-            console.log('Profile Data:', data);
-
-            // Set data to state
             setName(data.name);
             setEmail(data.email);
             setMobile(data.number);
-
-            // Optional: store user data in AsyncStorage
             await AsyncStorage.setItem('user', JSON.stringify(data));
 
         } catch (error) {
@@ -59,16 +66,40 @@ const ProfileScreen = ({ navigation }) => {
         }
     };
 
-    const handleUpdate = () => {
-        console.log('Updating Profile:', { name, email, mobile });
-        Alert.alert('Success', 'Profile updated successfully!');
+    const handleUpdate = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await fetch('http://192.168.1.10:3000/api/auth/update-Password', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currentPassword: currentPassword,
+                    newPassword: newPassword,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Password update failed');
+            }
+
+            Alert.alert('Success', 'Password updated successfully!');
+            setCurrentPassword('');
+            setNewPassword('');
+        } catch (error) {
+            console.error('Update Error:', error);
+            Alert.alert('Error', error.message || 'Failed to update password');
+        }
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
 
-            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={24} color="#fff" />
@@ -115,13 +146,34 @@ const ProfileScreen = ({ navigation }) => {
                                 keyboardType="phone-pad"
                                 placeholder="Enter your mobile number"
                                 placeholderTextColor="#ccc"
-                                editable={false} // As you wanted non-editable
+                                editable={false}
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Current Password</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={currentPassword}
+                                onChangeText={setCurrentPassword}
+                                secureTextEntry={true}
+                                placeholder="Enter your current password"
+                                placeholderTextColor="#ccc"
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>New Password</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={newPassword}
+                                onChangeText={setNewPassword}
+                                secureTextEntry={true}
+                                placeholder="Enter your new password"
+                                placeholderTextColor="#ccc"
                             />
                         </View>
 
-                        {/* Update Button */}
                         <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-                            <Text style={styles.updateButtonText}>Update</Text>
+                            <Text style={styles.updateButtonText}>Update Password</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -141,15 +193,6 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    walletContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 15,
-    },
-    
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',

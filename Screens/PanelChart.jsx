@@ -1,9 +1,12 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Dimensions, TouchableOpacity, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+    StyleSheet, View, Text, ScrollView, Dimensions, TouchableOpacity,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
 import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
-import { chartData } from '../Data/data';
 
 const screenWidth = Dimensions.get('window').width;
 const dateColWidth = screenWidth * 0.20;
@@ -31,22 +34,127 @@ const COLORS = {
     walletTextBackground: '#d3d3d3',
     walletTextColor: '#333',
 };
-const PanelChart = () => {
+
+const PanelChart = ({route}) => {
+    const { item } = route.params;
+
     const navigation = useNavigation();
+    const [chartData, setChartData] = useState([]);
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    navigation.navigate('Login');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+        fetchChartData();
+    }, []);
+
+    const fetchChartData = async () => {
+        try {
+            const response = await axios.get('http://192.168.1.10:3000/api/game-result/getAllResults');
+            const allResults = response.data;
+    
+            // ✅ Filter data based on the selected game
+            const filteredResults = allResults.filter(entry => entry.gameName === item.name);
+    
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth(); // 0-based
+    
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    
+            const weeks = [];
+    
+            let current = new Date(firstDayOfMonth);
+            current.setDate(current.getDate() - ((current.getDay() + 6) % 7)); // Start from Monday
+    
+            while (current <= lastDayOfMonth) {
+                const weekStart = new Date(current);
+                const weekEnd = new Date(current);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+    
+                const weekLabel = `${formatDate(weekStart)} to ${formatDate(weekEnd)}`;
+                const weekObject = { date: weekLabel };
+    
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(weekStart);
+                    d.setDate(d.getDate() + i);
+                    const dayKey = days[i].toLowerCase();
+    
+                    if (d < firstDayOfMonth || d > lastDayOfMonth) {
+                        weekObject[dayKey] = null;
+                        continue;
+                    }
+    
+                    const matchingEntry = filteredResults.find(entry => {
+                        const resultDate = new Date(entry.date);
+                        return resultDate.toDateString() === d.toDateString();
+                    });
+    
+                    if (matchingEntry) {
+                        weekObject[dayKey] = {
+                            p1: matchingEntry.openDigits[0]?.toString() || '*',
+                            p2: matchingEntry.openDigits[1]?.toString() || '*',
+                            p3: matchingEntry.openDigits[2]?.toString() || '*',
+                            result: `${matchingEntry.openSumDigit || '*'} ${matchingEntry.closeSumDigit || '*'}`,
+                            p4: matchingEntry.closeDigits[0]?.toString() || '*',
+                            p5: matchingEntry.closeDigits[1]?.toString() || '*',
+                            p6: matchingEntry.closeDigits[2]?.toString() || '*',
+                        };
+                    } else {
+                        weekObject[dayKey] = {
+                            p1: '*',
+                            p2: '*',
+                            p3: '*',
+                            result: '*',
+                            p4: '*',
+                            p5: '*',
+                            p6: '*',
+                        };
+                    }
+                }
+    
+                weeks.push(weekObject);
+                current.setDate(current.getDate() + 7);
+            }
+    
+            setChartData(weeks);
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
+        }
+    };
+    
+    
+    const formatDate = (date) => {
+        const day = (`0${date.getDate()}`).slice(-2);
+        const month = (`0${date.getMonth() + 1}`).slice(-2);
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+    
+   
+
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                     <Icon name="arrow-back" size={26} color={COLORS.headerText} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Add Funds</Text>
+                <Text style={styles.headerTitle}>{item.name}</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-                    <View style={styles.walletContainer}>
-                        <Icon name="account-balance-wallet" size={20} color={COLORS.walletIcon} />
-                        <Text style={styles.walletText}>0</Text>
-                    </View>
+                    <WallettScreen />
                 </TouchableOpacity>
             </View>
+
             <ScrollView style={{ flex: 1, padding: 16 }} horizontal>
                 <ScrollView style={{ borderWidth: 1 }}>
                     <View style={styles.row}>
@@ -79,34 +187,27 @@ const PanelChart = () => {
                                         ]}
                                     >
                                         {dayData ? (
-                                            <>
-                                                <View style={{ width: '80%', flexDirection: "row" }}>
-                                                    {/* Row 1 */}
-                                                    <View style={{ flexDirection: 'colmn', justifyContent: 'space-between', marginBottom: 2 }}>
+                                            <View style={{ width: '80%', flexDirection: "row" }}>
+                                            <View style={{ flexDirection: 'colmn', justifyContent: 'space-between', marginBottom: 2 }}>
                                                         <Text style={styles.cellText}>{dayData.p1 != "" ? dayData.p1 : "*"}</Text>
                                                         <Text style={styles.cellText}>{dayData.p2 != "" ? dayData.p2 : "*"}</Text>
                                                         <Text style={styles.cellText}>{dayData.p3 != "" ? dayData.p3 : "*"}</Text>
                                                     </View>
 
-                                                    {/* Result row */}
                                                     <View style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", marginHorizontal: 8 }}>
                                                         <Text style={styles.resultText}>{dayData.result != "" ? dayData.result : "*"}</Text>
                                                     </View>
 
-                                                    {/* Row 2 */}
-                                                    <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+                                                <View style={{ flexDirection: 'coslumn', justifyContent: 'space-between' }}>
                                                         <Text style={styles.cellText}>{dayData.p4 != "" ? dayData.p4 : "*"}</Text>
                                                         <Text style={styles.cellText}>{dayData.p5 != "" ? dayData.p5 : "*"}</Text>
                                                         <Text style={styles.cellText}>{dayData.p6 != "" ? dayData.p6 : "*"}</Text>
                                                     </View>
-                                                </View>
-
-                                            </>
+                                            </View>
                                         ) : (
                                             <Text style={styles.noDataText}>-</Text>
                                         )}
                                     </View>
-
                                 );
                             })}
                         </View>
@@ -117,8 +218,8 @@ const PanelChart = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
+    // (same as your provided styles above)
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -128,29 +229,12 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-    
     headerTitle: {
         color: COLORS.headerText,
         fontSize: 20,
         fontWeight: 'bold',
     },
-    walletContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.headerText,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 15,
-    },
-    walletText: {
-        color: COLORS.walletTextColor,
-        fontWeight: 'bold',
-        fontSize: 14,
-        marginLeft: 5,
-    },
-    row: {
-        flexDirection: 'row',
-    },
+    row: { flexDirection: 'row' },
     cell: {
         padding: 0,
         margin: 0,
@@ -186,7 +270,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#333',
         marginVertical: 4,
-        flexDirection: 'column',
     },
     resultText: {
         fontSize: 14,
@@ -208,6 +291,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
     },
+    
 });
 
 export default PanelChart;

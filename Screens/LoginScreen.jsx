@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     StatusBar,
@@ -46,33 +46,61 @@ const LoginScreen = () => {
     const handleLogin = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://192.168.1.12:3000/api/auth/login', {
-                email,
-                password,
+            const response = await fetch('http://192.168.1.10:3000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
             });
 
-            const { token, user } = response.data;
+            const data = await response.json();
 
-            // Token save karo AsyncStorage me
-            await AsyncStorage.setItem('token', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            if (response.ok) {
+                const { token, user } = data;
 
-            Alert.alert('Success', 'Login successful!');
+                // Save token and user to AsyncStorage
+                await AsyncStorage.setItem('token', token);
+                await AsyncStorage.setItem('user', JSON.stringify(user));
 
-            // Navigate karo Home Screen ya kisi bhi screen pe
-            navigation.navigate('MainDrawer');
+                Alert.alert('Success', 'Login successful!');
+
+                // Navigate to MainDrawer
+                navigation.navigate('MainDrawer');
+            } else {
+                Alert.alert('Error', data.message || 'Invalid credentials');
+            }
 
         } catch (error) {
             console.log(error);
-            Alert.alert('Error', 'Invalid credentials');
-        }finally {
-            setLoading(false); // Add this
+            Alert.alert('Error', 'Something went wrong');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleRegisterPress = () => {
         navigation.navigate('SignUp');
     };
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (token) {
+                    // Token hai to MainDrawer pe navigate kar do
+                    navigation.navigate('MainDrawer');
+                }
+            } catch (error) {
+                console.log('Error checking login status:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
+
 
     return (
         <LinearGradient
