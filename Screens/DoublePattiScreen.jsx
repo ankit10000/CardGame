@@ -13,39 +13,26 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-import DateTimePicker from '@react-native-community/datetimepicker';
-
+import moment from 'moment';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon1 from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 const PADDING = 15;
 const INPUT_ITEM_WIDTH = (width - PADDING * 5) / 4;
 
-const DoublePattiScreen = ({ navigation }) => {
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-    const formatDate = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day} / ${month} / ${year}`;
-    };
+const PADDING_HORIZONTAL = 20;
+const ITEM_MARGIN_HORIZONTAL = 5;
+const NUM_COLUMNS = 4;
+const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
+
+const DoublePattiScreen = ({ navigation, route }) => {
+    const { items } = route.params || {};
     const [selectedPoints, setSelectedPoints] = useState(null);
     const [selectedMarket, setSelectedMarket] = useState('OPEN');
     const [digitInputs, setDigitInputs] = useState({});
-
+    const currentDate = moment().format('DD / MM / YYYY');
     const pointOptions = [10, 20, 50, 100, 200, 500, 1000];
 
     const digitGroups = [
@@ -57,32 +44,113 @@ const DoublePattiScreen = ({ navigation }) => {
             title: 'Select Digit 1',
             digits: ['100', '119', '155', '227', '335', '344', '399', '588', '669'],
         },
+        {
+            title: 'Select Digit 2',
+            digits: ['200', '110', '228', '255', '336', '499', '660', '688', '778'],
+        },
+        {
+            title: 'Select Digit 3',
+            digits: ['300', '166', '229', '337', '355', '445', '599', '779', '788'],
+        },
+        {
+            title: 'Select Digit 4',
+            digits: ['400', '112', '220', '266', '338', '446', '455', '699', '770'],
+        },
+        {
+            title: 'Select Digit 5',
+            digits: ['500', '113', '122', '177', '339', '366', '447', '799', '889'],
+        },
+        {
+            title: 'Select Digit 6',
+            digits: ['600', '114', '277', '330', '448', '466', '556', '880', '899'],
+        },
+        {
+            title: 'Select Digit 7',
+            digits: ['700', '115', '133', '188', '223', '377', '449', '557', '566'],
+        },
+        {
+            title: 'Select Digit 8',
+            digits: ['800', '116', '224', '233', '288', '440', '477', '558', '990'],
+        },
+        {
+            title: 'Select Digit 9',
+            digits: ['900', '117', '144', '199', '225', '388', '559', '577', '667'],
+        },
     ];
 
-    const handlePointSelect = (points) => {
-        setSelectedPoints(points);
+
+
+
+    const [dropdownValue, setDropdownValue] = useState('open');
+    const [showDropdownOptions, setShowDropdownOptions] = useState(false);
+    const dropdownOptions = ['open', 'close'];
+    const submitBid = async () => {
+
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                alert("User not logged in");
+                navigation.navigate('Login');
+                return;
+            }
+
+            const gameDate = moment().format('YYYY-MM-DD');
+            const selectedDigits = Object.keys(digitValues);
+
+            if (selectedDigits.length === 0) {
+                alert("Please select at least one digit");
+                return;
+            }
+
+            // For each selected digit, make a POST request
+            for (const panaNumber of selectedDigits) {
+                const payload = {
+                    panaNumber,
+                    amount: digitValues[panaNumber],
+                    gameType: items.name,
+                    gameDate: gameDate,
+                    betType: dropdownValue, // either 'open' or 'close'
+                };
+
+                const response = await axios.post(
+                    "http://192.168.1.10:3000/api/doublepana/add",
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                console.log("Bet Response:", response.data);
+            }
+
+            alert("All bets placed successfully!");
+            handleReset();
+        } catch (error) {
+            console.error("Bet placement failed:", error?.response?.data || error.message);
+            alert("Bet placement failed. Check console for details.");
+        }
     };
 
-    const handleInputChange = (digit, value) => {
-
-        const numericValue = value.replace(/[^0-9]/g, '');
-        setDigitInputs(prev => ({ ...prev, [digit]: numericValue }));
+    const [digitValues, setDigitValues] = useState({});
+    const [selectedPoint, setSelectedPoint] = useState(null);
+    const handleDigitPress = (digit) => {
+        if (selectedPoint !== null) {
+            setDigitValues(prev => ({
+                ...prev,
+                [digit]: selectedPoint
+            }));
+        } else {
+            alert('Please select points first!');
+        }
+    };
+    const handleReset = () => {
+        setDigitValues({});
+        setSelectedPoint(null);
     };
 
-    const resetBid = () => {
-        setSelectedPoints(null);
-        setDigitInputs({});
-
-    };
-
-    const submitBid = () => {
-        console.log("Submitting Bid:");
-        console.log("Market:", selectedMarket);
-        console.log("Selected Points:", selectedPoints);
-        console.log("Digit Inputs:", digitInputs);
-
-        alert("Bid Submitted (check console)");
-    };
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -113,45 +181,52 @@ const DoublePattiScreen = ({ navigation }) => {
             </View>
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
-                    <Text style={styles.dateText}>{formatDate(date)}</Text>
-                    <Icon name="calendar-today" size={20} color="#555" />
+                <TouchableOpacity style={styles.datePickerContainer}>
+                    <Text style={styles.dateText}>{currentDate}</Text>
                 </TouchableOpacity>
+                <View style={styles.dropdownContainer}>
+                    <TouchableOpacity
+                        style={styles.dropdown}
+                        onPress={() => setShowDropdownOptions(!showDropdownOptions)}
+                    >
+                        <Text style={styles.dropdownText}>{dropdownValue}</Text>
+                        <Icon1 name="chevron-down" size={20} color="#666" />
+                    </TouchableOpacity>
 
-                {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                    />
-                )}
-                {showDatePicker && Platform.OS === 'ios' && (
-                    <View style={styles.iosPickerDoneButtonContainer}>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                            <Text style={styles.iosPickerDoneText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+                    {showDropdownOptions && (
+                        <View style={styles.dropdownOptions}>
+                            {dropdownOptions.map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    style={styles.dropdownOption}
+                                    onPress={() => {
+                                        setDropdownValue(option);
+                                        setShowDropdownOptions(false);
+                                    }}
+                                >
+                                    <Text style={styles.dropdownOptionText}>{option}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
+                </View>
 
-                <View style={styles.sectionContainer}>
+
+
+
+                <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Select Points for Betting</Text>
-                    <View style={styles.pointsGrid}>
+                    <View style={styles.pointsContainer}>
                         {pointOptions.map((points) => (
                             <TouchableOpacity
                                 key={points}
                                 style={[
                                     styles.pointButton,
-                                    selectedPoints === points && styles.pointButtonSelected,
+                                    selectedPoint === points && { backgroundColor: 'green', borderColor: 'green' } // Selected styling
                                 ]}
-                                onPress={() => handlePointSelect(points)}
+                                onPress={() => setSelectedPoint(points)}
                             >
-                                <Text style={[
-                                    styles.pointButtonText,
-                                    selectedPoints === points && styles.pointButtonTextSelected
-                                ]}>
+                                <Text style={[styles.pointButtonText, selectedPoint === points && { color: '#fff' }]}>
                                     {points}
                                 </Text>
                             </TouchableOpacity>
@@ -168,18 +243,28 @@ const DoublePattiScreen = ({ navigation }) => {
                     <View key={index} style={styles.sectionContainer}>
                         <Text style={styles.subSectionTitle}>{group.title}</Text>
                         <View style={styles.digitsGrid}>
-                            {group.digits.map((digit) => (
-                                <View key={digit} style={styles.digitInputContainer}>
-                                    <Text style={styles.digitLabel}>{digit}</Text>
+                            {group.digits.map((pattiNumber) => (
+                                <TouchableOpacity
+                                    key={pattiNumber}
+                                    style={[
+                                        styles.digitInputContainer,
+                                        {
+                                            borderColor: '#e0e0e0',
+                                            borderRadius: 8,
+                                            paddingVertical: 12,
+                                        }
+                                    ]}
+                                    onPress={() => handleDigitPress(pattiNumber)}>
+                                    <Text style={styles.digitLabel}>{pattiNumber}</Text>
                                     <TextInput
-                                        style={styles.textInput}
-                                        keyboardType="numeric"
-                                        value={digitInputs[digit] || ''}
-                                        onChangeText={(value) => handleInputChange(digit, value)}
-                                        placeholder="Points"
-                                        placeholderTextColor="#ccc"
+                                        style={[
+                                            styles.digitInput,
+                                            { color: digitValues[pattiNumber] ? '#000' : '#aaa' }
+                                        ]}
+                                        editable={false}
+                                        value={digitValues[pattiNumber] ? String(digitValues[pattiNumber]) : ''}
                                     />
-                                </View>
+                                </TouchableOpacity>
                             ))}
                         </View>
                     </View>
@@ -189,7 +274,7 @@ const DoublePattiScreen = ({ navigation }) => {
 
             {/* Bottom Action Buttons */}
             <View style={styles.bottomActions}>
-                <TouchableOpacity style={[styles.actionButton, styles.resetButton]} onPress={resetBid}>
+                <TouchableOpacity style={[styles.actionButton, styles.resetButton]} onPress={handleReset}>
                     <Text style={styles.actionButtonText}>Reset BID</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.actionButton, styles.submitButton]} onPress={submitBid}>
@@ -201,6 +286,60 @@ const DoublePattiScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    dropdownContainer: {
+        marginBottom: 20,
+        position: 'relative',
+    },
+
+    dropdown: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 15,
+        paddingVertical: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        marginBottom: 25,
+        width: '50%',
+        alignSelf: 'flex-end',
+    },
+
+    dropdownText: {
+        color: '#333',
+        fontSize: 16,
+    },
+
+    dropdownOptions: {
+        position: 'absolute',
+        top: 50,
+        left: 185,
+        right: 0,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        zIndex: 10,
+        width: '50%',
+    },
+
+    dropdownOption: {
+        padding: 12,
+    },
+
+    dropdownOptionText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    pointsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+    },
+    section: {
+        marginBottom: 25,
+    },
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
@@ -282,6 +421,31 @@ const styles = StyleSheet.create({
 
 
     },
+    digitInputContainer: {
+        width: digitItemWidth, // Calculated width for 4 columns
+        marginHorizontal: ITEM_MARGIN_HORIZONTAL, // Horizontal space between items
+        marginBottom: 15, // Vertical space between rows
+        alignItems: 'center',
+    },
+    digitLabel: {
+        fontSize: 14,
+        color: '#555',
+        marginBottom: 5,
+        fontWeight: 'bold',
+    },
+    digitInput: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#b0bec5',
+        borderRadius: 8,
+        paddingVertical: Platform.OS === 'ios' ? 12 : 8,
+        paddingHorizontal: 10,
+        fontSize: 16,
+        color: '#333',
+        width: '100%',
+        textAlign: 'center',
+        height: 50,
+    },
     pickerIcon: {
         fontSize: 16,
         color: '#555',
@@ -296,8 +460,9 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 15,
         color: '#333',
+        marginBottom: 15,
+        textAlign: 'center',
     },
     subSectionTitle: {
         fontSize: 16,

@@ -20,15 +20,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const pointsOptions = [5, 10, 20, 50, 100, 200, 500, 1000];
 
 
-const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '0'));
+const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '00'));
 
-const JodiScreen = ({ navigation }) => {
+const JodiScreen = ({ navigation, route }) => {
+
+    const { items } = route.params || {};
 
 
-
-    
     const [selectedPoints, setSelectedPoints] = useState(null);
-    
+
 
     const handleSubmit = async () => {
         const filledDigits = Object.entries(digitValues).filter(([key, value]) => value && parseInt(value) > 0);
@@ -41,12 +41,12 @@ const JodiScreen = ({ navigation }) => {
             alert('Please select points for betting.');
             return;
         }
-    
+
         if (filledDigits.length === 0) {
             alert('Please enter at least one digit amount.');
             return;
         }
-    
+
         try {
             for (const [jodiNumber, amount] of filledDigits) {
                 const response = await fetch('http://192.168.1.10:3000/api/jodi/place', {
@@ -58,33 +58,33 @@ const JodiScreen = ({ navigation }) => {
                     body: JSON.stringify({
                         jodiNumber: parseInt(jodiNumber),
                         amount: parseInt(amount),
-                        gameType: 'PADMAVATI'
+                        gameType: items?.name || ''
                     })
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (!response.ok) {
                     throw new Error(data.message || 'Something went wrong');
                 }
-    
+
                 console.log('Response:', data);
             }
-    
+
             alert('All BIDs submitted successfully!');
             handleReset(); // Clear values on success
-    
+
         } catch (error) {
             console.error('Error placing bid:', error.message);
             alert(`Error placing bid: ${error.message}`);
         }
     };
-    
+
     const handleReset = () => {
         setDigitValues({});
         setSelectedPoints(null);
     };
-const [digitValues, setDigitValues] = useState({});
+    const [digitValues, setDigitValues] = useState({});
     const handleDigitPress = (digit) => {
         if (selectedPoints !== null) {
             setDigitValues(prev => ({

@@ -244,16 +244,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
 
-    dropdown: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderColor: '#e0e0e0',
-        borderWidth: 1,
-        padding: 12,
-        borderRadius: 8,
-    },
+   
 
     dropdownText: {
         color: '#333',
