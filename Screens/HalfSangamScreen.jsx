@@ -11,11 +11,11 @@ import {
     FlatList,
     Alert,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-
+import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const formatDate = (date) => {
@@ -28,10 +28,9 @@ const formatDate = (date) => {
 };
 
 
-const HalfSangamScreen = ({ navigation }) => {
-
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
+const HalfSangamScreen = ({ navigation, route }) => {
+    const {items } = route.params; // Get userId from route params
+    const currentDate = moment().format('DD / MM / YYYY');
 
 
     const [openPanna, setOpenPanna] = useState('');
@@ -42,18 +41,7 @@ const HalfSangamScreen = ({ navigation }) => {
     const [addedItems, setAddedItems] = useState([]);
 
 
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
+   
 
 
     const handleOpenPannaChange = (value) => {
@@ -103,20 +91,58 @@ const HalfSangamScreen = ({ navigation }) => {
     };
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (addedItems.length === 0) {
             Alert.alert('No Bids', 'Please add at least one bid before submitting.');
             return;
         }
-        console.log("Submitting Bids:");
-        console.log("Date:", formatDate(date));
-        console.log("Bids:", addedItems);
-
-
-        Alert.alert("Bids Submitted", `Submitted ${addedItems.length} bids for ${formatDate(date)} (check console).`);
-
-
+    
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                navigation.navigate('Login');
+                return;
+            }
+    
+            const gameDate = moment().format('YYYY-MM-DD');
+            const openingTime = new Date(); // Optional: adjust based on your logic
+    
+            for (let item of addedItems) {
+                const payload = {
+                    singleDigit: parseInt(item.sangam.split('-')[1]),
+                    panaNumber: item.sangam.split('-')[0],
+                    amount: parseInt(item.points),
+                    gameType: items.name || "", // fallback gameType
+                    gameDate: gameDate,
+                };
+    
+                const response = await fetch('http://192.168.1.10:3000/api/halfsangam/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+    
+                const result = await response.json();
+    
+                if (!response.ok) {
+                    throw new Error(result.message || 'Something went wrong');
+                }
+    
+                console.log('Response:', result);
+            }
+    
+            Alert.alert('Success', `Successfully submitted ${addedItems.length} bids.`);
+            setAddedItems([]);
+    
+        } catch (error) {
+            console.error('Submit error:', error);
+            Alert.alert('Error', error.message || 'Failed to submit bids.');
+        }
     };
+    
 
 
     const renderItem = ({ item }) => (
@@ -161,31 +187,13 @@ const HalfSangamScreen = ({ navigation }) => {
                 {/* Date Picker Area */}
                 <View style={styles.dateContainer}>
                     <View style={styles.dateDisplay}>
-                        <Text style={styles.dateText}>{formatDate(date)}</Text>
+                        <Text style={styles.dateText}>{currentDate}</Text>
                     </View>
-                    <TouchableOpacity style={styles.changeButton} onPress={showDatepicker}>
-                        <Icon name="calendar-today" size={20} color="#555" />
+                    <TouchableOpacity style={styles.changeButton} x>
                     </TouchableOpacity>
                 </View>
 
-                {/* Date Picker Modal/Component */}
-                {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                    />
-                )}
-                {showDatePicker && Platform.OS === 'ios' && (
-                    <View style={styles.iosPickerDoneButtonContainer}>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                            <Text style={styles.iosPickerDoneText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+               x
 
                 {/* Input Form */}
                 <View style={styles.form}>

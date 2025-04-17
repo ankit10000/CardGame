@@ -8,32 +8,23 @@ import {
     TextInput,
     StyleSheet,
     StatusBar,
-    Platform,
     FlatList,
     Alert,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
+import moment from 'moment';
+// Top of your file
+import axios from 'axios'; // add this
 
 
 
-const formatDate = (date) => {
-    if (!date) return '';
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day} / ${month} / ${year}`;
-};
 
 
-const FullSangamScreen = ({ navigation }) => {
+const FullSangamScreen = ({ navigation, route }) => {
 
-    const [date, setDate] = useState(new Date(2025, 3, 7));
-    const [showDatePicker, setShowDatePicker] = useState(false);
-
+    const { items } = route.params || {};
 
     const [openPanna, setOpenPanna] = useState('');
     const [closePanna, setClosePanna] = useState('');
@@ -42,19 +33,8 @@ const FullSangamScreen = ({ navigation }) => {
 
     const [addedItems, setAddedItems] = useState([]);
 
+    const currentDate = moment().format('DD / MM / YYYY');
 
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDatePicker(Platform.OS === 'ios');
-        setDate(currentDate);
-        if (Platform.OS === 'android') {
-            setShowDatePicker(false);
-        }
-    };
-
-    const showDatepicker = () => {
-        setShowDatePicker(true);
-    };
 
 
     const handleOpenPannaChange = (value) => {
@@ -104,19 +84,54 @@ const FullSangamScreen = ({ navigation }) => {
     };
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (addedItems.length === 0) {
             Alert.alert('No Bids', 'Please add at least one bid before submitting.');
             return;
         }
-        console.log("Submitting Bids:");
-        console.log("Date:", formatDate(date));
-        console.log("Bids:", addedItems);
 
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Authorization Failed', 'User token not found. Please login again.');
+                navigation.navigate('Login');
+                return;
+            }
 
-        Alert.alert("Bids Submitted", `Submitted ${addedItems.length} bids for ${formatDate(date)} (check console).`);
+            const gameDate = moment().format('YYYY-MM-DD');
 
+            for (const item of addedItems) {
+                const [openPana, closePana] = item.sangam.split('-');
 
+                const body = {
+                    openPana,
+                    closePana,
+                    amount: parseInt(item.points),
+                    gameType: items?.name || 'MAIN BAZAR',
+                    gameDate,
+                };
+
+                const response = await axios.post(
+                    'http://192.168.1.10:3000/api/fullsangam/add',
+                    body,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                console.log('API Response:', response.data);
+            }
+
+            Alert.alert("Success", "Full Sangam entry created successfully.");
+            setAddedItems([]); // clear after successful submit
+
+        } catch (error) {
+            console.error('API Error:', error.response?.data || error.message);
+            Alert.alert("Submission Failed", error.response?.data?.message || "An error occurred while submitting.");
+        }
     };
 
 
@@ -132,31 +147,12 @@ const FullSangamScreen = ({ navigation }) => {
     const ListHeaderComponent = () => (
         <>
             {/* Date Display Area */}
-            <TouchableOpacity onPress={showDatepicker} style={styles.datePickerContainer}>
-                <Text style={styles.dateText}>{formatDate(date)}</Text>
+            <TouchableOpacity style={styles.datePickerContainer}>
+                <Text style={styles.dateText}>{currentDate}</Text>
 
-                {/* Optional: Add a calendar icon here */}
-                <Icon name="calendar-today" size={20} color="#555" />
             </TouchableOpacity>
 
-            {/* Date Picker Modal/Component (kept for potential future use) */}
-            {showDatePicker && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode={'date'}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChangeDate}
-                />
-            )}
-            {showDatePicker && Platform.OS === 'ios' && (
-                <View style={styles.iosPickerDoneButtonContainer}>
-                    <TouchableOpacity onPress={() => setShowDatePicker(false)} style={styles.iosPickerDoneButton}>
-                        <Text style={styles.iosPickerDoneText}>Done</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+
 
             {/* Input Form */}
             <View style={styles.form}>
@@ -247,7 +243,6 @@ const FullSangamScreen = ({ navigation }) => {
                 ListHeaderComponent={ListHeaderComponent}
                 ListEmptyComponent={
                     <View style={styles.emptyListContainer}>
-                        {/* Show empty text only below the header */}
                         <Text style={styles.emptyListText}>No bids added yet.</Text>
                     </View>
                 }
