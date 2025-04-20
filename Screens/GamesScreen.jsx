@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect } from 'react';
 import {
     SafeAreaView,
@@ -9,91 +8,110 @@ import {
     TouchableOpacity,
     ScrollView,
     Dimensions,
+    ImageBackground, // Import ImageBackground
+    Image, // Import Image
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import WallettScreen from '../components/WallettScreen'; // Assuming this component exists and works
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage if not already globally available
 
 
 const { width } = Dimensions.get('window');
-const itemSize = width / 3 - 16;
+// Calculate item width for 2 columns with spacing
+const itemHorizontalPadding = 15;
+const numColumns = 2;
+const itemWidth = (width - itemHorizontalPadding * (numColumns + 1)) / numColumns;
+
+// --- IMPORTANT: Replace placeholders with your actual asset paths ---
+const BACKGROUND_IMAGE = require('../assets/bg.jpg'); // Replace with your background image
+// const ICON_HOLDER_IMAGE = require('../assets/bg.jpg'); // Replace with your icon holder image
 
 const options = [
-    { key: '1', label: 'Signle Ank', iconType: 'dice', iconName: 'dice-5-outline', nav: 'SAnkh' },
-    { key: '2', label: 'Jodi', iconType: 'dice', iconName: 'dice-multiple-outline', nav: 'JodiAce' },
-    { key: '3', label: 'Single Patti', iconType: 'card', iconName: 'cards-spade-outline', nav: 'SPatti' },
-    { key: '4', label: 'Double Patti', iconType: 'card', iconName: 'cards-outline', nav: 'DPatti' },
-    { key: '5', label: 'Tripple Patti', iconType: 'card', iconName: 'cards-playing-outline', nav: 'TPatti' },
-    { key: '6', label: 'Half Sangam', iconType: 'other', iconName: 'chart-arc', nav: 'HSangam' },
-    { key: '7', label: 'Full Sangam', iconType: 'other', iconName: 'circle-slice-8', nav: 'FSangam' },
-    { key: '8', label: 'SP DP TP', iconType: 'other', iconName: 'triangle-outline', nav: 'SPDPTP' },
-];
-
-const renderIcon = (iconType, iconName) => {
-    return <Icon1 name={iconName} size={35} color="#444" />;
-};
+    { key: '1', mainLabel: 'Signle Ank', iconType: 'dice',subLabel:"DIGIT" , iconImage: require('../assets/singleDigit.png'), nav: 'SAnkh' },
+    { key: '2', mainLabel: 'Jodi', iconType: 'dice',subLabel:"DIGIT" , iconImage: require('../assets/jodi.png'), nav: 'JodiAce' },
+    { key: '3', mainLabel: 'Single Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/singlePana.png'), nav: 'SPatti' },
+    { key: '4', mainLabel: 'Double Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/doublePana.png'), nav: 'DPatti' },
+    { key: '5', mainLabel: 'Tripple Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/triplePana.png'), nav: 'TPatti' },
+    { key: '6', mainLabel: 'Half Sangam', iconType: 'other',subLabel:"SAANGAM" , iconImage: require('../assets/halfSangam.png'), nav: 'HSangam' },
+    { key: '7', mainLabel: 'Full Sangam', iconType: 'other',subLabel:"SAANGAM" , iconImage: require('../assets/fullSanagm.png'), nav: 'FSangam' },
+    // { key: '8', label: 'SP DP TP', iconType: 'other', iconName: 'triangle-outline', nav: 'SPDPTP' },
+    ];
+// --- End Asset Placeholders ---
 
 
-const GridItem = React.memo(({ i, onPress }) => (
-    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(i)}>
-        <View style={styles.iconContainer}>
-            {/* Removed unnecessary Text wrapper around Icon */}
-            {renderIcon(i.iconType, i.iconName)}
+// Optimised GridItem component
+const GridItem = React.memo(({ itemData, onPress }) => (
+    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(itemData)}>
+        <View style={styles.iconOuterContainer}>
+            {/* <Image source={ICON_HOLDER_IMAGE} style={styles.iconHolder} resizeMode="contain" /> */}
+            <Image source={itemData.iconImage} style={styles.iconItself} resizeMode="contain" />
         </View>
-        <Text style={styles.itemText}>{i.label}</Text>
+        {/* <View style={styles.labelContainer}>
+            <View style={styles.mainLabelBackground}>
+                <Text style={styles.mainLabelText}>{itemData.mainLabel}</Text>
+            </View>
+            <View style={styles.subLabelBackground}>
+                <Text style={styles.subLabelText}>{itemData.subLabel}</Text>
+            </View>
+        </View> */}
     </TouchableOpacity>
 ));
 
 const GamesScreen = ({ navigation, route }) => {
 
-    const { item } = route.params;
-    const handleItemPress = useCallback((i) => {
-        if (i.nav) {
-            navigation.navigate(i.nav, { items: item });
+    const { item } = route.params; // Game Market data (e.g., LAXMI MORNING)
 
+    const handleItemPress = useCallback((selectedOption) => {
+        if (selectedOption.nav) {
+            navigation.navigate(selectedOption.nav, { items: item }); // Pass market data to next screen
         } else {
-            console.warn(`Navigation target not defined for item: ${i.label}`);
-
+            console.warn(`Navigation target not defined for item: ${selectedOption.mainLabel}`);
         }
-    }, [navigation]);
+    }, [navigation, item]); // Include item in dependencies
 
- 
+    // Optional: Keep login check if needed
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
-                    // Token hai to MainDrawer pe navigate kar do
-                    navigation.navigate('Login');
+                    // navigation.navigate('Login'); // Uncomment if needed
+                    console.log("No token found, potential redirect to Login needed.");
                 }
             } catch (error) {
                 console.log('Error checking login status:', error);
             }
         };
 
-        checkLoginStatus();
-    }, []);
+        checkLoginStatus(); // Uncomment if needed
+    }, [navigation]); // Add navigation dependency if uncommented
 
     return (
         <SafeAreaView style={styles.safeArea}>
+            {/* Use the exact purple from the image */}
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
             <View style={styles.header}>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
-                    <Icon name="arrow-back" size={24} color="#FFFFFF" />
+                    <Icon name="arrow-back" size={26} color="#FFFFFF" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{item.name}</Text>
+                {/* Ensure item.name exists and is passed correctly */}
+                <Text style={styles.headerTitle}>{item?.name ? item.name.toUpperCase() : 'GAME'}</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+                    {/* Make sure WallettScreen component is correctly implemented */}
                     <WallettScreen />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.gridContainer}>
-                    {options.map((i) => (
-                        <GridItem key={item.key} i={i} onPress={handleItemPress} />
-                    ))}
-                </View>
-            </ScrollView>
+            <ImageBackground source={BACKGROUND_IMAGE} style={styles.backgroundImage}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.gridContainer}>
+                        {options.map((option) => (
+                            <GridItem key={option.key} itemData={option} onPress={handleItemPress} />
+                        ))}
+                    </View>
+                </ScrollView>
+            </ImageBackground>
 
         </SafeAreaView>
     );
@@ -102,79 +120,105 @@ const GamesScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#4D2D7A', // Fallback background
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#4D2D7A',
-        paddingHorizontal: 10,
-        paddingVertical: 12,
-        height: 60,
-        height: 60,
+        backgroundColor: '#4D2D7A', // Dark purple header
+        paddingHorizontal: 15, // Increased padding
+        paddingVertical: 10,
+        height: 60, // Fixed height
     },
-    backButton: {
-        padding: 5,
+    headerButton: {
+        // padding: 5, // Add padding for easier touch
+        // minWidth: 40, // Ensure minimum touch area
+        alignItems: 'center', // Center icon/content if needed
     },
     headerTitle: {
         color: '#FFFFFF',
-        fontSize: 18,
+        fontSize: 19, // Slightly larger font
         fontWeight: 'bold',
+        textAlign: 'center',
+        flex: 1, // Allow title to take available space for centering
+        marginHorizontal: 10, // Add space around title
     },
-    headerRightPlaceholder: {
-        width: 24 + 10,
+    backgroundImage: {
+        flex: 1, // Take remaining space
+        width: '100%',
+        height: '100%',
     },
     scrollContainer: {
-        paddingTop: 10,
-        paddingBottom: 20,
+        paddingTop: 20, // Add some padding at the top
+        paddingBottom: 30, // Add padding at the bottom
     },
     gridContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        paddingHorizontal: 10,
+        justifyContent: 'flex-start', // Align items to the start
+        paddingHorizontal: itemHorizontalPadding / 2, // Half padding on sides for centering
     },
     itemContainer: {
-
-        width: itemSize,
-        height: itemSize,
+        width: itemWidth,
+        alignItems: 'center',
+        justifyContent: 'flex-start', // Align content to top
+        marginBottom: 25, // Space between rows
+        marginHorizontal: itemHorizontalPadding / 2, // Horizontal spacing between items
+        // Remove background/border from the container itself
+    },
+    iconOuterContainer: {
+        width: itemWidth * 0.7, // Adjust size relative to item width
+        height: itemWidth * 0.7, // Make it square
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10, // Space below icon holder
+        position: 'relative', // Needed for absolute positioning of icon
+    },
+    iconHolder: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute', // Holder is the base
+    },
+    iconItself: {
+        width: '95%', // Icon size relative to the holder
+        height: '95%', // Icon size relative to the holder
+        // The icon sits visually centered on top of the holder due to resizeMode and container centering
+    },
+    labelContainer: {
+        alignItems: 'center', // Center labels horizontally
+    },
+    mainLabelBackground: {
         backgroundColor: '#FFFFFF',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10,
-        marginHorizontal: 4,
-        padding: 10,
-
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 3,
+        borderRadius: 15, // Rounded corners
+        paddingVertical: 5,
+        paddingHorizontal: 20, // Wider padding
+        marginBottom: 5, // Space between main and sub label
+        minWidth: itemWidth * 0.8, // Ensure minimum width
+        alignItems: 'center', // Center text inside
     },
-    iconContainer: {
-        marginBottom: 8,
-
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    itemText: {
-        fontSize: 13,
-        color: '#333',
-        fontWeight: '500',
+    mainLabelText: {
+        fontSize: 16,
+        color: '#D32F2F', // Red color
+        fontWeight: 'bold',
         textAlign: 'center',
     },
-    walletContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 15,
+    subLabelBackground: {
+        backgroundColor: '#333333', // Dark background
+        borderRadius: 10, // Slightly less rounded
+        paddingVertical: 3,
+        paddingHorizontal: 15, // Wider padding
+        minWidth: itemWidth * 0.6, // Ensure minimum width
+         alignItems: 'center', // Center text inside
     },
+    subLabelText: {
+        fontSize: 13,
+        color: '#FFFFFF', // White text
+        fontWeight: '500',
+         textAlign: 'center',
+    },
+    // Ensure WalletScreen component styles don't conflict (optional)
+    // walletContainer: { ... }
 });
 
 export default GamesScreen;
