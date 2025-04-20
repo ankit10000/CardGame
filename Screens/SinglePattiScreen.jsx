@@ -118,7 +118,7 @@ const SinglePattiScreen = ({ navigation, route }) => {
                 };
 
                 const response = await axios.post(
-                    'http://192.168.1.10:3000/api/singlepana/add',
+                    'http://192.168.1.2:3000/api/singlepana/add',
                     payload,
                     {
                         headers: {
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingVertical: Platform.OS === 'ios' ? 15 : 12,
         paddingHorizontal: 15,
         height: 60,

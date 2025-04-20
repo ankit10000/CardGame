@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
     const fetchProfile = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.10:3000/api/auth/profile', {
+            const response = await fetch('http://192.168.1.2:3000/api/auth/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -69,7 +69,7 @@ const ProfileScreen = ({ navigation }) => {
     const handleUpdate = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.10:3000/api/auth/update-Password', {
+            const response = await fetch('http://192.168.1.2:3000/api/auth/update-Password', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingHorizontal: 10,
         paddingVertical: 12,
         height: 60,

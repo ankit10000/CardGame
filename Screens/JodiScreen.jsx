@@ -49,7 +49,7 @@ const JodiScreen = ({ navigation, route }) => {
 
         try {
             for (const [jodiNumber, amount] of filledDigits) {
-                const response = await fetch('http://192.168.1.10:3000/api/jodi/place', {
+                const response = await fetch('http://192.168.1.2:3000/api/jodi/place', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const JodiScreen = ({ navigation, route }) => {
                                 key={points}
                                 style={[
                                     styles.pointButton,
-                                    selectedPoints === points && { backgroundColor: '#934b47', borderColor: '#934b47' }
+                                    selectedPoints === points && { backgroundColor: '#4D2D7A', borderColor: '#4D2D7A' }
                                 ]}
                                 onPress={() => setSelectedPoints(points)}
                             >
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingVertical: Platform.OS === 'ios' ? 15 : 12,
         paddingHorizontal: 15,
         height: 60,

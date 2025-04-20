@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
 const COLORS = {
-    headerBackground: '#934b47',
+    headerBackground: '#4D2D7A',
     headerText: '#ffffff',
     background: '#f4f7f9',
     cardBackground: '#ffffff',
@@ -98,7 +98,7 @@ const AddFundsScreen = () => {
             }
 
             const response = await axios.post(
-                'http://192.168.1.10:3000/api/wallet/add',
+                'http://192.168.1.2:3000/api/wallet/add',
                 {
                     amount: numericAmount,
                     note: 'Initial top-up'

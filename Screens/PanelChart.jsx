@@ -15,7 +15,7 @@ const DATE_BG_COLOR = '#f8f9fa';
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const COLORS = {
-    headerBackground: '#934b47',
+    headerBackground: '#4D2D7A',
     headerText: '#ffffff',
     background: '#f4f7f9',
     cardBackground: '#ffffff',
@@ -59,7 +59,7 @@ const PanelChart = ({route}) => {
 
     const fetchChartData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.10:3000/api/game-result/getAllResults');
+            const response = await axios.get('http://192.168.1.2:3000/api/game-result/getAllResults');
             const allResults = response.data;
     
             // ✅ Filter data based on the selected game

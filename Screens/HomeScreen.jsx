@@ -1,37 +1,50 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
+  Dimensions,
+  ImageBackground,
   StatusBar,
   StyleSheet,
+  ActivityIndicator,
   Text,
   View,
   Image,
   TouchableOpacity,
   FlatList,
+  Linking,
 } from 'react-native';
-import { Linking } from 'react-native';
-
+import axios from 'axios';
+import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import { useNavigation } from '@react-navigation/native';
-import WallettScreen from '../components/WallettScreen';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import WalletScreen from '../components/WallettScreen';
+
+const { width } = Dimensions.get('window');
 const COLORS = {
-  primaryPurple: '#5d2f8e',
-  lightPurple: '#7e4ab5',
-  backgroundPink: '#b96b67',
-  cardPink: '#9E5353',
-  textWhite: '#ffffff',
+  primaryPurple: '#4D2D7A',
+  lightPurple: '#6A359C',
+  backgroundPurple: '#6A359C',
+  cardBackground: '#5C2E85',
+  textWhite: '#FFFFFF',
   textDark: '#333333',
-  textGray: '#555555',
-  closedRed: '#fff',
-  openGreen: '#4CAF50',
-  gradientStart: '#f7d977',
-  gradientEnd: '#e5a550',
+  textPurple: '#4D2D7A',
+  yellowGold: '#F7C04A',
   iconGreen: '#4CAF50',
   iconRed: '#F44336',
+  iconOrange: '#FFA500',
+  iconYellow: '#FFD700',
+  barChartBlue: '#63C5DA',
+  barChartYellow: '#F7C04A',
+  notificationBadge: '#FF0000',
 };
+
 
 const marketData = [
   {
@@ -92,13 +105,17 @@ const marketData = [
   },
 ];
 
+
 const MarketItem = ({ item, navigation }) => (
-  <View style={styles.card} activeOpacity={0.8}>
-    <TouchableOpacity onPress={() => navigation.navigate('PanelChart', { item })} activeOpacity={0.8}>
-      <View style={styles.cardIconContainer}>
-        <Ionicons name="stats-chart" size={30} color={COLORS.textWhite} />
-      </View>
+  <View style={styles.card}>
+
+    <TouchableOpacity onPress={() => navigation.navigate('PanelChart', { item })} style={styles.cardIconContainer}>
+
+      <FontAwesome5 name="chart-bar" size={35} color={COLORS.barChartBlue} />
+
+
     </TouchableOpacity>
+
 
     <View style={styles.cardDetails}>
       <Text style={styles.cardTitle}>{item.name}</Text>
@@ -109,31 +126,62 @@ const MarketItem = ({ item, navigation }) => (
         <Text style={styles.cardTimeText}>Close: {item.close}</Text>
       </View>
     </View>
+
     {item.status === 'CLOSED' ? (
-      <View style={styles.cardStatusContainer}>
-        <View style={styles.closedIconCircle}>
-          <Icon name="close" size={20} color={COLORS.closedRed} />
+      <TouchableOpacity style={styles.cardStatusContainer} >
+        <View style={styles.closeIconCircle}>
+          <Ionicons name="close" size={22} color={COLORS.textWhite} />
         </View>
-        <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
-      </View>
-    ) : (
-      <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}
-      >
-        <View style={styles.OpenIconCircle}>
-          <Icon name="refresh" size={20} color={COLORS.closedRed} />
+        <Text style={styles.closeText}>{item.status.toUpperCase()}</Text>
+      </TouchableOpacity>) : (
+      <TouchableOpacity style={styles.cardStatusContainer} >
+        <View style={styles.playIconCircle}>
+          <Ionicons name="play" size={22} color={COLORS.textWhite} onPress={() => navigation.navigate('Games', { item })} />
         </View>
-        <Text style={{ color: "#fff", fontSize: 10 }}>{item.status}</Text>
+        <Text style={styles.runningText}>{item.status.toUpperCase()}</Text>
       </TouchableOpacity>
     )}
   </View>
 );
 
 const HomeScreen = () => {
+  const navigation = useNavigation();
+  const [dpImages, setDpImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDpImages = async () => {
+    try {
+      const res = await axios.get('http://192.168.1.2:3000/api/homedp/all-dpimage');
+      setDpImages(res.data.data);
+    } catch (err) {
+      console.error('Error fetching DP images:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDpImages();
+  }, []);
+
+  
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.log('Error checking login status:', error);
+      }
+    };
+    checkLoginStatus();
+  }, [navigation]);
 
   const handleWhatsApp = () => {
     const phoneNumber = '+911234567890';
     const url = `whatsapp://send?phone=${phoneNumber}`;
-
     Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
@@ -142,162 +190,222 @@ const HomeScreen = () => {
           return Linking.openURL(url);
         }
       })
-      .catch((err) => console.error('Error:', err));
+      .catch((err) => console.error('Error opening WhatsApp:', err));
   };
 
   const handleCall = () => {
     const phoneNumber = 'tel:+911234567890';
-    Linking.openURL(phoneNumber).catch((err) => console.error('Error:', err));
+    Linking.openURL(phoneNumber).catch((err) => console.error('Error making call:', err));
   };
 
-  const navigation = useNavigation();
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          // Token hai to MainDrawer pe navigate kar do
-          navigation.navigate('Login');
-        }
-      } catch (error) {
-        console.log('Error checking login status:', error);
-      }
-    };
 
-    checkLoginStatus();
-  }, []);
+  const fetchData = () => {
+    console.log("Refreshing data...");
+
+  };
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
+
       <StatusBar barStyle="light-content" backgroundColor="#313332" />
+
+
+
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={28} color="#fff" />
+        <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.headerIcon}>
+          <Ionicons name="menu" size={30} color={COLORS.textWhite} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Milaan matka 777</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
-          <WallettScreen />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>GAMA567 MATKA</Text>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
+            <WalletScreen />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <View style={styles.scrollView} contentContainerStyle={styles.scrollContentContainer}>
+
         <View style={styles.bannerContainer}>
-          <Image
-            source={require('../assets/slide1.png')}
-            style={styles.bannerImage}
-            resizeMode="contain"
-          />
-        </View>
 
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => navigation.navigate('AddFund')}>
-            <Icon name="account-balance-wallet" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Add Fund</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => navigation.navigate('Withdraw')}>
-            <Ionicons name="card-outline" size={20} color={COLORS.iconRed} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Withdraw</Text>
-          </TouchableOpacity>
+          <Swiper autoplay showsPagination={true} dotColor="#ccc" activeDotColor="#000">
+            {dpImages.map((item, index) => (
+              <Image
+                key={index}
+                source={{ uri: `http://192.168.1.2:3000/uploads/homedp/${item.image}` }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            ))}
+          </Swiper>
+
         </View>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={handleWhatsApp}>
-            <Ionicons name="logo-whatsapp" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Chat Now</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={handleCall}>
-            <Icon name="call" size={20} color={COLORS.iconGreen} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Call Now</Text>
-          </TouchableOpacity>
-        </View>
+        <ImageBackground
+          source={require('../assets/bg.jpg')} // or use a URL with { uri: 'https://...' }
+          style={styles.background}
+          resizeMode="cover"
+        >
+
+          <Text style={styles.welcomeText}>
+            WELCOME TO INDIA NO.1 TRUSTED KALYAN MATKA APP
+          </Text>
 
 
-        <TouchableOpacity activeOpacity={0.8}>
-          <LinearGradient
-            colors={[COLORS.gradientStart, COLORS.gradientEnd]}
-            style={styles.starlineBar}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-          >
-            <Text style={styles.starlineText}>Starline</Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => navigation.navigate('AddFund')}>
+              <FontAwesome name="plus-circle" size={22} color={COLORS.iconGreen} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Add Fund</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => navigation.navigate('Withdraw')}>
+
+              <MaterialCommunityIcons name="bank-transfer-out" size={24} color={COLORS.iconYellow} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Withdraw</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={handleWhatsApp}>
+              <Ionicons name="logo-whatsapp" size={24} color={COLORS.iconGreen} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Chat Now</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={handleCall}>
+              <Ionicons name="call" size={22} color={COLORS.iconOrange} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Call Now</Text>
+            </TouchableOpacity>
+          </View>
+
+
+          <TouchableOpacity style={styles.gamesBar} activeOpacity={0.8}>
+            <Text style={styles.gamesBarText}>GALI DISAWAR GAMES</Text>
             <View style={styles.arrowCircle}>
-              <Icon name="arrow-forward-ios" size={16} color={COLORS.primaryPurple} />
+              <Icon name="arrow-forward-ios" size={16} color={COLORS.textWhite} />
             </View>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <FlatList
-          data={marketData}
-          renderItem={({ item }) => <MarketItem item={item} navigation={navigation} />}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContainer}
-          scrollEnabled={false}
-        />
+          </TouchableOpacity>
 
 
-      </ScrollView>
+
+          <FlatList
+            data={marketData}
+            renderItem={({ item }) => <MarketItem item={item} navigation={navigation} />}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.listContainer}
+            scrollEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
+            refreshing={false}
+            onRefresh={fetchData}
+          />
+        </ImageBackground>
+      </View>
     </SafeAreaView>
   );
 };
 
+
 const styles = StyleSheet.create({
+  image: {
+    width: width,
+    height: 150,
+  },
+
+  background: {
+    flex: 1,
+  },
 
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.backgroundPink,
+    backgroundColor: COLORS.backgroundPurple,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: "#934b47",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
+    backgroundColor: COLORS.primaryPurple,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     height: 60,
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  headerIcon: {
+    padding: 5,
+    position: 'relative',
   },
   headerTitle: {
     color: COLORS.textWhite,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 15,
+    textAlign: 'center',
+    flex: 1,
+    marginLeft: 5,
+    marginRight: 5,
   },
   headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
-
+  notificationBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: COLORS.notificationBadge,
+    borderRadius: 10,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.textWhite,
+  },
+  notificationCount: {
+    color: COLORS.textWhite,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  coinIconContainer: {
+    backgroundColor: COLORS.yellowGold,
+    borderRadius: 15,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 28,
+  },
+  coinIcon: {
+    marginRight: 4,
+    color: COLORS.primaryPurple,
+  },
+  coinText: {
+    color: COLORS.primaryPurple,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   scrollView: {
     flex: 1,
   },
+  scrollContentContainer: {
+    paddingBottom: 20,
+  },
   bannerContainer: {
-    marginHorizontal: 15,
-    marginTop: 10,
-  },
-  bannerTextContainer: {
-  },
-  bannerTextLine1: {
-    backgroundColor: '#c83737',
-    color: COLORS.textWhite,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    fontSize: 16,
-    marginBottom: 5,
-    alignSelf: 'flex-start',
-  },
-  bannerTextLine2: {
-    backgroundColor: '#c83737',
-    color: COLORS.textWhite,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    fontSize: 16,
-    alignSelf: 'flex-start',
+
+    marginHorizontal: 0,
+    marginTop: 0,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   bannerImage: {
-    width: 380,
-    height: 90,
+    width: '100%',
+    height: '100%',
+  },
+  welcomeText: {
+    color: COLORS.textWhite,
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: COLORS.primaryPurple,
+    marginVertical: 5,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -313,7 +421,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryPurple,
     paddingVertical: 12,
     borderRadius: 25,
-    marginHorizontal: 5,
+    marginHorizontal: 8,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -325,26 +433,28 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.textWhite,
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
-  starlineBar: {
+  gamesBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: COLORS.yellowGold,
     marginHorizontal: 10,
     marginTop: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    marginBottom: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
     borderRadius: 25,
   },
-  starlineText: {
-    color: COLORS.primaryPurple,
+  gamesBarText: {
+    color: COLORS.textPurple,
     fontSize: 16,
     fontWeight: 'bold',
   },
   arrowCircle: {
-    backgroundColor: COLORS.textWhite,
+    backgroundColor: COLORS.primaryPurple,
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -353,47 +463,61 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 10,
+    paddingTop: 10,
   },
+
   card: {
-    backgroundColor: COLORS.cardPink,
-    borderRadius: 10,
-    padding: 15,
+    backgroundColor: "transparent",
+    borderColor: COLORS.primaryPurple,
+    borderWidth: 2,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    justifyContent: 'space-between',
   },
   cardIconContainer: {
-    marginRight: 15,
+
+    paddingRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    flexDirection: 'row',
+  },
+
+  barStyle: {
+    width: 8,
+    marginHorizontal: 1,
+    backgroundColor: COLORS.barChartBlue,
   },
   cardDetails: {
     flex: 1,
-    marginRight: 10,
+    alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: COLORS.textWhite,
-    marginBottom: 4,
-  },
-  cardNumbers: {
     fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.textWhite,
-    marginBottom: 8,
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  cardNumbers: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.textWhite,
+    marginBottom: 5,
+    textAlign: 'center',
   },
   cardTimes: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   cardTimeText: {
-    fontSize: 12,
+    fontSize: 11,
     color: COLORS.textWhite,
     opacity: 0.9,
   },
@@ -405,44 +529,39 @@ const styles = StyleSheet.create({
   },
   cardStatusContainer: {
     alignItems: 'center',
+    paddingLeft: 10,
   },
-  closedIconCircle: {
+  playIconCircle: {
+    backgroundColor: COLORS.lightPurple,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 3,
+    borderWidth: 1,
+    borderColor: COLORS.primaryPurple,
+  },
+  closeIconCircle: {
     backgroundColor: "#e31202",
-
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 3,
+    borderWidth: 1,
+    borderColor: COLORS.primaryPurple,
   },
-  OpenIconCircle: {
-    backgroundColor: COLORS.openGreen,
-
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  closedText: {
-    fontSize: 12,
+  runningText: {
+    fontSize: 11,
     fontWeight: 'bold',
-    color: COLORS.closedRed,
+    color: COLORS.iconGreen,
   },
-  bottomSection: {
-    backgroundColor: COLORS.cardPink,
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    marginHorizontal: 10,
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  bottomSectionText: {
-    fontSize: 15,
+  closeText: {
+    fontSize: 11,
     fontWeight: 'bold',
-    color: COLORS.textWhite,
+    color: "#e31202",
   },
 });
 

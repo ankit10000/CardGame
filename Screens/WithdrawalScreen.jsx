@@ -10,10 +10,11 @@ import {
   StatusBar,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-
 
 const { width } = Dimensions.get('window');
 const cardPadding = 20;
@@ -25,28 +26,20 @@ const formatCurrency = (value) => {
 };
 
 const WithdrawalScreen = ({ navigation }) => {
-  const [phonepeId, setPhonepeId] = useState('');
+  const [method, setMethod] = useState('UPI'); // fixed for now
   const [amount, setAmount] = useState('');
+  const [token, setToken] = useState(null);
 
   const quickAmounts = [1000, 2000, 5000, 10000, 50000, 100000];
 
-  const handleAmountSelect = (selectedAmount) => {
-    setAmount(selectedAmount.toString());
-  };
-
-  const handleSubmit = () => {
-    console.log('Submitting withdrawal:');
-    console.log('PhonePe ID:', phonepeId);
-    console.log('Amount:', amount);
-    alert(`Withdrawal Requested:\nAmount: ${formatCurrency(Number(amount))}\nTo: ${phonepeId}`);
-  };
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          // Token hai to MainDrawer pe navigate kar do
+        const storedToken = await AsyncStorage.getItem('token');
+        if (!storedToken) {
           navigation.navigate('Login');
+        } else {
+          setToken(storedToken);
         }
       } catch (error) {
         console.log('Error checking login status:', error);
@@ -56,10 +49,47 @@ const WithdrawalScreen = ({ navigation }) => {
     checkLoginStatus();
   }, []);
 
+  const handleAmountSelect = (selectedAmount) => {
+    setAmount(selectedAmount.toString());
+  };
+
+  const handleSubmit = async () => {
+    if (!amount || isNaN(amount) || Number(amount) < 1000) {
+      Alert.alert('Error', 'Please enter a valid amount (min 1000)');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://192.168.1.2:3000/api/withdrawal/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: Number(amount),
+          method: method,
+          note: 'withdrawel',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        Alert.alert('Success', result.message);
+        setAmount('');
+      } else {
+        Alert.alert('Failed', result.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('API error:', error);
+      Alert.alert('Error', 'Unable to submit request');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#313332" />
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
           <Icon name="arrow-back" size={26} color={"#ffffff"} />
@@ -101,17 +131,7 @@ const WithdrawalScreen = ({ navigation }) => {
 
           <TextInput
             style={styles.input}
-            placeholder="Phonepe"
-            placeholderTextColor="#888"
-            value={phonepeId}
-            onChangeText={setPhonepeId}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="enter amount"
+            placeholder="Enter amount"
             placeholderTextColor="#888"
             value={amount}
             onChangeText={setAmount}
@@ -139,6 +159,7 @@ const WithdrawalScreen = ({ navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -148,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: "#934b47",
+    backgroundColor: "#4D2D7A",
     paddingHorizontal: 10,
     paddingVertical: 12,
     height: 60,
@@ -270,7 +291,7 @@ const styles = StyleSheet.create({
   },
   amountButton: {
     width: buttonWidth,
-    backgroundColor: '#934b47',
+    backgroundColor: '#4D2D7A',
     paddingVertical: 10,
     marginBottom: 10,
     borderRadius: 8,

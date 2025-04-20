@@ -3,7 +3,7 @@ import {  useState,useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+// import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const WalletScreen = () => {
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ const WalletScreen = () => {
 
             console.log('Token:', token);
 
-            const response = await fetch('http://192.168.1.10:3000/api/wallet/get', {
+            const response = await fetch('http://192.168.1.2:3000/api/wallet/get', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -53,9 +53,11 @@ const WalletScreen = () => {
         <View >
             <View style={styles.walletContainer}>
                 <Icon name="account-balance-wallet" size={20} color="#e5a550" />
-                <Text style={styles.walletText}>
+                {/* <Text style={styles.walletText}>
                     {loading ? 'Loading...' : `${balance}`}
-                </Text>
+                </Text> */}
+                {/* <FontAwesome name="rupee" size={18} color={'#4D2D7A'} style={styles.coinIcon} /> */}
+                            <Text style={styles.coinText}>{loading ? 'Loading...' : `${balance}`}</Text>
             </View>
         </View>
     );
@@ -64,6 +66,10 @@ const WalletScreen = () => {
 export default WalletScreen;
 
 const styles = StyleSheet.create({
+    coinIcon: {
+    marginRight: 4,
+    color: "#4D2D7A", // Icon color inside coin
+  },
     container: {
         flex: 1,
         justifyContent: 'center',

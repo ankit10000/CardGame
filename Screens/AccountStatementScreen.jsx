@@ -1,6 +1,4 @@
-import React, {useState, useCallback
-
-} from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     SafeAreaView,
     View,
@@ -9,37 +7,12 @@ import {
     StatusBar,
     FlatList,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const statementData = [
-    {
-        id: '1',
-        referenceId: '#3691127',
-        amount: 1000,
-        status: 'Pending',
-        date: '06 Apr 2025 09:28',
-    },
-    {
-        id: '2',
-        referenceId: '#2517604',
-        amount: 500,
-        status: 'Rejected',
-        date: '05 Apr 2025 02:57',
-    },
-    {
-        id: '3',
-        referenceId: '#1988432',
-        amount: 2000,
-        status: 'Success',
-        date: '04 Apr 2025 11:15',
-    },
-];
-
-
 
 const statusColors = {
     debit: '#FFA500',
@@ -47,11 +20,57 @@ const statusColors = {
     credit: '#28A745',
 };
 
-
 const AccountStatementScreen = ({ navigation }) => {
+    const [bids, setBids] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchBids = async () => {
+        setIsLoading(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                Alert.alert('Token Error', 'Token not found');
+                return;
+            }
+
+            const response = await fetch('http://192.168.1.2:3000/api/wallet/get', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch bids');
+            }
+
+            const data = await response.json();
+            
+            // Sort transactions by createdAt DESC (latest first)
+            const sortedTransactions = data.transactions.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            setBids(sortedTransactions);
+
+        } catch (error) {
+            console.error("Failed to fetch bid history:", error);
+            Alert.alert('Error', error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchBids();
+        }, [])
+    );
 
     const renderStatementItem = ({ item }) => (
-        <View style={styles.itemContainer} key={item.id}>
+        <View style={styles.itemContainer} key={item._id}>
             <View style={styles.row}>
                 <Text style={styles.label}>Reference ID:</Text>
                 <Text style={styles.value}>{item._id}</Text>
@@ -73,7 +92,7 @@ const AccountStatementScreen = ({ navigation }) => {
             <View style={styles.row}>
                 <Text style={styles.label}>Date:</Text>
                 <Text style={styles.value}>
-                     {new Date(item.createdAt).toLocaleDateString('en-US', {
+                    {new Date(item.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -84,54 +103,7 @@ const AccountStatementScreen = ({ navigation }) => {
             </View>
         </View>
     );
-    const [bids, setBids] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-
-
-
-    const fetchBids = async () => {
-        setIsLoading(true);
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Token Error', 'Token not found');
-                return;
-            }
-
-            console.log('Token:', token);
-
-            const response = await fetch('http://192.168.1.10:3000/api/wallet/get', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log('Error response:', errorData);
-                throw new Error(errorData.message || 'Failed to fetch bids');
-            }
-            const data = await response.json();
-            console.log('Bids Data:', data);
-            setBids(data.transactions);
-            console.log(data.transactions);
-
-        } catch (error) {
-            console.error("Failed to fetch bid history:", error);
-
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchBids();
-        }, [])
-    );
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
@@ -151,11 +123,12 @@ const AccountStatementScreen = ({ navigation }) => {
             <FlatList
                 data={bids}
                 renderItem={renderStatementItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={<Text style={styles.emptyText}>No statements found.</Text>}
+                refreshing={isLoading}
+                onRefresh={fetchBids}
             />
-
         </SafeAreaView>
     );
 };
@@ -169,40 +142,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingHorizontal: 10,
         paddingVertical: 12,
         height: 60,
     },
-    
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#fff',
     },
-    headerRightIconContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        position: 'relative',
-        padding: 5,
-    },
-    badge: {
-        position: 'absolute',
-        top: -2,
-        right: -5,
-        backgroundColor: '#FFA500',
-        borderRadius: 10,
-        minWidth: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-    },
-    badgeText: {
-        color: '#fff',
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
+    
     listContainer: {
         padding: 15,
     },
@@ -240,14 +190,6 @@ const styles = StyleSheet.create({
         marginTop: 50,
         fontSize: 16,
         color: '#888',
-    },
-    walletContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 15,
     },
 });
 

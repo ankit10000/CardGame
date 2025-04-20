@@ -102,7 +102,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
     
-                const response = await axios.post('http://192.168.1.10:3000/api/TriplePana/add', payload, { headers });
+                const response = await axios.post('http://192.168.1.2:3000/api/TriplePana/add', payload, { headers });
                 return response.data;
             }));
     
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingVertical: 12,
         paddingHorizontal: PADDING,
     },
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
     },
     pointButtonSelected: {
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
     },
     pointButtonText: {
         fontSize: 14,

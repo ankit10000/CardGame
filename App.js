@@ -57,7 +57,7 @@ function DrawerNavigator() {
 
       screenOptions={({ navigation }) => ({
         drawerStyle: {
-          backgroundColor: '#934b47',
+          backgroundColor: '#4D2D7A',
           marginTop: 60,
           marginRight: 40,
           borderRadius: 5,
@@ -71,7 +71,7 @@ function DrawerNavigator() {
         },
         overlayColor: 'transparent',
         headerShown: false,
-        drawerActiveBackgroundColor: '#b96b67',
+        drawerActiveBackgroundColor: '#6A359C',
         drawerActiveTintColor: '#fff',
         drawerInactiveTintColor: '#CBD5E1',
         drawerLabelStyle: {

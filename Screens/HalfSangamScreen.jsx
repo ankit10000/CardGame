@@ -114,9 +114,10 @@ const HalfSangamScreen = ({ navigation, route }) => {
                     amount: parseInt(item.points),
                     gameType: items.name || "", // fallback gameType
                     gameDate: gameDate,
+                    openingTime: openingTime,
                 };
     
-                const response = await fetch('http://192.168.1.10:3000/api/halfsangam/add', {
+                const response = await fetch('http://192.168.1.2:3000/api/halfsangam/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -276,7 +277,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingHorizontal: 10,
         paddingVertical: 12,
         height: 60,

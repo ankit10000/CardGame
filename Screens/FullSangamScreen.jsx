@@ -102,17 +102,18 @@ const FullSangamScreen = ({ navigation, route }) => {
 
             for (const item of addedItems) {
                 const [openPana, closePana] = item.sangam.split('-');
-
+                const openingTime = new Date(); 
                 const body = {
                     openPana,
                     closePana,
                     amount: parseInt(item.points),
                     gameType: items?.name || 'MAIN BAZAR',
                     gameDate,
+                    openingTime: openingTime,
                 };
 
                 const response = await axios.post(
-                    'http://192.168.1.10:3000/api/fullsangam/add',
+                    'http://192.168.1.2:3000/api/fullsangam/add',
                     body,
                     {
                         headers: {
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#934b47',
+        backgroundColor: '#4D2D7A',
         paddingHorizontal: 10,
         paddingVertical: 12,
         height: 60,
