@@ -86,14 +86,14 @@ const SignUpScreen = () => {
                 email: email,
                 password: password,
                 // Confirm password might not be needed by backend, but good practice to send if expected
-                // confirmPassword: confirmPassword,
+                confirmPassword: confirmPassword,
                 isAdmin: false, // Make sure this is correct
             });
 
             console.log('Registration Success:', response.data);
             Alert.alert('Success', 'Registration successful! Please Login.', [
                 // Navigate to Login screen after successful registration
-                { text: 'OK', onPress: () => navigation.replace('LoginScreen') }, // Use replace
+                { text: 'OK', onPress: () => navigation.replace('Login') }, // Use replace
             ]);
         } catch (error) {
             console.error('Registration Error:', error.response?.data || error.message);
