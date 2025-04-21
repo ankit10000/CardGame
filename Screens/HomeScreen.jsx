@@ -274,7 +274,7 @@ const HomeScreen = () => {
           </View>
 
 
-          <TouchableOpacity style={styles.gamesBar} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.gamesBar} activeOpacity={0.8} onPress={() => navigation.navigate('Games1')}>
             <Text style={styles.gamesBarText}>GALI DISAWAR GAMES</Text>
             <View style={styles.arrowCircle}>
               <Icon name="arrow-forward-ios" size={16} color={COLORS.textWhite} />
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   gamesBarText: {
-    color: COLORS.textPurple,
+    color: "red",
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   playIconCircle: {
-    backgroundColor: COLORS.lightPurple,
+    backgroundColor: "green",
     width: 40,
     height: 40,
     borderRadius: 20,

@@ -35,6 +35,13 @@ import {
   StatusBar,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GameGaliScreen from './Screens/GameGaliScreen';
+import RightGameScreen from './Screens/RightGameScreen';
+import LeftGameScreen from './Screens/LeftGameScreen';
+import JodiGameScreen from './Screens/JodiGameScreen';
+import ThreeGameScreen from './Screens/ThreeGameScreen';
+import BidHistoryScreen from './Screens/BidHistoryScreen';
+import WinHistoryGali from './Screens/WinHistoryGali';
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -224,6 +231,13 @@ export default function App() {
           <Stack.Screen name="GameRates" component={GameRatesScreen} />
           <Stack.Screen name="HowToPlay" component={HowToPlayScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+          <Stack.Screen name="Games1" component={GameGaliScreen} />
+          <Stack.Screen name="GameGali" component={ThreeGameScreen} />
+          <Stack.Screen name="Right" component={RightGameScreen} />
+          <Stack.Screen name="Left" component={LeftGameScreen} />
+          <Stack.Screen name="JodiGali" component={JodiGameScreen} />
+          <Stack.Screen name="BidHistory" component={BidHistoryScreen} />
+          <Stack.Screen name="WinGaliHistory" component={WinHistoryGali} />
 
         </Stack.Navigator>
       </NavigationContainer>
