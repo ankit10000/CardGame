@@ -59,7 +59,7 @@ const PanelChart = ({route}) => {
 
     const fetchChartData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.2:3000/api/game-result/getAllResults');
+            const response = await axios.get('https://mtka-api-production.up.railway.app/api/game-result/getAllResults');
             const allResults = response.data;
     
             // ✅ Filter data based on the selected game

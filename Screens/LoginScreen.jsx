@@ -79,7 +79,7 @@ const LoginScreen = () => {
         try {
             // *** IMPORTANT: Update the API endpoint and request body if needed ***
             // Assuming your API now expects 'mobile' instead of 'email'
-            const response = await fetch('http://192.168.1.2:3000/api/auth/login', {
+            const response = await fetch('https://mtka-api-production.up.railway.app/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,12 +150,25 @@ const LoginScreen = () => {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Logo */}
-                    <Image
-                        // *** Replace with the correct path to your logo asset ***
-                        source={require('../assets/icon.png')} // Placeholder path
-                        style={styles.logoImage}
-                        resizeMode="contain"
-                    />
+                    <View style={{ 
+                        width: width * 0.6, 
+                        height: width * 0.6, 
+                        borderRadius: (width * 0.6) / 2, // Make it circular
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        marginBottom: 1 // Space below the logo
+                    }}>
+                        <Image
+                            // *** Replace with the correct path to your logo asset ***
+                            source={require('../assets/icon.png')} // Placeholder path
+                            style={{
+                                width: '70%', 
+                                height: '70%', 
+                                borderRadius: (width * 0.6) / 2, // Ensure image fits within the circle
+                            }}
+                            resizeMode="contain"
+                        />
+                    </View>
 
                     {/* Login Tab */}
                     <View style={styles.loginTab}>

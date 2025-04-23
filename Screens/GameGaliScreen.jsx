@@ -9,7 +9,7 @@ import {
     StatusBar,
     ImageBackground,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const GameGaliScreen = ({ navigation }) => { 

@@ -113,7 +113,7 @@ const DoublePattiScreen = ({ navigation, route }) => {
                 };
 
                 const response = await axios.post(
-                    "http://192.168.1.2:3000/api/doublepana/add",
+                    "https://mtka-api-production.up.railway.app/api/doublepana/add",
                     payload,
                     {
                         headers: {
