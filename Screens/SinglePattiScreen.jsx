@@ -118,7 +118,7 @@ const SinglePattiScreen = ({ navigation, route }) => {
                 };
 
                 const response = await axios.post(
-                    'http://192.168.1.2:3000/api/singlepana/add',
+                    'https://mtka-api-production.up.railway.app/api/singlepana/add',
                     payload,
                     {
                         headers: {

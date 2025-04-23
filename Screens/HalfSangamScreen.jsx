@@ -117,7 +117,7 @@ const HalfSangamScreen = ({ navigation, route }) => {
                     openingTime: openingTime,
                 };
     
-                const response = await fetch('http://192.168.1.2:3000/api/halfsangam/add', {
+                const response = await fetch('https://mtka-api-production.up.railway.app/api/halfsangam/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
