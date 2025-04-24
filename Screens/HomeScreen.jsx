@@ -324,11 +324,21 @@ const HomeScreen = () => {
 
 
 
-          <TouchableOpacity style={styles.gamesBar} activeOpacity={0.8} onPress={() => navigation.navigate('Games1')}>
-            <Text style={styles.gamesBarText}>GALI DISAWAR GAMES</Text>
-            <View style={styles.arrowCircle}>
-              <Icon name="arrow-forward-ios" size={16} color={COLORS.textWhite} />
-            </View>
+          <TouchableOpacity
+            style={styles.gamesBarContainer} // Use a container style for layout/margins
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Games1')}>
+            <LinearGradient
+              colors={[COLORS.yellowGold, '#DAA520']} // Define your golden colors here (e.g., existing yellowGold and a darker gold like Goldenrod)
+              start={{ x: 0, y: 0.5 }} // Gradient starts from the left center
+              end={{ x: 1, y: 0.5 }}   // Gradient ends at the right center (horizontal)
+              style={styles.gamesBarGradient} // Apply padding, flex properties here
+            >
+              <Text style={styles.gamesBarText}>GALI DISAWAR GAMES</Text>
+              <View style={styles.arrowCircle}>
+                <Icon name="arrow-forward-ios" size={16} color={COLORS.textWhite} />
+              </View>
+            </LinearGradient>
           </TouchableOpacity>
 
 
@@ -450,7 +460,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     color: COLORS.textWhite,
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'center',
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -604,8 +614,8 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginHorizontal: 10, // Keep horizontal margin for the row
-    marginTop: 15,
+    marginHorizontal: 5, // Keep horizontal margin for the row
+    marginTop: 5,
   },
   buttonContainer: { // Style for the TouchableOpacity wrapper
     flex: 1,
@@ -634,6 +644,44 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: "#ffffff", // Default text color, can override inline
+  },
+  gamesBarContainer: {
+    marginHorizontal: 10,
+    marginTop: 20,
+    marginBottom: 5,
+    borderRadius: 25, // Apply border radius here
+    overflow: 'hidden', // Important: clips the gradient to the rounded corners
+    elevation: 3, // Optional: Add shadow to the container if needed
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+
+  // Style FOR the LinearGradient component itself
+  gamesBarGradient: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    // No backgroundColor, margins, or borderRadius needed here
+  },
+
+  // Adjusted text style for better contrast on gold
+  gamesBarText: {
+    color: "red", // Changed from 'red' for better contrast
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  arrowCircle: {
+    backgroundColor: COLORS.primaryPurple, // Or maybe a different color if needed
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -126,7 +126,7 @@ const SignUpScreen = () => {
                     {/* Logo */}
                     <Image
                         // *** Use the same logo asset as LoginScreen ***
-                        source={require('../assets/icon.png')} // Placeholder path
+                        source={require('../assets/icon.jpeg')} // Placeholder path
                         style={styles.logoImage}
                         resizeMode="contain"
                     />

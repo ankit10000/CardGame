@@ -160,7 +160,7 @@ const LoginScreen = () => {
                     }}>
                         <Image
                             // *** Replace with the correct path to your logo asset ***
-                            source={require('../assets/icon.png')} // Placeholder path
+                            source={require('../assets/icon.jpeg')} // Placeholder path
                             style={{
                                 width: '70%', 
                                 height: '70%', 
