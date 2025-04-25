@@ -98,7 +98,7 @@ const AddFundsScreen = () => {
             }
 
             const response = await axios.post(
-                'http://192.168.1.2:3000/api/wallet/add',
+                'https://mtka-api-production.up.railway.app/api/wallet/add',
                 {
                     amount: numericAmount,
                     note: 'Initial top-up'

@@ -5,7 +5,6 @@ import {
   ImageBackground,
   StatusBar,
   StyleSheet,
-  ActivityIndicator,
   Text,
   View,
   Image,
@@ -13,9 +12,7 @@ import {
   FlatList,
   Linking,
 } from 'react-native';
-// import LinearGradient from 'react-native-linear-gradient'; 
 import { LinearGradient } from 'expo-linear-gradient';
-// <--- Add this import
 import axios from 'axios';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -244,7 +241,7 @@ const HomeScreen = () => {
 
         </View>
         <ImageBackground
-          source={require('../assets/bg.jpg')} // or use a URL with { uri: 'https://...' }
+          source={require('../assets/bg.jpg')}
           style={styles.background}
           resizeMode="cover"
         >
@@ -261,9 +258,9 @@ const HomeScreen = () => {
               activeOpacity={0.8}
               onPress={() => navigation.navigate('AddFund')}>
               <LinearGradient
-                colors={["#551e82", "#8039bb", "#551e82"]} // Green -> White -> Purple
-                start={{ x: 0.5, y: 0 }} // Vertical gradient start (top)
-                end={{ x: 0.5, y: 1 }}   // Vertical gradient end (bottom)
+                colors={["#551e82", "#8039bb", "#551e82"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
                 style={styles.gradientButton}
               >
                 <FontAwesome name="plus-circle" size={22} color={"#71d64c"} style={styles.buttonIcon} />
@@ -277,9 +274,9 @@ const HomeScreen = () => {
               activeOpacity={0.8}
               onPress={() => navigation.navigate('Withdraw')}>
               <LinearGradient
-                colors={["#551e82", "#8039bb", "#551e82"]} // Yellow -> White -> Light Purple
-                start={{ x: 0.5, y: 0 }} // Vertical gradient start (top)
-                end={{ x: 0.5, y: 1 }}   // Vertical gradient end (bottom)
+                colors={["#551e82", "#8039bb", "#551e82"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
                 style={styles.gradientButton}
               >
                 <MaterialCommunityIcons name="bank-transfer-out" size={24} color={"#fabe24"} style={styles.buttonIcon} />
@@ -295,9 +292,9 @@ const HomeScreen = () => {
               activeOpacity={0.8}
               onPress={handleWhatsApp}>
               <LinearGradient
-                colors={["#551e82", "#8039bb", "#551e82"]} // WhatsApp Green -> White -> Darker Green
-                start={{ x: 0.5, y: 0 }} // Vertical gradient start (top)
-                end={{ x: 0.5, y: 1 }}   // Vertical gradient end (bottom)
+                colors={["#551e82", "#8039bb", "#551e82"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
                 style={styles.gradientButton}
               >
                 <Ionicons name="logo-whatsapp" size={24} color={'#71d64c'} style={styles.buttonIcon} />
@@ -311,9 +308,9 @@ const HomeScreen = () => {
               activeOpacity={0.8}
               onPress={handleCall}>
               <LinearGradient
-                colors={["#551e82", "#8039bb", "#551e82"]} // Orange -> White -> Darker Orange
-                start={{ x: 0.5, y: 0 }} // Vertical gradient start (top)
-                end={{ x: 0.5, y: 1 }}   // Vertical gradient end (bottom)
+                colors={["#551e82", "#8039bb", "#551e82"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
                 style={styles.gradientButton}
               >
                 <Ionicons name="call" size={22} color={'#f59a75'} style={styles.buttonIcon} />
@@ -325,14 +322,14 @@ const HomeScreen = () => {
 
 
           <TouchableOpacity
-            style={styles.gamesBarContainer} // Use a container style for layout/margins
+            style={styles.gamesBarContainer}
             activeOpacity={0.8}
             onPress={() => navigation.navigate('Games1')}>
             <LinearGradient
-              colors={[COLORS.yellowGold, '#DAA520']} // Define your golden colors here (e.g., existing yellowGold and a darker gold like Goldenrod)
-              start={{ x: 0, y: 0.5 }} // Gradient starts from the left center
-              end={{ x: 1, y: 0.5 }}   // Gradient ends at the right center (horizontal)
-              style={styles.gamesBarGradient} // Apply padding, flex properties here
+              colors={[COLORS.yellowGold, '#DAA520']}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.gamesBarGradient}
             >
               <Text style={styles.gamesBarText}>GALI DISAWAR GAMES</Text>
               <View style={styles.arrowCircle}>
@@ -614,69 +611,69 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginHorizontal: 5, // Keep horizontal margin for the row
+    marginHorizontal: 5,
     marginTop: 5,
   },
-  buttonContainer: { // Style for the TouchableOpacity wrapper
+  buttonContainer: {
     flex: 1,
-    marginHorizontal: 8, // Margin between buttons
-    borderRadius: 25, // Apply border radius to the touchable for ripple effect (Android) and clipping
-    // Add shadow/elevation to the container for better effect
+    marginHorizontal: 8,
+    borderRadius: 25,
+
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  gradientButton: { // Style for the LinearGradient component
+  gradientButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 25, // Match container's border radius
-    width: '100%', // Ensure gradient fills the container
+    borderRadius: 25,
+    width: '100%',
   },
   buttonIcon: {
     marginRight: 8,
-    // We'll set color individually per button now if needed, or keep a default
+
   },
   buttonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: "#ffffff", // Default text color, can override inline
+    color: "#ffffff",
   },
   gamesBarContainer: {
     marginHorizontal: 10,
     marginTop: 20,
     marginBottom: 5,
-    borderRadius: 25, // Apply border radius here
-    overflow: 'hidden', // Important: clips the gradient to the rounded corners
-    elevation: 3, // Optional: Add shadow to the container if needed
+    borderRadius: 25,
+    overflow: 'hidden',
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
   },
 
-  // Style FOR the LinearGradient component itself
+
   gamesBarGradient: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 12,
-    // No backgroundColor, margins, or borderRadius needed here
+
   },
 
-  // Adjusted text style for better contrast on gold
+
   gamesBarText: {
-    color: "red", // Changed from 'red' for better contrast
+    color: "red",
     fontSize: 16,
     fontWeight: 'bold',
   },
 
   arrowCircle: {
-    backgroundColor: COLORS.primaryPurple, // Or maybe a different color if needed
+    backgroundColor: COLORS.primaryPurple,
     width: 30,
     height: 30,
     borderRadius: 15,

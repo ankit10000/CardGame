@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     SafeAreaView,
     View,
@@ -8,27 +8,55 @@ import {
     ScrollView,
     StatusBar,
     ImageBackground,
+    ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const GameGaliScreen = ({ navigation }) => { 
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
-    const gameData = [
-        { id: '1', name: 'DESAWAR', time: '03:00 AM', result: '**', status: 'open' },
-        { id: '2', name: 'FARIDABAD', time: '05:40 PM', result: '**', status: 'close' },
-        { id: '3', name: 'GAZIYABAD', time: '08:45 PM', result: '**', status: 'open' },
-        { id: '4', name: 'GALI', time: '11:10 PM', result: '**', status: 'close' },
-    ];
-
-    const handleBackPress = () => {
-        
-        console.log('Back button pressed');
-    };
-
-    const handleChartPress = () => {
-        console.log('Galidesawar Chart pressed');
-    };
+const GameGaliScreen = ({ navigation }) => {
+    const [gameData, setGameData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        const fetchGames = async () => {
+            const token = await AsyncStorage.getItem('token');
+            try {
+                const response = await axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-games', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                const currentTime = new Date();
+                const games = response.data.games.map((game) => {
+                    const [hours, minutes] = game.closeTime.split(':').map(Number);
+                    const closeDateTime = new Date();
+                    closeDateTime.setHours(hours, minutes, 0, 0);
+                    const status = currentTime < closeDateTime ? 'open' : 'close';
+    
+                    return {
+                        id: game._id,
+                        name: game.gameName,
+                        time: game.closeTime,
+                        result: '**',
+                        status: status,
+                    };
+                });
+    
+                setGameData(games);
+            } catch (error) {
+                console.error('Error fetching games:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchGames();
+    }, []);
+    
 
     const handleBidHistoryPress = () => {
         navigation.navigate('BidHistory');
@@ -38,37 +66,28 @@ const GameGaliScreen = ({ navigation }) => {
         navigation.navigate('WinGaliHistory');
     };
 
-    const handleGamePlayPress = (gameName) => {
-        console.log(`Play button pressed for ${gameName}`);
-    };
-
     return (
         <>
-            {/* Set status bar style to light for dark background */}
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
-            <LinearGradient
-                colors={['#4a0e57', '#3b0a45', '#2c0833']} 
-                style={styles.gradientContainer}
-            >
+            <LinearGradient colors={['#4a0e57', '#3b0a45', '#2c0833']} style={styles.gradientContainer}>
                 <SafeAreaView style={styles.safeArea}>
-                    {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                             <Icon name="arrow-back" size={28} color="#FFF" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Galidesawar Game</Text>
-                        <View style={styles.headerPlaceholder} /> {/* To center the title */}
+                        <View style={styles.headerPlaceholder} />
                     </View>
+
                     <ImageBackground
-                        source={require('../assets/bg.jpg')} 
+                        source={require('../assets/bg.jpg')}
                         style={styles.background}
                         resizeMode="cover"
                     >
-                        {/* Game Rates Section */}
                         <View style={styles.ratesContainer}>
                             <View style={styles.ratesHeader}>
-                                <Text style={styles.ratesTitle}>game Rates</Text>
-                                <TouchableOpacity onPress={handleChartPress}>
+                                <Text style={styles.ratesTitle}>Game Rates</Text>
+                                <TouchableOpacity>
                                     <Text style={styles.chartLink}>Galidesawar Chart</Text>
                                 </TouchableOpacity>
                             </View>
@@ -88,52 +107,52 @@ const GameGaliScreen = ({ navigation }) => {
                             </View>
                         </View>
 
-                        {/* History Buttons */}
                         <View style={styles.historyButtonsContainer}>
-                            <TouchableOpacity
-                                style={styles.historyButton}
-                                onPress={handleBidHistoryPress}
-                            >
+                            <TouchableOpacity style={styles.historyButton} onPress={handleBidHistoryPress}>
                                 <Text style={styles.historyButtonText}>Bid History</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.historyButton}
-                                onPress={handleWinHistoryPress}
-                            >
+                            <TouchableOpacity style={styles.historyButton} onPress={handleWinHistoryPress}>
                                 <Text style={styles.historyButtonText}>Win History</Text>
                             </TouchableOpacity>
                         </View>
-                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
-                            {/* Game List */}
-                            <View style={styles.gameListContainer}>
-                                {gameData.map((game) => (
-                                    <View key={game.id} style={styles.gameCard}>
-                                        {/* Optional: Add background image elements like cactus if needed */}
-                                        {/* <Image source={require('./path/to/cactus.png')} style={styles.cactusImage} /> */}
-                                        <View style={styles.gameInfo}>
-                                            <Text style={styles.gameName}>{game.name}</Text>
-                                            <Text style={styles.gameResult}>{game.result}</Text>
-                                            <Text style={styles.gameTime}>{game.time}</Text>
+                        {loading ? (
+                            <ActivityIndicator size="large" color="#FFD700" style={{ marginTop: 20 }} />
+                        ) : (
+                            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                                <View style={styles.gameListContainer}>
+                                    {gameData.map((game) => (
+                                        <View key={game.id} style={styles.gameCard}>
+                                            <View style={styles.gameInfo}>
+                                                <Text style={styles.gameName}>{game.name}</Text>
+                                                <Text style={styles.gameResult}>{game.result}</Text>
+                                                <Text style={styles.gameTime}>{game.time}</Text>
+                                            </View>
+                                            {game.status === 'close' ? (
+                                                <TouchableOpacity style={styles.cardStatusContainer}>
+                                                    <View style={styles.closeIconCircle}>
+                                                        <Ionicons name="close" size={22} color={"#ffffff"} />
+                                                    </View>
+                                                    <Text style={styles.closeText}>{game.status.toUpperCase()}</Text>
+                                                </TouchableOpacity>
+                                            ) : (
+                                                <TouchableOpacity style={styles.cardStatusContainer}>
+                                                    <View style={styles.playIconCircle}>
+                                                        <Ionicons
+                                                            name="play"
+                                                            size={22}
+                                                            color={"#ffffff"}
+                                                            onPress={() => navigation.navigate('GameGali', { game })}
+                                                        />
+                                                    </View>
+                                                    <Text style={styles.runningText}>{game.status.toUpperCase()}</Text>
+                                                </TouchableOpacity>
+                                            )}
                                         </View>
-                                        {game.status === 'close' ? (
-                                            <TouchableOpacity style={styles.cardStatusContainer} >
-                                                <View style={styles.closeIconCircle}>
-                                                    <Ionicons name="close" size={22} color={"#ffffff"} />
-                                                </View>
-                                                <Text style={styles.closeText}>{game.status.toUpperCase()}</Text>
-                                            </TouchableOpacity>) : (
-                                            <TouchableOpacity style={styles.cardStatusContainer} >
-                                                <View style={styles.playIconCircle}>
-                                                    <Ionicons name="play" size={22} color={"#ffffff"} onPress={() => navigation.navigate('GameGali', { game })} />
-                                                </View>
-                                                <Text style={styles.runningText}>{game.status.toUpperCase()}</Text>
-                                            </TouchableOpacity>
-                                        )}
-                                    </View>
-                                ))}
-                            </View>
-                        </ScrollView>
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        )}
                     </ImageBackground>
                 </SafeAreaView>
             </LinearGradient>
@@ -307,7 +326,17 @@ const styles = StyleSheet.create({
         padding: 5, 
     },
     
-    
+    runningText:
+    {
+        color: 'green',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    closeText: {
+        color: 'red',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
     
     
     

@@ -14,6 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { Alert } from 'react-native';
 
 
 const { width } = Dimensions.get('window');
