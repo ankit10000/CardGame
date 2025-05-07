@@ -11,52 +11,65 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GameGaliScreen = ({ navigation }) => {
     const [gameData, setGameData] = useState([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        const fetchGames = async () => {
+        const fetchGamesAndWinners = async () => {
             const token = await AsyncStorage.getItem('token');
             try {
-                const response = await axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-games', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-    
+                const [gamesResponse, winnersResponse] = await Promise.all([
+                    axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-games', {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-winners', {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                ]);
+
                 const currentTime = new Date();
-                const games = response.data.games.map((game) => {
+                const winners = winnersResponse.data.winners;
+
+                const games = gamesResponse.data.games.map((game) => {
                     const [hours, minutes] = game.closeTime.split(':').map(Number);
                     const closeDateTime = new Date();
                     closeDateTime.setHours(hours, minutes, 0, 0);
                     const status = currentTime < closeDateTime ? 'open' : 'close';
-    
+
+                    const winner = winners.find(w => w.gameId === game._id);
+
+
+                    if (winner) {
+                        console.log(`Winner found for game ${game.gameName}:`, winner.result?.jodi);
+                    }
+
                     return {
                         id: game._id,
                         name: game.gameName,
                         time: game.closeTime,
-                        result: '**',
+                        result: status === 'close' && winner ? winner.result?.jodi || '**' : '**',
+
                         status: status,
                     };
                 });
-    
+
                 setGameData(games);
             } catch (error) {
-                console.error('Error fetching games:', error);
+                console.error('Error fetching games or winners:', error);
             } finally {
                 setLoading(false);
             }
         };
-    
-        fetchGames();
+
+        fetchGamesAndWinners();
     }, []);
-    
+
+
 
     const handleBidHistoryPress = () => {
         navigation.navigate('BidHistory');
@@ -201,11 +214,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
-        backgroundColor: '#5a1a69', 
+        backgroundColor: '#5a1a69',
         minHeight: 50,
     },
     backButton: {
-        padding: 5, 
+        padding: 5,
         marginRight: 15,
     },
     headerTitle: {
@@ -213,15 +226,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
-        flex: 1, 
+        flex: 1,
     },
-    headerPlaceholder: { 
-        width: 48, 
+    headerPlaceholder: {
+        width: 48,
     },
     scrollViewContent: {
-        paddingBottom: 20, 
+        paddingBottom: 20,
     },
-    
+
     ratesContainer: {
         paddingHorizontal: 15,
         marginTop: 20,
@@ -239,12 +252,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     chartLink: {
-        color: '#64b5f6', 
+        color: '#64b5f6',
         fontSize: 16,
         fontWeight: 'bold',
     },
     ratesBox: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
         borderRadius: 8,
         padding: 15,
     },
@@ -254,7 +267,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
     rateText: {
-        color: '#E0E0E0', 
+        color: '#E0E0E0',
         fontSize: 15,
     },
     rateValue: {
@@ -262,7 +275,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
     },
-    
+
     historyButtonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -270,43 +283,43 @@ const styles = StyleSheet.create({
         marginBottom: 25,
     },
     historyButton: {
-        backgroundColor: '#FFD700', 
+        backgroundColor: '#FFD700',
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
-        flex: 1, 
-        marginHorizontal: 8, 
-        alignItems: 'center', 
+        flex: 1,
+        marginHorizontal: 8,
+        alignItems: 'center',
     },
     historyButtonText: {
-        color: '#333', 
+        color: '#333',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    
+
     gameListContainer: {
         paddingHorizontal: 15,
     },
     gameCard: {
-        backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
         borderRadius: 12,
         padding: 20,
         marginBottom: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
     },
     gameInfo: {
-        flex: 1, 
+        flex: 1,
     },
     gameName: {
-        color: '#FFD700', 
+        color: '#FFD700',
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 4,
@@ -318,14 +331,14 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     gameTime: {
-        color: '#E0E0E0', 
+        color: '#E0E0E0',
         fontSize: 15,
     },
     playButton: {
-        marginLeft: 15, 
-        padding: 5, 
+        marginLeft: 15,
+        padding: 5,
     },
-    
+
     runningText:
     {
         color: 'green',
@@ -337,12 +350,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 });
 
 export default GameGaliScreen;

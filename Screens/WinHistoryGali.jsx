@@ -11,10 +11,14 @@ import {
     SafeAreaView,
     StatusBar,
     ImageBackground,
+    ActivityIndicator
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WallettScreen from '../components/WallettScreen';
+import axios from 'axios';
+
 // Helper to format date as YYYY-MM-DD
 const formatDate = (date) => {
     const d = new Date(date);
@@ -24,21 +28,22 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is passed
+const WinHistoryGali = ({ navigation }) => {
     const [fromDate, setFromDate] = useState(new Date());
     const [toDate, setToDate] = useState(new Date());
     const [showFromPicker, setShowFromPicker] = useState(false);
     const [showToPicker, setShowToPicker] = useState(false);
-    const [noDataFound, setNoDataFound] = useState(true); // Initially true, set to false when data is fetched
+    const [noDataFound, setNoDataFound] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [userWinners, setUserWinners] = useState([]);
 
     const onChangeFromDate = (event, selectedDate) => {
         const currentDate = selectedDate || fromDate;
-        setShowFromPicker(Platform.OS === 'ios'); // Keep open on iOS until dismissal
+        setShowFromPicker(Platform.OS === 'ios');
         setFromDate(currentDate);
         if (Platform.OS !== 'ios') {
-            setShowFromPicker(false); // Close automatically on Android
+            setShowFromPicker(false);
         }
-        // Optional: If ToDate is before FromDate, update ToDate
         if (currentDate > toDate) {
             setToDate(currentDate);
         }
@@ -53,15 +58,47 @@ const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is pass
         }
     };
 
-    const handleSubmit = () => {
-        console.log('Fetching data from:', formatDate(fromDate), 'to:', formatDate(toDate));
-        // --- Add your data fetching logic here ---
-        // Example: fetchBidHistory(formatDate(fromDate), formatDate(toDate))
-        // Based on the result, update setNoDataFound(false) or keep it true
-        setNoDataFound(true); // Keep true for demo purposes
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem('token');
+            const response1 = await axios.get('https://mtka-api-production.up.railway.app/api/auth/profile', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const userId = response1.data._id;
+            if (!token) {
+                console.log('No token found');
+                setLoading(false);
+                return;
+            }
+
+
+            const response = await axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-winners', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const allWinners = response.data.winners || [];
+            const filteredWinners = allWinners.filter(winner => winner.userId === userId);
+            if (filteredWinners.length > 0) {
+                setUserWinners(filteredWinners);
+                setNoDataFound(false);
+            } else {
+                setUserWinners([]);
+                setNoDataFound(true);
+            }
+
+        } catch (error) {
+            console.error('Error fetching winners:', error);
+            setNoDataFound(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Function to handle back navigation
     const handleBackPress = () => {
         if (navigation) {
             navigation.goBack();
@@ -74,10 +111,10 @@ const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is pass
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor="#313332" />
             <View style={styles.header}>
-                <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.headerButton} onPress={handleBackPress}>
                     <Icon name="arrow-back" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Jodi</Text>
+                <Text style={styles.headerTitle}>Win History</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <WallettScreen />
                 </TouchableOpacity>
@@ -114,9 +151,9 @@ const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is pass
                             testID="fromDateTimePicker"
                             value={fromDate}
                             mode="date"
-                            display="default" // Or "spinner"
+                            display="default"
                             onChange={onChangeFromDate}
-                            maximumDate={new Date()} // Optional: prevent future dates
+                            maximumDate={new Date()}
                         />
                     )}
 
@@ -127,8 +164,8 @@ const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is pass
                             mode="date"
                             display="default"
                             onChange={onChangeToDate}
-                            minimumDate={fromDate} // Prevent ToDate being before FromDate
-                            maximumDate={new Date()} // Optional
+                            minimumDate={fromDate}
+                            maximumDate={new Date()}
                         />
                     )}
 
@@ -136,18 +173,26 @@ const WinHistoryGali = ({ navigation }) => { // Assuming navigation prop is pass
                         <Text style={styles.submitButtonText}>SUBMIT</Text>
                     </TouchableOpacity>
 
-                    {noDataFound && (
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#fff" />
+                    ) : noDataFound ? (
                         <View style={styles.noDataContainer}>
-                            {/* <Image
-                            source={require('../assets/images/sad_file.png')} // Adjust path
-                            style={styles.noDataIcon}
-                            resizeMode="contain"
-                        /> */}
                             <Text style={styles.noDataText}>No Data Found</Text>
                         </View>
+                    ) : (
+                        <View style={styles.dataContainer}>
+                            {userWinners.map((item, index) => (
+                                <View key={index} style={styles.card}>
+                                    <Text style={styles.cardText}>Game Name: {item.gameName}</Text>
+                                    <Text style={styles.cardText}>Number: {item.number}</Text>
+                                    <Text style={styles.cardText}>Bet Type: {item.betType}</Text>
+                                    <Text style={styles.cardText}>Amount: ₹{item.amount}</Text>
+                                    <Text style={styles.cardText}>Winning: ₹{item.winningAmount}</Text>
+                                    <Text style={styles.cardText}>Result :- {`\n`} Left : {item.result.left}{`\n`} Right : {item.result.right}{`\n`} Jodi : {item.result.jodi}</Text>
+                                </View>
+                            ))}
+                        </View>
                     )}
-
-
                 </ScrollView>
             </ImageBackground>
         </SafeAreaView>
@@ -171,6 +216,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
+    
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -201,7 +247,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        minWidth: 140, // Ensure minimum width
+        minWidth: 140,
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#ddd'
@@ -211,38 +257,26 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     submitButton: {
-        backgroundColor: '#f0c14b', // Yellow color
+        backgroundColor: '#f0c14b',
         paddingVertical: 12,
         paddingHorizontal: 50,
         borderRadius: 8,
         marginTop: 10,
-        marginBottom: 40, // Space before no data message
+        marginBottom: 40,
         width: '80%',
         alignItems: 'center',
         elevation: 3,
     },
     submitButtonText: {
-        color: '#111', // Dark text for yellow button
+        color: '#111',
         fontSize: 16,
         fontWeight: 'bold',
     },
     noDataContainer: {
-        flex: 1, // Take remaining space
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 30,
-        // backgroundColor:'rgba(0,0,0,0.1)' // for debugging layout
-    },
-    noDataIcon: {
-        width: 100,
-        height: 100,
-        marginBottom: 20,
-        opacity: 0.8
-    },
-    noDataIconPlaceholder: { // Use if image fails
-        fontSize: 80,
-        color: '#e74c3c',
-        marginBottom: 15,
     },
     noDataText: {
         color: '#FFFFFF',
@@ -250,6 +284,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         opacity: 0.8
     },
+    dataContainer: {
+        width: '100%',
+    },
+    card: {
+        backgroundColor: '#ffffffaa',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 15,
+    },
+    cardText: {
+        fontSize: 14,
+        color: '#333',
+    }
 });
 
 export default WinHistoryGali;
