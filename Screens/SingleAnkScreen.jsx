@@ -21,7 +21,7 @@ import moment from 'moment';
 
 const SingleAnkScreen = ({ navigation, route }) => {
     const { items, gamename } = route.params || {};
-    console.log('gamename:', gamename); 
+    console.log('gamename:', gamename);
     const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
     const digits = Array.from({ length: 10 }, (_, i) => i.toString());
 
@@ -38,7 +38,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
             alert('Please select points first!');
         }
     };
-    
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -63,20 +63,20 @@ const SingleAnkScreen = ({ navigation, route }) => {
             alert('You are not logged in');
             return;
         }
-    
+
         const selectedDigits = Object.keys(digitValues);
         if (selectedDigits.length === 0) {
             alert('Please select at least one digit.');
             return;
         }
-    
+
         try {
             const results = [];
 
             const gameIds = items?._id;
             if (!gameIds) {
-              alert('Game ID is missing. Please try again.');
-              return;
+                alert('Game ID is missing. Please try again.');
+                return;
             }
             for (let digit of selectedDigits) {
                 const payload = {
@@ -85,9 +85,9 @@ const SingleAnkScreen = ({ navigation, route }) => {
                     betNumber: String(digit),
                     amount: digitValues[digit],
                     betType: dropdownValue,
-                  };
-                  
-    
+                };
+
+
                 const response = await axios.post(
                     'http://192.168.1.7:3000/api/starline/bet/place',
                     payload,
@@ -98,23 +98,23 @@ const SingleAnkScreen = ({ navigation, route }) => {
                         },
                     }
                 );
-    
+
                 results.push(response.data);
             }
-    
+
             alert('Bids placed successfully!');
             console.log('Responses:', results);
-    
+
             // Reset state
             setDigitValues({});
             setSelectedPoint(null);
-    
+
         } catch (error) {
             console.error('Bid submission error:', error?.response?.data || error.message);
             alert(error?.response?.data?.message || 'Something went wrong!');
         }
     };
-    
+
     const currentDate = moment().format('DD / MM / YYYY');
 
     return (
@@ -136,7 +136,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 {/* Date Display */}
                 <View style={styles.datePickerContainer}>
-                <Text style={styles.dateText}>{currentDate}</Text>
+                    <Text style={styles.dateText}>{currentDate}</Text>
                 </View>
 
                 {/* Dropdown Mock */}
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
 
-   
+
 
     dropdownText: {
         color: '#333',

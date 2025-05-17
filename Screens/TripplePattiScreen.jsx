@@ -27,7 +27,7 @@ const NUM_COLUMNS = 4;
 const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
 
 const TripplePattiScreen = ({ navigation, route }) => {
-    const {items} = route.params;
+    const { items,gamename } = route.params;
     const [dropdownValue, setDropdownValue] = useState('open');
     const [showDropdownOptions, setShowDropdownOptions] = useState(false);
     const dropdownOptions = ['open', 'close'];
@@ -53,7 +53,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
 
 
 
-    
+
     const handleDigitPress = (digit) => {
         if (selectedPoint !== null) {
             setDigitValues(prev => ({
@@ -72,40 +72,44 @@ const TripplePattiScreen = ({ navigation, route }) => {
 
     const submitBid = async () => {
         const token = await AsyncStorage.getItem('token');
-    
+
         if (!token) {
             alert("You're not logged in. Please log in first.");
             navigation.navigate('Login');
             return;
         }
-    
+
         if (!selectedPoint || Object.keys(digitValues).length === 0) {
             alert("Please select at least one digit and a point value.");
             return;
         }
-    
+
         const headers = {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         };
-    
+
         const gameType = items.name; // Or use selectedMarket if dynamic
         const gameDate = moment().format("YYYY-MM-DD");
-    
+        const gameIds = items?._id;
+        if (!gameIds) {
+            alert('Game ID is missing. Please try again.');
+            return;
+        }
         try {
             const responses = await Promise.all(Object.entries(digitValues).map(async ([panaNumber, amount]) => {
                 const payload = {
-                    panaNumber,
-                    amount,
-                    gameType,
-                    gameDate,
+                    gameId: gameIds,
+                    panaNumber: String(panaNumber),
+                    amount: amount,
+                    gameType: gamename,
                     betType: dropdownValue
                 };
-    
-                const response = await axios.post('http://192.168.1.7:3000/api/TriplePana/add', payload, { headers });
+
+                const response = await axios.post('http://192.168.1.7:3000/api/starline/bet/place', payload, { headers });
                 return response.data;
             }));
-    
+
             console.log("All bets placed:", responses);
             alert("Triple Pana bet placed successfully!");
             handleReset();
@@ -114,7 +118,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
             alert("Failed to place bet. Please try again.");
         }
     };
-    
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {

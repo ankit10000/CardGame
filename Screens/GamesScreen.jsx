@@ -28,12 +28,12 @@ const BACKGROUND_IMAGE = require('../assets/bg.jpg'); // Replace with your backg
 // const ICON_HOLDER_IMAGE = require('../assets/bg.jpg'); // Replace with your icon holder image
 const options = [
     { key: '1', gamename: 'single', iconType: 'dice', subLabel: "DIGIT", iconImage: require('../assets/singleDigit.png'), nav: 'SAnkh' },
-    { key: '2', gamename: 'Jodi', iconType: 'dice', subLabel: "DIGIT", iconImage: require('../assets/jodi.png'), nav: 'JodiAce' },
-    { key: '3', gamename: 'Single Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/singlePana.png'), nav: 'SPatti' },
-    { key: '4', gamename: 'Double Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/doublePana.png'), nav: 'DPatti' },
-    { key: '5', gamename: 'Tripple Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/triplePana.png'), nav: 'TPatti' },
-    { key: '6', gamename: 'Half Sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/halfSangam.png'), nav: 'HSangam' },
-    { key: '7', gamename: 'Full Sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/fullSanagm.png'), nav: 'FSangam' },
+    { key: '2', gamename: 'jodi', iconType: 'dice', subLabel: "DIGIT", iconImage: require('../assets/jodi.png'), nav: 'JodiAce' },
+    { key: '3', gamename: 'singlepana', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/singlePana.png'), nav: 'SPatti' },
+    { key: '4', gamename: 'doublepana', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/doublePana.png'), nav: 'DPatti' },
+    { key: '5', gamename: 'triplepana', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/triplePana.png'), nav: 'TPatti' },
+    { key: '6', gamename: 'half sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/halfSangam.png'), nav: 'HSangam' },
+    { key: '7', gamename: 'full sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/fullSanagm.png'), nav: 'FSangam' },
 ];
 
 const GridItem = React.memo(({ itemData, onPress }) => (

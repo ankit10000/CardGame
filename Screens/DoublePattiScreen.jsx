@@ -28,7 +28,7 @@ const NUM_COLUMNS = 4;
 const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
 
 const DoublePattiScreen = ({ navigation, route }) => {
-    const { items } = route.params || {};
+    const { items,gamename } = route.params || {};
     const [selectedPoints, setSelectedPoints] = useState(null);
     const [selectedMarket, setSelectedMarket] = useState('OPEN');
     const [digitInputs, setDigitInputs] = useState({});
@@ -101,19 +101,23 @@ const DoublePattiScreen = ({ navigation, route }) => {
                 alert("Please select at least one digit");
                 return;
             }
-
+            const gameIds = items?._id;
+            if (!gameIds) {
+                alert('Game ID is missing. Please try again.');
+                return;
+            }
             // For each selected digit, make a POST request
             for (const panaNumber of selectedDigits) {
                 const payload = {
-                    panaNumber,
+                    gameId: gameIds,
+                    panaNumber: String(panaNumber),
                     amount: digitValues[panaNumber],
-                    gameType: items.name,
-                    gameDate: gameDate,
-                    betType: dropdownValue, // either 'open' or 'close'
+                    gameType: gamename,
+                    betType: dropdownValue
                 };
 
                 const response = await axios.post(
-                    "http://192.168.1.7:3000/api/doublepana/add",
+                    'http://192.168.1.7:3000/api/starline/bet/place',
                     payload,
                     {
                         headers: {

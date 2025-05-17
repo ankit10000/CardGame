@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 
 
@@ -24,7 +25,7 @@ const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2
 
 const JodiScreen = ({ navigation, route }) => {
 
-    const { items } = route.params || {};
+    const { items, gamename } = route.params || {};
 
 
     const [selectedPoints, setSelectedPoints] = useState(null);
@@ -48,27 +49,35 @@ const JodiScreen = ({ navigation, route }) => {
         }
 
         try {
+            const results = [];
+            const gameIds = items?._id;
+            if (!gameIds) {
+                alert('Game ID is missing. Please try again.');
+                return;
+            }
             for (const [jodiNumber, amount] of filledDigits) {
-                const response = await fetch('http://192.168.1.7:3000/api/jodi/place', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`, // <-- Replace with actual token
-                    },
-                    body: JSON.stringify({
-                        jodiNumber: parseInt(jodiNumber),
-                        amount: parseInt(amount),
-                        gameType: items?.name || ''
-                    })
-                });
+                const payload = {
+                    gameId: gameIds,
+                    gameType: gamename,
+                    betNumber: String(jodiNumber),
+                    amount: Number(amount),
+                    betType: 'close',
+                };
+                
 
-                const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.message || 'Something went wrong');
-                }
+                const response = await axios.post(
+                    'http://192.168.1.7:3000/api/starline/bet/place',
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
 
-                console.log('Response:', data);
+                results.push(response.data);
             }
 
             alert('All BIDs submitted successfully!');

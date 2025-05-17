@@ -71,7 +71,7 @@ const ITEM_MARGIN_HORIZONTAL = 5;
 const NUM_COLUMNS = 4;
 const digitItemWidth = (width - PADDING_HORIZONTAL * 2 - ITEM_MARGIN_HORIZONTAL * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
 const SinglePattiScreen = ({ navigation, route }) => {
-    const { items } = route.params || {};
+    const { items, gamename } = route.params || {};
     const [dropdownValue, setDropdownValue] = useState('open');
     const [showDropdownOptions, setShowDropdownOptions] = useState(false);
     const dropdownOptions = ['open', 'close'];
@@ -108,17 +108,23 @@ const SinglePattiScreen = ({ navigation, route }) => {
                 return;
             }
 
+            const gameIds = items?._id;
+            if (!gameIds) {
+                alert('Game ID is missing. Please try again.');
+                return;
+            }
+
             for (const [panaNumber, amount] of selectedEntries) {
                 const payload = {
-                    panaNumber,
-                    amount,
-                    gameType: items.name,
-                    gameDate: moment().format('YYYY-MM-DD'),
+                    gameId: gameIds,
+                    panaNumber: String(panaNumber),
+                    amount: amount,
+                    gameType: gamename,
                     betType: dropdownValue
                 };
 
                 const response = await axios.post(
-                    'http://192.168.1.7:3000/api/singlepana/add',
+                    'http://192.168.1.7:3000/api/starline/bet/place',
                     payload,
                     {
                         headers: {
