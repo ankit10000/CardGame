@@ -46,66 +46,6 @@ const COLORS = {
 };
 
 
-const marketData = [
-  {
-    id: '1',
-    name: 'KALYAN MORNING',
-    numbers: '126-94-248',
-    open: '09:30 AM',
-    close: '10:30 AM',
-    status: 'Running',
-  },
-  {
-    id: '2',
-    name: 'MAIN BAZAR',
-    numbers: '148-31-489',
-    open: '10:00 AM',
-    close: '11:00 AM',
-    status: 'CLOSED',
-  },
-  {
-    id: '3',
-    name: 'KARNATAKA DAY',
-    numbers: '889-53-256',
-    open: '10:10 AM',
-    close: '11:10 AM',
-    status: 'CLOSED',
-  },
-  {
-    id: '4',
-    name: 'SRIDEVI MORNING',
-    numbers: '489-15-348',
-    open: '11:00 AM',
-    close: '12:00 PM',
-    status: 'CLOSED',
-  },
-  {
-    id: '5',
-    name: 'MADHUR MORNING',
-    numbers: '190-03-139',
-    open: '11:30 AM',
-    close: '12:30 PM',
-    status: 'Running',
-  },
-  {
-    id: '6',
-    name: 'PADMAVATI',
-    numbers: '190-03-139',
-    open: '11:30 AM',
-    close: '12:30 PM',
-    status: 'Running',
-  },
-  {
-    id: '7',
-    name: 'MILAN MORNING',
-    numbers: '190-03-139',
-    open: '11:30 AM',
-    close: '12:30 PM',
-    status: 'Running',
-  },
-];
-
-
 const MarketItem = ({ item, navigation }) => (
   <View style={styles.card}>
 
@@ -118,41 +58,100 @@ const MarketItem = ({ item, navigation }) => (
 
 
     <View style={styles.cardDetails}>
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      <Text style={styles.cardNumbers}>{item.numbers}</Text>
+      <Text style={styles.cardTitle}>{item.gameName}</Text>
+      <Text style={styles.cardNumbers}>
+        {item.result?.openDigits || '***'} - {item.result?.jodiResult || '**'} - {item.result?.closeDigits || '***'}
+      </Text>
       <View style={styles.cardTimes}>
-        <Text style={styles.cardTimeText}>Open: {item.open}</Text>
+        <Text style={styles.cardTimeText}>Open: {item.openTime}</Text>
         <Text style={styles.cardTimeSeparator}>|</Text>
-        <Text style={styles.cardTimeText}>Close: {item.close}</Text>
+        <Text style={styles.cardTimeText}>Close: {item.closeTime}</Text>
       </View>
     </View>
 
-    {item.status === 'CLOSED' ? (
-      <TouchableOpacity style={styles.cardStatusContainer} >
+    {item?.status?.toUpperCase() === 'CLOSED' ? (
+      <TouchableOpacity style={styles.cardStatusContainer}>
         <View style={styles.closeIconCircle}>
           <Ionicons name="close" size={22} color={COLORS.textWhite} />
         </View>
-        <Text style={styles.closeText}>{item.status.toUpperCase()}</Text>
-      </TouchableOpacity>) : (
-      <TouchableOpacity style={styles.cardStatusContainer} >
+        <Text style={styles.closeText}>{item.status?.toUpperCase() || 'close'}</Text>
+      </TouchableOpacity>
+    ) : (
+      <TouchableOpacity style={styles.cardStatusContainer} onPress={() => navigation.navigate('Games', { item })}>
         <View style={styles.playIconCircle}>
-          <Ionicons name="play" size={22} color={COLORS.textWhite} onPress={() => navigation.navigate('Games', { item })} />
+          <Ionicons name="play" size={22} color={COLORS.textWhite} />
         </View>
-        <Text style={styles.runningText}>{item.status.toUpperCase()}</Text>
+        <Text style={styles.runningText}>{item.status?.toUpperCase() || 'Running'}</Text>
       </TouchableOpacity>
     )}
+
   </View>
 );
 
 const HomeScreen = () => {
+  const [marketData, setMarketData] = useState([]);
+
+  // const [marketData, setMarketData] = useState([]);
+  const fetchMarketData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await axios.get('http://192.168.1.7:3000/api/starline/game/all', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const now = new Date();
+
+      const updatedData = res.data.data.map((game) => {
+        const gameDate = new Date(game.gameDate); // use game's date (e.g., 2025-05-15T18:30:00.000Z)
+
+        const [openHour, openMinute] = game.openTime.split(':').map(Number);
+        const [closeHour, closeMinute] = game.closeTime.split(':').map(Number);
+
+        const openTime = new Date(gameDate);
+        openTime.setHours(openHour, openMinute, 0, 0);
+
+        const closeTime = new Date(gameDate);
+        closeTime.setHours(closeHour, closeMinute, 0, 0);
+
+        let status = 'Closed';
+        if (now < openTime) {
+          status = 'Running';
+        } else if (now >= openTime && now < closeTime) {
+          status = 'Running';
+        }
+
+        return {
+          ...game,
+          status,
+          result: {
+            openDigits: game.result?.openDigits || '***',
+            closeDigits: game.result?.closeDigits || '***',
+            openResult: game.result?.openResult || '***',
+            closeResult: game.result?.closeResult || '***',
+            jodiResult: game.result?.jodiResult || '***',
+          }
+        };
+      });
+
+      setMarketData(updatedData);
+    } catch (error) {
+      console.error('Error fetching market data:', error);
+    }
+  };
+
+
+
   const navigation = useNavigation();
   const [dpImages, setDpImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDpImages = async () => {
     try {
-      const res = await axios.get('https://mtka-api-production.up.railway.app/api/homedp/all-dpimage');
+      const res = await axios.get('http://192.168.1.7:3000/api/homedp/all-dpimage');
       setDpImages(res.data.data);
+
     } catch (err) {
       console.error('Error fetching DP images:', err);
     } finally {
@@ -162,6 +161,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchDpImages();
+    fetchMarketData();
   }, []);
 
 
@@ -198,11 +198,14 @@ const HomeScreen = () => {
     Linking.openURL(phoneNumber).catch((err) => console.error('Error making call:', err));
   };
 
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = () => {
-    console.log("Refreshing data...");
-
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([fetchMarketData(), fetchDpImages()]);
+    setRefreshing(false);
   };
+
 
 
   return (
@@ -232,7 +235,7 @@ const HomeScreen = () => {
             {dpImages.map((item, index) => (
               <Image
                 key={index}
-                source={{ uri: `https://mtka-api-production.up.railway.app/uploads/homedp/${item.image}` }}
+                source={{ uri: `http://192.168.1.7:3000/uploads/homedp/${item.image}` }}
                 style={styles.image}
                 resizeMode="cover"
               />
@@ -348,8 +351,9 @@ const HomeScreen = () => {
             scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={true}
-            refreshing={false}
-            onRefresh={fetchData}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+
           />
         </ImageBackground>
       </View>

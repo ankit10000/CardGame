@@ -59,11 +59,24 @@ const PanelChart = ({route}) => {
 
     const fetchChartData = async () => {
         try {
-            const response = await axios.get('https://mtka-api-production.up.railway.app/api/game-result/getAllResults');
+            const token = await AsyncStorage.getItem('token');
+            if (!token) return;
+    
+            // 1. Get all starline games
+            const gameListResponse = await axios.get('http://192.168.1.7:3000/api/starline/game/all', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+    
+            const selectedGame = gameListResponse.data.data.find(g => g.gameName === item.gameName);
+            if (!selectedGame) {
+                console.warn('Selected game not found');
+                return;
+            }
+            const response = await axios.get('http://192.168.1.7:3000/api/game-result/getAllResults');
             const allResults = response.data;
     
             // ✅ Filter data based on the selected game
-            const filteredResults = allResults.filter(entry => entry.gameName === item.name);
+            const filteredResults = allResults.filter(res => res.gameId === selectedGame._id);
     
             const today = new Date();
             const currentYear = today.getFullYear();
@@ -105,7 +118,7 @@ const PanelChart = ({route}) => {
                             p1: matchingEntry.openDigits[0]?.toString() || '*',
                             p2: matchingEntry.openDigits[1]?.toString() || '*',
                             p3: matchingEntry.openDigits[2]?.toString() || '*',
-                            result: `${matchingEntry.openSumDigit || '*'} ${matchingEntry.closeSumDigit || '*'}`,
+                            result: `${matchingEntry.openResult || '*'} ${matchingEntry.closeResult || '*'}`,
                             p4: matchingEntry.closeDigits[0]?.toString() || '*',
                             p5: matchingEntry.closeDigits[1]?.toString() || '*',
                             p6: matchingEntry.closeDigits[2]?.toString() || '*',

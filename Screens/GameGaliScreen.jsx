@@ -24,10 +24,10 @@ const GameGaliScreen = ({ navigation }) => {
             const token = await AsyncStorage.getItem('token');
             try {
                 const [gamesResponse, winnersResponse] = await Promise.all([
-                    axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-games', {
+                    axios.get('http://192.168.1.7:3000/api/galidesawar/all-games', {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-winners', {
+                    axios.get('http://192.168.1.7:3000/api/galidesawar/all-winners', {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);

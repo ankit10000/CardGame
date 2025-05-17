@@ -49,7 +49,7 @@ const JodiScreen = ({ navigation, route }) => {
 
         try {
             for (const [jodiNumber, amount] of filledDigits) {
-                const response = await fetch('https://mtka-api-production.up.railway.app/api/jodi/place', {
+                const response = await fetch('http://192.168.1.7:3000/api/jodi/place', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

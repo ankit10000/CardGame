@@ -20,8 +20,8 @@ import moment from 'moment';
 
 
 const SingleAnkScreen = ({ navigation, route }) => {
-    const { items } = route.params || {};
-
+    const { items, gamename } = route.params || {};
+    console.log('gamename:', gamename); 
     const pointsOptions = [10, 20, 50, 100, 200, 500, 1000];
     const digits = Array.from({ length: 10 }, (_, i) => i.toString());
 
@@ -38,7 +38,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
             alert('Please select points first!');
         }
     };
-
+    
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -63,29 +63,33 @@ const SingleAnkScreen = ({ navigation, route }) => {
             alert('You are not logged in');
             return;
         }
-
+    
         const selectedDigits = Object.keys(digitValues);
         if (selectedDigits.length === 0) {
             alert('Please select at least one digit.');
             return;
         }
-
+    
         try {
             const results = [];
 
+            const gameIds = items?._id;
+            if (!gameIds) {
+              alert('Game ID is missing. Please try again.');
+              return;
+            }
             for (let digit of selectedDigits) {
                 const payload = {
-                    digit: Number(digit),
+                    gameId: gameIds,
+                    gameType: gamename,
+                    betNumber: String(digit),
                     amount: digitValues[digit],
-                    gameType: items?.name || '',
-                    isOpenClosed: dropdownValue,
-                    date: moment().format('YYYY-MM-DD'), // you can replace with actual selected date if needed
-                    openingTime: dropdownValue === 'open' ? moment().toISOString() : null,
-                    closingTime: dropdownValue === 'close' ? moment().toISOString() : null,
-                };
-
+                    betType: dropdownValue,
+                  };
+                  
+    
                 const response = await axios.post(
-                    'https://mtka-api-production.up.railway.app/api/sigle/place',
+                    'http://192.168.1.7:3000/api/starline/bet/place',
                     payload,
                     {
                         headers: {
@@ -94,22 +98,23 @@ const SingleAnkScreen = ({ navigation, route }) => {
                         },
                     }
                 );
-
+    
                 results.push(response.data);
             }
-
+    
             alert('Bids placed successfully!');
             console.log('Responses:', results);
-
+    
             // Reset state
             setDigitValues({});
             setSelectedPoint(null);
-
+    
         } catch (error) {
             console.error('Bid submission error:', error?.response?.data || error.message);
             alert(error?.response?.data?.message || 'Something went wrong!');
         }
     };
+    
     const currentDate = moment().format('DD / MM / YYYY');
 
     return (

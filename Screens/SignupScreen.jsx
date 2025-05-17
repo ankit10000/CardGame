@@ -80,7 +80,7 @@ const SignUpScreen = () => {
         setLoading(true); // Start loading indicator
         try {
             // *** Ensure API endpoint and field names match your backend ***
-            const response = await axios.post('https://mtka-api-production.up.railway.app/api/auth/register', {
+            const response = await axios.post('http://192.168.1.7:3000/api/auth/register', {
                 name: username, // Assuming backend expects 'name'
                 number: mobile, // Assuming backend expects 'number'
                 email: email,

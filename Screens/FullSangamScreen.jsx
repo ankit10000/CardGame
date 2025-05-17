@@ -112,7 +112,7 @@ const FullSangamScreen = ({ navigation, route }) => {
                 };
 
                 const response = await axios.post(
-                    'https://mtka-api-production.up.railway.app/api/fullsangam/add',
+                    'http://192.168.1.7:3000/api/fullsangam/add',
                     body,
                     {
                         headers: {

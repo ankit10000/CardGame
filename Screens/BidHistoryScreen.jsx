@@ -37,14 +37,14 @@ const BidHistoryScreen = ({ navigation }) => {
                     return;
                 }
 
-                const profileResponse = await axios.get('https://mtka-api-production.up.railway.app/api/auth/profile', {
+                const profileResponse = await axios.get('http://192.168.1.7:3000/api/auth/profile', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 const userId = profileResponse.data._id;
 
-                const winnersResponse = await axios.get('https://mtka-api-production.up.railway.app/api/galidesawar/all-winners', {
+                const winnersResponse = await axios.get('http://192.168.1.7:3000/api/galidesawar/all-winners', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

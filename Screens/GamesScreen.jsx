@@ -26,47 +26,33 @@ const itemWidth = (width - itemHorizontalPadding * (numColumns + 1)) / numColumn
 // --- IMPORTANT: Replace placeholders with your actual asset paths ---
 const BACKGROUND_IMAGE = require('../assets/bg.jpg'); // Replace with your background image
 // const ICON_HOLDER_IMAGE = require('../assets/bg.jpg'); // Replace with your icon holder image
-
 const options = [
-    { key: '1', mainLabel: 'Signle Ank', iconType: 'dice',subLabel:"DIGIT" , iconImage: require('../assets/singleDigit.png'), nav: 'SAnkh' },
-    { key: '2', mainLabel: 'Jodi', iconType: 'dice',subLabel:"DIGIT" , iconImage: require('../assets/jodi.png'), nav: 'JodiAce' },
-    { key: '3', mainLabel: 'Single Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/singlePana.png'), nav: 'SPatti' },
-    { key: '4', mainLabel: 'Double Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/doublePana.png'), nav: 'DPatti' },
-    { key: '5', mainLabel: 'Tripple Patti', iconType: 'card',subLabel:"PANNA" , iconImage: require('../assets/triplePana.png'), nav: 'TPatti' },
-    { key: '6', mainLabel: 'Half Sangam', iconType: 'other',subLabel:"SAANGAM" , iconImage: require('../assets/halfSangam.png'), nav: 'HSangam' },
-    { key: '7', mainLabel: 'Full Sangam', iconType: 'other',subLabel:"SAANGAM" , iconImage: require('../assets/fullSanagm.png'), nav: 'FSangam' },
-    // { key: '8', label: 'SP DP TP', iconType: 'other', iconName: 'triangle-outline', nav: 'SPDPTP' },
-    ];
-// --- End Asset Placeholders ---
+    { key: '1', gamename: 'single', iconType: 'dice', subLabel: "DIGIT", iconImage: require('../assets/singleDigit.png'), nav: 'SAnkh' },
+    { key: '2', gamename: 'Jodi', iconType: 'dice', subLabel: "DIGIT", iconImage: require('../assets/jodi.png'), nav: 'JodiAce' },
+    { key: '3', gamename: 'Single Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/singlePana.png'), nav: 'SPatti' },
+    { key: '4', gamename: 'Double Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/doublePana.png'), nav: 'DPatti' },
+    { key: '5', gamename: 'Tripple Patti', iconType: 'card', subLabel: "PANNA", iconImage: require('../assets/triplePana.png'), nav: 'TPatti' },
+    { key: '6', gamename: 'Half Sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/halfSangam.png'), nav: 'HSangam' },
+    { key: '7', gamename: 'Full Sangam', iconType: 'other', subLabel: "SAANGAM", iconImage: require('../assets/fullSanagm.png'), nav: 'FSangam' },
+];
 
-
-// Optimised GridItem component
 const GridItem = React.memo(({ itemData, onPress }) => (
-    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(itemData)}>
+    <TouchableOpacity style={styles.itemContainer} onPress={() => onPress(itemData)}> 
         <View style={styles.iconOuterContainer}>
-            {/* <Image source={ICON_HOLDER_IMAGE} style={styles.iconHolder} resizeMode="contain" /> */}
             <Image source={itemData.iconImage} style={styles.iconItself} resizeMode="contain" />
         </View>
-        {/* <View style={styles.labelContainer}>
-            <View style={styles.mainLabelBackground}>
-                <Text style={styles.mainLabelText}>{itemData.mainLabel}</Text>
-            </View>
-            <View style={styles.subLabelBackground}>
-                <Text style={styles.subLabelText}>{itemData.subLabel}</Text>
-            </View>
-        </View> */}
     </TouchableOpacity>
 ));
 
 const GamesScreen = ({ navigation, route }) => {
 
     const { item } = route.params; // Game Market data (e.g., LAXMI MORNING)
-
+    console.log("Game Market data:", item); // Debugging log
     const handleItemPress = useCallback((selectedOption) => {
         if (selectedOption.nav) {
-            navigation.navigate(selectedOption.nav, { items: item }); // Pass market data to next screen
+            navigation.navigate(selectedOption.nav, { items: item, gamename: selectedOption.gamename }); // Pass market data and gamename to next screen
         } else {
-            console.warn(`Navigation target not defined for item: ${selectedOption.mainLabel}`);
+            console.warn(`Navigation target not defined for item: ${selectedOption.gamename}`);
         }
     }, [navigation, item]); // Include item in dependencies
 
@@ -209,13 +195,13 @@ const styles = StyleSheet.create({
         paddingVertical: 3,
         paddingHorizontal: 15, // Wider padding
         minWidth: itemWidth * 0.6, // Ensure minimum width
-         alignItems: 'center', // Center text inside
+        alignItems: 'center', // Center text inside
     },
     subLabelText: {
         fontSize: 13,
         color: '#FFFFFF', // White text
         fontWeight: '500',
-         textAlign: 'center',
+        textAlign: 'center',
     },
     // Ensure WalletScreen component styles don't conflict (optional)
     // walletContainer: { ... }

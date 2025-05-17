@@ -34,7 +34,7 @@ const MyBidsScreen = ({ navigation }) => {
                 return;
             }
 
-            const response = await fetch('https://mtka-api-production.up.railway.app/api/allbeat/my-bets', {
+            const response = await fetch('http://192.168.1.7:3000/api/allbeat/my-bets', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
