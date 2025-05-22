@@ -23,7 +23,7 @@ import axios from 'axios'; // add this
 
 const FullSangamScreen = ({ navigation, route }) => {
 
-    const { items } = route.params || {};
+    const { items, gamename } = route.params; 
 
     const [openPanna, setOpenPanna] = useState('');
     const [closePanna, setClosePanna] = useState('');
@@ -102,17 +102,22 @@ const FullSangamScreen = ({ navigation, route }) => {
             for (const item of addedItems) {
                 const [openPana, closePana] = item.sangam.split('-');
                 const openingTime = new Date(); 
+                const gameIds = items?._id;
+            if (!gameIds) {
+                alert('Game ID is missing. Please try again.');
+                return;
+            }
                 const body = {
+                    gameId: gameIds,
                     openPana,
                     closePana,
                     amount: parseInt(item.points),
-                    gameType: items?.name || 'MAIN BAZAR',
-                    gameDate,
-                    openingTime: openingTime,
+                    gameType: gamename, // fallback gameType
+                    betType: "close",
                 };
 
                 const response = await axios.post(
-                    'http://192.168.1.7:3000/api/fullsangam/add',
+                    'http://192.168.1.7:3000/api/starline/bet/place',
                     body,
                     {
                         headers: {

@@ -18,18 +18,11 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const formatDate = (date) => {
-    if (!date) return '';
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day} / ${month} / ${year}`;
-};
+
 
 
 const HalfSangamScreen = ({ navigation, route }) => {
-    const {items } = route.params; // Get userId from route params
+    const { items, gamename } = route.params; // Get userId from route params
     const currentDate = moment().format('DD / MM / YYYY');
 
 
@@ -39,11 +32,6 @@ const HalfSangamScreen = ({ navigation, route }) => {
 
 
     const [addedItems, setAddedItems] = useState([]);
-
-
-   
-
-
     const handleOpenPannaChange = (value) => {
 
         setOpenPanna(value.replace(/[^0-9]/g, '').slice(0, 3));
@@ -96,28 +84,32 @@ const HalfSangamScreen = ({ navigation, route }) => {
             Alert.alert('No Bids', 'Please add at least one bid before submitting.');
             return;
         }
-    
+
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
                 navigation.navigate('Login');
                 return;
             }
-    
+
             const gameDate = moment().format('YYYY-MM-DD');
             const openingTime = new Date(); // Optional: adjust based on your logic
-    
+            const gameIds = items?._id;
+            if (!gameIds) {
+                alert('Game ID is missing. Please try again.');
+                return;
+            }
             for (let item of addedItems) {
                 const payload = {
-                    singleDigit: parseInt(item.sangam.split('-')[1]),
-                    panaNumber: item.sangam.split('-')[0],
+                    gameId: gameIds,
+                    closeDigit: parseInt(item.sangam.split('-')[1]),
+                    openPana: item.sangam.split('-')[0],
                     amount: parseInt(item.points),
-                    gameType: items.name || "", // fallback gameType
-                    gameDate: gameDate,
-                    openingTime: openingTime,
+                    gameType: gamename, // fallback gameType
+                    betType: "close",
                 };
-    
-                const response = await fetch('http://192.168.1.7:3000/api/halfsangam/add', {
+
+                const response = await fetch('http://192.168.1.7:3000/api/starline/bet/place', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -125,25 +117,25 @@ const HalfSangamScreen = ({ navigation, route }) => {
                     },
                     body: JSON.stringify(payload),
                 });
-    
+
                 const result = await response.json();
-    
+
                 if (!response.ok) {
                     throw new Error(result.message || 'Something went wrong');
                 }
-    
+
                 console.log('Response:', result);
             }
-    
+
             Alert.alert('Success', `Successfully submitted ${addedItems.length} bids.`);
             setAddedItems([]);
-    
+
         } catch (error) {
             console.error('Submit error:', error);
             Alert.alert('Error', error.message || 'Failed to submit bids.');
         }
     };
-    
+
 
 
     const renderItem = ({ item }) => (
@@ -182,10 +174,7 @@ const HalfSangamScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
 
-            {/* Use ScrollView only if needed, otherwise let FlatList handle scroll */}
-            {/* Or wrap form elements in a View and list in FlatList */}
             <View style={styles.contentContainer}>
-                {/* Date Picker Area */}
                 <View style={styles.dateContainer}>
                     <View style={styles.dateDisplay}>
                         <Text style={styles.dateText}>{currentDate}</Text>
@@ -194,7 +183,6 @@ const HalfSangamScreen = ({ navigation, route }) => {
                     </TouchableOpacity>
                 </View>
 
-               x
 
                 {/* Input Form */}
                 <View style={styles.form}>
