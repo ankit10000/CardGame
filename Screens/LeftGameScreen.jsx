@@ -32,37 +32,37 @@ const LeftGameScreen = ({ navigation, route }) => {
   const { items } = route.params;
   console.log('Game Data:', items.id);
   const handleLeftGamePress = async () => {
-  const token = await AsyncStorage.getItem('token');
-  try {
-    const res = await fetch(`http://192.168.1.3:3000/api/galidesawar/place-bet`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        gameId: items.id,
-        betType: 'left',
-        number: leftDigit,
-        amount: amount,
-      }),
-    });
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await fetch(`http://192.168.1.3:3000/api/galidesawar/place-bet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          gameId: items.id,
+          betType: 'left',
+          number: leftDigit,
+          amount: amount,
+        }),
+      });
 
-    const data = await res.json();
-    console.log('Response:', data);
+      const data = await res.json();
+      console.log('Response:', data);
 
-    if (res.ok) {
-      Alert.alert('Success', 'Bet placed successfully!');
-      setLeftDigit('');
-      setAmount('');
-    } else {
-      Alert.alert('Error', data.message || 'Failed to place bet. Please try again.');
+      if (res.ok) {
+        Alert.alert('Success', 'Bet placed successfully!');
+        setLeftDigit('');
+        setAmount('');
+      } else {
+        Alert.alert('Error', data.message || 'Failed to place bet. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error placing bet:', error);
+      Alert.alert('Error', 'Failed to place bet. Please try again.');
     }
-  } catch (error) {
-    console.error('Error placing bet:', error);
-    Alert.alert('Error', 'Failed to place bet. Please try again.');
-  }
-};
+  };
 
 
   const [leftDigit, setLeftDigit] = useState('');

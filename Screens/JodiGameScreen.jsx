@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Helper to format date like "Mon-21-April-2025"
 const formatDateForDisplay = (date) => {
   const options = { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' };
@@ -27,41 +27,43 @@ const formatDateForDisplay = (date) => {
   return formatted;
 };
 
-const JodiGameScreen = ({ navigation }) => { // Assuming navigation prop
+const JodiGameScreen = ({ navigation, route }) => { // Assuming navigation prop
+    const { items } = route.params;
   const [leftDigit, setLeftDigit] = useState('');
   const [amount, setAmount] = useState('');
   const currentDate = new Date(); // Or get relevant date from state/props
 
-  const handleAddBid = () => {
-    // Basic Validation
-    if (!leftDigit || !amount) {
-      Alert.alert('Missing Info', 'Please enter both Left Digit and Amount.');
-      return;
-    }
-    if (isNaN(Number(leftDigit)) || isNaN(Number(amount))) {
-      Alert.alert('Invalid Input', 'Please enter valid numbers for Digit and Amount.');
-      return;
-    }
-    if (Number(leftDigit) < 0 || Number(leftDigit) > 9) {
-      Alert.alert('Invalid Digit', 'Left Digit must be between 0 and 9.');
-      return;
-    }
-    if (Number(amount) <= 0) {
-      Alert.alert('Invalid Amount', 'Amount must be greater than 0.');
-      return;
-    }
+  const handleAddBid = async () => {
+   const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await fetch(`http://192.168.1.3:3000/api/galidesawar/place-bet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          gameId: items.id,
+          betType: 'jodi',
+          number: leftDigit,
+          amount: amount,
+        }),
+      });
 
+      const data = await res.json();
+      console.log('Response:', data);
 
-    console.log('Adding Bid:', {
-      date: formatDateForDisplay(currentDate),
-      digit: leftDigit,
-      amount: amount,
-    });
-    // --- Add your bid submission logic here ---
-    Alert.alert('Success', `Bid placed for digit ${leftDigit} with amount ${amount}`);
-    // Optionally clear fields after submission
-    setLeftDigit('');
-    setAmount('');
+      if (res.ok) {
+        Alert.alert('Success', 'Bet placed successfully!');
+        setLeftDigit('');
+        setAmount('');
+      } else {
+        Alert.alert('Error', data.message || 'Failed to place bet. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error placing bet:', error);
+      Alert.alert('Error', 'Failed to place bet. Please try again.');
+    }
   };
 
   // Function to handle back navigation
@@ -104,7 +106,7 @@ const JodiGameScreen = ({ navigation }) => { // Assuming navigation prop
                 value={leftDigit}
                 onChangeText={setLeftDigit}
                 keyboardType="number-pad" // Use number-pad for single digits
-                maxLength={1} // Limit to single digit
+                maxLength={2} // Limit to single digit
               />
 
               <TextInput

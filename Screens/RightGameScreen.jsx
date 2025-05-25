@@ -1,4 +1,4 @@
-// src/screens/LeftDigitScreen.js
+
 import React, { useState } from 'react';
 import {
   View,
@@ -14,57 +14,59 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Helper to format date like "Mon-21-April-2025"
 const formatDateForDisplay = (date) => {
   const options = { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' };
-  // Replace commas potentially added by toLocaleDateString and adjust format
+  
   let formatted = date.toLocaleDateString('en-GB', options).replace(/,/g, '');
-  // Example manual formatting if toLocaleDateString isn't exact:
+  
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   formatted = `${days[date.getDay()]}-${('0' + date.getDate()).slice(-2)}-${months[date.getMonth()]}-${date.getFullYear()}`;
   return formatted;
 };
 
-const RightGameScreen = ({ navigation }) => { // Assuming navigation prop
+const RightGameScreen = ({ navigation, route }) => { 
+  const { items } = route.params;
   const [leftDigit, setLeftDigit] = useState('');
   const [amount, setAmount] = useState('');
-  const currentDate = new Date(); // Or get relevant date from state/props
+  const currentDate = new Date(); 
 
-  const handleAddBid = () => {
-    // Basic Validation
-    if (!leftDigit || !amount) {
-      Alert.alert('Missing Info', 'Please enter both Left Digit and Amount.');
-      return;
-    }
-    if (isNaN(Number(leftDigit)) || isNaN(Number(amount))) {
-      Alert.alert('Invalid Input', 'Please enter valid numbers for Digit and Amount.');
-      return;
-    }
-    if (Number(leftDigit) < 0 || Number(leftDigit) > 9) {
-      Alert.alert('Invalid Digit', 'Left Digit must be between 0 and 9.');
-      return;
-    }
-    if (Number(amount) <= 0) {
-      Alert.alert('Invalid Amount', 'Amount must be greater than 0.');
-      return;
-    }
+  const handleAddBid = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await fetch(`http://192.168.1.3:3000/api/galidesawar/place-bet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          gameId: items.id,
+          betType: 'right',
+          number: leftDigit,
+          amount: amount,
+        }),
+      });
 
+      const data = await res.json();
+      console.log('Response:', data);
 
-    console.log('Adding Bid:', {
-      date: formatDateForDisplay(currentDate),
-      digit: leftDigit,
-      amount: amount,
-    });
-    // --- Add your bid submission logic here ---
-    Alert.alert('Success', `Bid placed for digit ${leftDigit} with amount ${amount}`);
-    // Optionally clear fields after submission
-    setLeftDigit('');
-    setAmount('');
+      if (res.ok) {
+        Alert.alert('Success', 'Bet placed successfully!');
+        setLeftDigit('');
+        setAmount('');
+      } else {
+        Alert.alert('Error', data.message || 'Failed to place bet. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error placing bet:', error);
+      Alert.alert('Error', 'Failed to place bet. Please try again.');
+    }
   };
 
-  // Function to handle back navigation
+  
   const handleBackPress = () => {
     if (navigation) {
       navigation.goBack();
@@ -103,8 +105,8 @@ const RightGameScreen = ({ navigation }) => { // Assuming navigation prop
                 placeholderTextColor="#999"
                 value={leftDigit}
                 onChangeText={setLeftDigit}
-                keyboardType="number-pad" // Use number-pad for single digits
-                maxLength={1} // Limit to single digit
+                keyboardType="number-pad" 
+                maxLength={1} 
               />
 
               <TextInput
@@ -151,24 +153,24 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center', // Center content vertically
+    justifyContent: 'center', 
   },
   container: {
     marginHorizontal: 20,
     padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Semi-transparent background for the form
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', 
     borderRadius: 15,
     alignItems: 'center',
     borderColor: 'rgba(255, 255, 255, 0.2)',
     borderWidth: 1,
   },
   dateDisplay: {
-    backgroundColor: '#4a0e75', // Purple background for date
+    backgroundColor: '#4a0e75', 
     paddingVertical: 8,
     paddingHorizontal: 25,
-    borderRadius: 20, // Pill shape
-    marginBottom: 30, // Space below date
-    alignSelf: 'center', // Center the date display
+    borderRadius: 20, 
+    marginBottom: 30, 
+    alignSelf: 'center', 
     elevation: 3,
   },
   dateText: {
@@ -187,23 +189,23 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     fontSize: 16,
-    marginBottom: 20, // Space between inputs
-    width: '100%', // Take full width within wrapper
+    marginBottom: 20, 
+    width: '100%', 
     borderWidth: 1,
     borderColor: '#ddd',
   },
   submitButton: {
-    backgroundColor: '#f0c14b', // Yellow color
+    backgroundColor: '#f0c14b', 
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 8,
-    marginTop: 10, // Space above button
-    width: '100%', // Take full width
+    marginTop: 10, 
+    width: '100%', 
     alignItems: 'center',
     elevation: 3,
   },
   submitButtonText: {
-    color: '#111', // Dark text
+    color: '#111', 
     fontSize: 16,
     fontWeight: 'bold',
   },
