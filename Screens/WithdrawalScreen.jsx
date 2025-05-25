@@ -60,7 +60,7 @@ const WithdrawalScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://192.168.1.7:3000/api/withdrawal/create', {
+      const response = await fetch('http://192.168.1.3:3000/api/withdrawal/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

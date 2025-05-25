@@ -106,7 +106,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
 
-                const response = await axios.post('http://192.168.1.7:3000/api/starline/bet/place', payload, { headers });
+                const response = await axios.post('http://192.168.1.3:3000/api/starline/bet/place', payload, { headers });
                 return response.data;
             }));
 

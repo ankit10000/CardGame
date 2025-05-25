@@ -63,7 +63,7 @@ const PanelChart = ({route}) => {
             if (!token) return;
     
             // 1. Get all starline games
-            const gameListResponse = await axios.get('http://192.168.1.7:3000/api/starline/game/all', {
+            const gameListResponse = await axios.get('http://192.168.1.3:3000/api/starline/game/all', {
                 headers: { Authorization: `Bearer ${token}` }
             });
     
@@ -72,7 +72,7 @@ const PanelChart = ({route}) => {
                 console.warn('Selected game not found');
                 return;
             }
-            const response = await axios.get('http://192.168.1.7:3000/api/game-result/getAllResults');
+            const response = await axios.get('http://192.168.1.3:3000/api/game-result/getAllResults');
             const allResults = response.data;
     
             // ✅ Filter data based on the selected game

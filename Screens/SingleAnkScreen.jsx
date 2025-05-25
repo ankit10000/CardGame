@@ -89,7 +89,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
 
 
                 const response = await axios.post(
-                    'http://192.168.1.7:3000/api/starline/bet/place',
+                    'http://192.168.1.3:3000/api/starline/bet/place',
                     payload,
                     {
                         headers: {

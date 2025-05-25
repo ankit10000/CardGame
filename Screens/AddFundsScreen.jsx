@@ -11,7 +11,8 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     Platform,
-    Alert
+    Alert,
+    Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
@@ -55,14 +56,38 @@ const AddFundsScreen = () => {
         setAmount(String(value));
     };
 
+    const [images, setImages] = useState([]);
+
+    const fetchImages = async () => {
+        try {
+            const res = await axios.get('http://192.168.1.3:3000/api/homedp/latest-qr');
+            console.log('Fetched Image Response:', res.data);
+
+            if (res.data && res.data.data) {
+                setImages([res.data.data]); // Wrap the single object in an array
+            } else {
+                setImages([]);
+                toast.warn('No image found.');
+            }
+        } catch (error) {
+            console.error('Error fetching image:', error.message);
+            toast.error('Failed to fetch image.');
+        }
+    };
+
     const handleTextInputChange = (text) => {
         const numericValue = text.replace(/[^0-9]/g, '');
-        setAmount(numericValue);
+        setAmount(numericVafdlue);
         if (selectedAmount !== null && numericValue !== String(selectedAmount)) {
             setSelectedAmount(null);
         }
     };
-
+    const [utrNumber, setUtrNumber] = useState('');
+    //mujhe utr number bhi chahiye jo ki user input karega
+    const handleUtrInputChange = (text) => {
+        const numericValue = text; // Allow both string and number input (no filtering)
+        setUtrNumber(numericValue);
+    }
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -76,6 +101,7 @@ const AddFundsScreen = () => {
         };
 
         checkLoginStatus();
+        fetchImages();
     }, []);
 
     const handlePayNow = async () => {
@@ -98,10 +124,10 @@ const AddFundsScreen = () => {
             }
 
             const response = await axios.post(
-                'http://192.168.1.7:3000/api/wallet/add',
+                'http://192.168.1.3:3000/api/wallet/add',
                 {
                     amount: numericAmount,
-                    note: 'Initial top-up'
+                    note: utrNumber, 
                 },
                 {
                     headers: {
@@ -156,13 +182,32 @@ const AddFundsScreen = () => {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.card}>
-                        <Text style={styles.fadedCardTitle}>Enter Amount</Text>
+                    //mujhe yaha pr ek qr code chahiye jo ki get hoga api se show hoga
+
+                        {images.map((item, index) => (
+                            <Image
+                                key={index}
+                                source={{ uri: `http://192.168.1.3:3000/uploads/QRcode/${item.image}` }}
+                                style={{ width: 200, height: 200, marginBottom: 20 }}
+                                resizeMode="cover"
+                            />
+                        ))}
+
                         <TextInput
                             style={styles.input}
                             placeholder="Enter Amount"
                             placeholderTextColor={COLORS.inputPlaceholder}
                             value={amount}
                             onChangeText={handleTextInputChange}
+                            keyboardType="numeric"
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter UTR Number"
+                            placeholderTextColor={COLORS.inputPlaceholder}
+                            value={utrNumber}
+                            onChangeText={handleUtrInputChange}
                             keyboardType="numeric"
                         />
 
@@ -230,7 +275,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-  
+
     scrollContent: {
         flexGrow: 1,
         padding: 20,

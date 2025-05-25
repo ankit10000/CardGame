@@ -31,36 +31,28 @@ const BidHistoryScreen = ({ navigation }) => {
             try {
                 setLoading(true);
                 const token = await AsyncStorage.getItem('token');
+                const response1 = await axios.get('http://192.168.1.3:3000/api/auth/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const userId = response1.data._id;
                 if (!token) {
                     console.log('No token found');
                     setLoading(false);
                     return;
                 }
-
-                const profileResponse = await axios.get('http://192.168.1.7:3000/api/auth/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const userId = profileResponse.data._id;
-
-                const winnersResponse = await axios.get('http://192.168.1.7:3000/api/galidesawar/all-winners', {
+                const response = await axios.get('http://192.168.1.3:3000/api/galidesawar/all-bets', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                const allWinners = winnersResponse.data.winners || [];
+                const allWinners = response.data.allBets || [];
                 const filteredWinners = allWinners.filter(winner => winner.userId === userId);
-
-                if (filteredWinners.length > 0) {
-                    setUserWinners(filteredWinners);
-                    setNoDataFound(false);
-                } else {
-                    setUserWinners([]);
-                    setNoDataFound(true);
-                }
-
+                console.log('Filtered Winners:', filteredWinners);
+                setUserWinners(filteredWinners);
+                setNoDataFound(false);
             } catch (error) {
                 console.error('Error fetching winners:', error);
                 setNoDataFound(true);
@@ -69,8 +61,10 @@ const BidHistoryScreen = ({ navigation }) => {
             }
         };
 
+
         fetchData();
     }, []);
+
 
 
     const handleBackPress = () => {
@@ -118,7 +112,7 @@ const BidHistoryScreen = ({ navigation }) => {
                                     <Text style={styles.cardText}>Number: {item.number}</Text>
                                     <Text style={styles.cardText}>Bet Type: {item.betType}</Text>
                                     <Text style={styles.cardText}>Amount: ₹{item.amount}</Text>
-                                    <Text style={styles.cardText}>Winning: ₹{item.winningAmount}</Text>
+                                    <Text style={styles.cardText}>Status: ₹{item.status}</Text>
                                     <Text style={styles.cardText}>Result :- {`\n`} Left : {item.result.left}{`\n`} Right : {item.result.right}{`\n`} Jodi : {item.result.jodi}</Text>
                                 </View>
                             ))}

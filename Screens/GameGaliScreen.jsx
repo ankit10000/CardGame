@@ -5,10 +5,10 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    ScrollView,
     StatusBar,
     ImageBackground,
     ActivityIndicator,
+    FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -19,57 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const GameGaliScreen = ({ navigation }) => {
     const [gameData, setGameData] = useState([]);
     const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        const fetchGamesAndWinners = async () => {
-            const token = await AsyncStorage.getItem('token');
-            try {
-                const [gamesResponse, winnersResponse] = await Promise.all([
-                    axios.get('http://192.168.1.7:3000/api/galidesawar/all-games', {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                    axios.get('http://192.168.1.7:3000/api/galidesawar/all-winners', {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                ]);
-
-                const currentTime = new Date();
-                const winners = winnersResponse.data.winners;
-
-                const games = gamesResponse.data.games.map((game) => {
-                    const [hours, minutes] = game.closeTime.split(':').map(Number);
-                    const closeDateTime = new Date();
-                    closeDateTime.setHours(hours, minutes, 0, 0);
-                    const status = currentTime < closeDateTime ? 'open' : 'close';
-
-                    const winner = winners.find(w => w.gameId === game._id);
-
-
-                    if (winner) {
-                        console.log(`Winner found for game ${game.gameName}:`, winner.result?.jodi);
-                    }
-
-                    return {
-                        id: game._id,
-                        name: game.gameName,
-                        time: game.closeTime,
-                        result: status === 'close' && winner ? winner.result?.jodi || '**' : '**',
-
-                        status: status,
-                    };
-                });
-
-                setGameData(games);
-            } catch (error) {
-                console.error('Error fetching games or winners:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGamesAndWinners();
-    }, []);
-
-
+    const [refreshing, setRefreshing] = useState(false);
 
     const handleBidHistoryPress = () => {
         navigation.navigate('BidHistory');
@@ -78,6 +28,53 @@ const GameGaliScreen = ({ navigation }) => {
     const handleWinHistoryPress = () => {
         navigation.navigate('WinGaliHistory');
     };
+
+    const fetchGamesAndWinners = async () => {
+        setRefreshing(true);
+        const token = await AsyncStorage.getItem('token');
+        try {
+            const [gamesResponse, winnersResponse] = await Promise.all([
+                axios.get('http://192.168.1.3:3000/api/galidesawar/all-games', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+                axios.get('http://192.168.1.3:3000/api/galidesawar/all-winners', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+            ]);
+
+            const currentTime = new Date();
+            const winners = winnersResponse.data.winners;
+
+            const games = gamesResponse.data.games.map((game) => {
+                const [hours, minutes] = game.closeTime.split(':').map(Number);
+                const closeDateTime = new Date();
+                closeDateTime.setHours(hours, minutes, 0, 0);
+                const status = currentTime < closeDateTime ? 'open' : 'close';
+
+                const winner = winners.find(w => w.gameId === game._id);
+
+                return {
+                    id: game._id,
+                    name: game.gameName,
+                    time: game.closeTime,
+                    result: status === 'close' && winner ? winner.result?.jodi || '**' : '**',
+                    status: status,
+                };
+            });
+
+            setGameData(games);
+            console.log('Games id', gameData);
+        } catch (error) {
+            console.error('Error fetching games or winners:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchGamesAndWinners();
+    }, []);
 
     return (
         <>
@@ -100,7 +97,7 @@ const GameGaliScreen = ({ navigation }) => {
                         <View style={styles.ratesContainer}>
                             <View style={styles.ratesHeader}>
                                 <Text style={styles.ratesTitle}>Game Rates</Text>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => navigation.navigate('GalidesawarChart', { items: gameData })}>
                                     <Text style={styles.chartLink}>Galidesawar Chart</Text>
                                 </TouchableOpacity>
                             </View>
@@ -132,39 +129,41 @@ const GameGaliScreen = ({ navigation }) => {
                         {loading ? (
                             <ActivityIndicator size="large" color="#FFD700" style={{ marginTop: 20 }} />
                         ) : (
-                            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                                <View style={styles.gameListContainer}>
-                                    {gameData.map((game) => (
-                                        <View key={game.id} style={styles.gameCard}>
-                                            <View style={styles.gameInfo}>
-                                                <Text style={styles.gameName}>{game.name}</Text>
-                                                <Text style={styles.gameResult}>{game.result}</Text>
-                                                <Text style={styles.gameTime}>{game.time}</Text>
-                                            </View>
-                                            {game.status === 'close' ? (
-                                                <TouchableOpacity style={styles.cardStatusContainer}>
-                                                    <View style={styles.closeIconCircle}>
-                                                        <Ionicons name="close" size={22} color={"#ffffff"} />
-                                                    </View>
-                                                    <Text style={styles.closeText}>{game.status.toUpperCase()}</Text>
-                                                </TouchableOpacity>
-                                            ) : (
-                                                <TouchableOpacity style={styles.cardStatusContainer}>
-                                                    <View style={styles.playIconCircle}>
-                                                        <Ionicons
-                                                            name="play"
-                                                            size={22}
-                                                            color={"#ffffff"}
-                                                            onPress={() => navigation.navigate('GameGali', { game })}
-                                                        />
-                                                    </View>
-                                                    <Text style={styles.runningText}>{game.status.toUpperCase()}</Text>
-                                                </TouchableOpacity>
-                                            )}
+                            <FlatList
+                                data={gameData}
+                                keyExtractor={item => item.id}
+                                contentContainerStyle={styles.scrollViewContent}
+                                refreshing={refreshing}
+                                onRefresh={fetchGamesAndWinners}
+                                renderItem={({ item: game }) => (
+                                    <View style={styles.gameCard}>
+                                        <View style={styles.gameInfo}>
+                                            <Text style={styles.gameName}>{game.name}</Text>
+                                            <Text style={styles.gameResult}>{game.result}</Text>
+                                            <Text style={styles.gameTime}>{game.time}</Text>
                                         </View>
-                                    ))}
-                                </View>
-                            </ScrollView>
+                                        {game.status === 'close' ? (
+                                            <TouchableOpacity style={styles.cardStatusContainer}>
+                                                <View style={styles.closeIconCircle}>
+                                                    <Ionicons name="close" size={22} color={"#ffffff"} />
+                                                </View>
+                                                <Text style={styles.closeText}>{game.status.toUpperCase()}</Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity
+                                                style={styles.cardStatusContainer}
+                                                onPress={() => navigation.navigate('GameGali', { game })}
+                                            >
+                                                <View style={styles.playIconCircle}>
+                                                    <Ionicons name="play" size={22} color={"#ffffff"} />
+                                                </View>
+                                                <Text style={styles.runningText}>{game.status.toUpperCase()}</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                                style={styles.gameListContainer}
+                            />
                         )}
                     </ImageBackground>
                 </SafeAreaView>
@@ -308,12 +307,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-
-
-
-
-
-
     },
     gameInfo: {
         flex: 1,
@@ -350,12 +343,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-
-
-
-
-
-
 });
 
 export default GameGaliScreen;

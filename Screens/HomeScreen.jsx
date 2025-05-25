@@ -92,54 +92,65 @@ const HomeScreen = () => {
   const [marketData, setMarketData] = useState([]);
 
   // const [marketData, setMarketData] = useState([]);
-  const fetchMarketData = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await axios.get('http://192.168.1.7:3000/api/starline/game/all', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+ const fetchMarketData = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const res = await axios.get('http://192.168.1.3:3000/api/starline/game/all', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      const now = new Date();
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // Format: 'YYYY-MM-DD'
 
-      const updatedData = res.data.data.map((game) => {
-        const gameDate = new Date(game.gameDate); // use game's date (e.g., 2025-05-15T18:30:00.000Z)
+    const updatedData = res.data.data.map((game) => {
+      const gameDate = new Date(game.gameDate);
+      const gameDateString = gameDate.toISOString().split('T')[0];
 
-        const [openHour, openMinute] = game.openTime.split(':').map(Number);
-        const [closeHour, closeMinute] = game.closeTime.split(':').map(Number);
+      const [openHour, openMinute] = game.openTime.split(':').map(Number);
+      const [closeHour, closeMinute] = game.closeTime.split(':').map(Number);
 
-        const openTime = new Date(gameDate);
-        openTime.setHours(openHour, openMinute, 0, 0);
+      const openTime = new Date(gameDate);
+      openTime.setHours(openHour, openMinute, 0, 0);
 
-        const closeTime = new Date(gameDate);
-        closeTime.setHours(closeHour, closeMinute, 0, 0);
+      const closeTime = new Date(gameDate);
+      closeTime.setHours(closeHour, closeMinute, 0, 0);
 
-        let status = 'Closed';
-        if (now < openTime) {
-          status = 'Running';
-        } else if (now >= openTime && now < closeTime) {
-          status = 'Running';
+      let status = 'Closed';
+      if (now < openTime) {
+        status = 'Running';
+      } else if (now >= openTime && now < closeTime) {
+        status = 'Running';
+      }
+
+      return {
+        ...game,
+        gameDateString,
+        isToday: gameDateString === today,
+        status,
+        result: {
+          openDigits: game.result?.openDigits || '***',
+          closeDigits: game.result?.closeDigits || '***',
+          openResult: game.result?.openResult || '***',
+          closeResult: game.result?.closeResult || '***',
+          jodiResult: game.result?.jodiResult || '***',
         }
+      };
+    });
 
-        return {
-          ...game,
-          status,
-          result: {
-            openDigits: game.result?.openDigits || '***',
-            closeDigits: game.result?.closeDigits || '***',
-            openResult: game.result?.openResult || '***',
-            closeResult: game.result?.closeResult || '***',
-            jodiResult: game.result?.jodiResult || '***',
-          }
-        };
-      });
+    // Sort so today's games come first
+    updatedData.sort((a, b) => {
+      if (a.isToday && !b.isToday) return -1;
+      if (!a.isToday && b.isToday) return 1;
+      return new Date(a.gameDate) - new Date(b.gameDate); // fallback sort by date
+    });
 
-      setMarketData(updatedData);
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-    }
-  };
+    setMarketData(updatedData);
+  } catch (error) {
+    console.error('Error fetching market data:', error);
+  }
+};
 
 
 
@@ -149,7 +160,7 @@ const HomeScreen = () => {
 
   const fetchDpImages = async () => {
     try {
-      const res = await axios.get('http://192.168.1.7:3000/api/homedp/all-dpimage');
+      const res = await axios.get('http://192.168.1.3:3000/api/homedp/all-dpimage');
       setDpImages(res.data.data);
 
     } catch (err) {
@@ -235,7 +246,7 @@ const HomeScreen = () => {
             {dpImages.map((item, index) => (
               <Image
                 key={index}
-                source={{ uri: `http://192.168.1.7:3000/uploads/homedp/${item.image}` }}
+                source={{ uri: `http://192.168.1.3:3000/uploads/homedp/${item.image}` }}
                 style={styles.image}
                 resizeMode="cover"
               />

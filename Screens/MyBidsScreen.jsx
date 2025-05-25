@@ -34,7 +34,7 @@ const MyBidsScreen = ({ navigation }) => {
                 return;
             }
 
-            const response = await fetch('http://192.168.1.7:3000/api/allbeat/my-bets', {
+            const response = await fetch('http://192.168.1.3:3000/api/starline/bet/all-bets', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -48,27 +48,7 @@ const MyBidsScreen = ({ navigation }) => {
             }
 
             const data = await response.json();
-            const {
-                singleBets = [],
-                doubleBets = [],
-                singlePanaBets = [],
-                doublePanaBets = [],
-                triplePanaBets = [],
-                halfSangamBets = [],
-                fullSangamBets = [],
-            } = data.data;
-
-            const formattedBids = [
-                ...singleBets.map(bid => ({ ...bid, type: 'Single Bet' })),
-                ...doubleBets.map(bid => ({ ...bid, type: 'Double Bet' })),
-                ...singlePanaBets.map(bid => ({ ...bid, type: 'Single Pana Bet' })),
-                ...doublePanaBets.map(bid => ({ ...bid, type: 'Double Pana Bet' })),
-                ...triplePanaBets.map(bid => ({ ...bid, type: 'Triple Pana Bet' })),
-                ...halfSangamBets.map(bid => ({ ...bid, type: 'Half Sangam Bet' })),
-                ...fullSangamBets.map(bid => ({ ...bid, type: 'Full Sangam Bet' })),
-            ];
-
-            formattedBids.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const formattedBids = data.data || [];
 
             setBids(formattedBids);
         } catch (error) {
@@ -86,21 +66,29 @@ const MyBidsScreen = ({ navigation }) => {
 
     const renderStatementItem = ({ item }) => (
         <View style={styles.itemContainer} key={item._id}>
-        <View style={styles.row}>
+            <View style={styles.row}>
                 <Text style={styles.label}>Game Name:</Text>
-                <Text style={styles.value}>{item.gameType}</Text>
+                <Text style={styles.value}>{item.game?.name || 'N/A'}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label}>Game Type:</Text>
-                <Text style={styles.value}>{item.type}</Text>
+                <Text style={styles.value}>{item.gameType}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label}>Bet Type:</Text>
+                <Text style={styles.value}>{item.betType}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label}>Bet Info:</Text>
+                <Text style={styles.value}>{item.betInfo}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label}>Amount:</Text>
                 <Text style={styles.value}>{item.amount || 'N/A'}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.label}>Selected Number:</Text>
-                <Text style={styles.value}>{item.digit || item.panaNumber || `open ${item.openPana}\n close ${item.closePana}` || 'N/A' }</Text>
+                <Text style={styles.label}>Winning Amount:</Text>
+                <Text style={styles.value}>{item.winningAmount || '0'}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label}>Status:</Text>
@@ -111,10 +99,10 @@ const MyBidsScreen = ({ navigation }) => {
             <View style={styles.row}>
                 <Text style={styles.label}>Date:</Text>
                 <Text style={styles.value}>
-                    {item.createdAt
-                        ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                    {item.date
+                        ? new Date(item.date).toLocaleString('en-US', {
                             year: 'numeric',
-                            month: 'long',
+                            month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
@@ -174,7 +162,6 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         height: 60,
     },
-   
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',

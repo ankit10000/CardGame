@@ -42,6 +42,7 @@ import JodiGameScreen from './Screens/JodiGameScreen';
 import ThreeGameScreen from './Screens/ThreeGameScreen';
 import BidHistoryScreen from './Screens/BidHistoryScreen';
 import WinHistoryGali from './Screens/WinHistoryGali';
+import GalidesawarChart from './Screens/GalidesawarChart';
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -238,6 +239,8 @@ export default function App() {
           <Stack.Screen name="JodiGali" component={JodiGameScreen} />
           <Stack.Screen name="BidHistory" component={BidHistoryScreen} />
           <Stack.Screen name="WinGaliHistory" component={WinHistoryGali} />
+          <Stack.Screen name="GalidesawarChart" component={GalidesawarChart} />
+
 
         </Stack.Navigator>
       </NavigationContainer>

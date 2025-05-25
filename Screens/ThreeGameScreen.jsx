@@ -45,15 +45,16 @@ const GridItem = React.memo(({ itemData, onPress }) => (
 
 const ThreeGameScreen = ({ navigation, route }) => {
 
-    const { item } = route.params; 
+    const { game } = route.params; 
+    console.log("Received item:", game);
 
     const handleItemPress = useCallback((selectedOption) => {
         if (selectedOption.nav) {
-            navigation.navigate(selectedOption.nav, { items: item }); 
+            navigation.navigate(selectedOption.nav, { items: game }); 
         } else {
             console.warn(`Navigation target not defined for item: ${selectedOption.mainLabel}`);
         }
-    }, [navigation, item]); 
+    }, [navigation, game]); 
 
     
     useEffect(() => {
@@ -79,7 +80,7 @@ const ThreeGameScreen = ({ navigation, route }) => {
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={26} color="#FFFFFF" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{item?.name ? item.name.toUpperCase() : 'GAME'}</Text>
+                <Text style={styles.headerTitle}>{game?.name ? game.name.toUpperCase() : 'GAME'}</Text>
                 <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('AddFund')}>
                     <WallettScreen />
                 </TouchableOpacity>
