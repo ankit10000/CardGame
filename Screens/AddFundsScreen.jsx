@@ -166,8 +166,6 @@ const AddFundsScreen = () => {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.card}>
-                    //mujhe yaha pr ek qr code chahiye jo ki get hoga api se show hoga
-
                         {images.map((item, index) => (
                             <Image
                                 key={index}

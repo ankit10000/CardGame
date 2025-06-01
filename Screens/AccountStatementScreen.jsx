@@ -29,7 +29,6 @@ const AccountStatementScreen = ({ navigation }) => {
         try {
             const response = await apiService.get('/wallet/get');
             
-            // Sort transactions by createdAt DESC (latest first)
             const sortedTransactions = response.data.transactions.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             );

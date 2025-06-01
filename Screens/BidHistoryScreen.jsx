@@ -14,10 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WallettScreen from '../components/WallettScreen';
-import axios from 'axios';
-
-// Helper to format date as YYYY-MM-DD
-
+import apiService from '../services/apiService';
 
 const BidHistoryScreen = ({ navigation }) => {
     const [noDataFound, setNoDataFound] = useState(true);
@@ -30,29 +27,16 @@ const BidHistoryScreen = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const token = await AsyncStorage.getItem('token');
-                const response1 = await axios.get('https://mtka-api.vercel.app/api/auth/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response1 = await apiService.get('/auth/profile');
                 const userId = response1.data._id;
-                if (!token) {
-                    console.log('No token found');
-                    setLoading(false);
-                    return;
-                }
-                const response = await axios.get('https://mtka-api.vercel.app/api/galidesawar/all-bets', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                
+                const response = await apiService.get('/galidesawar/all-bets');
 
                 const allWinners = response.data.allBets || [];
                 const filteredWinners = allWinners.filter(winner => winner.userId === userId);
                 console.log('Filtered Winners:', filteredWinners);
                 setUserWinners(filteredWinners);
-                setNoDataFound(false);
+                setNoDataFound(filteredWinners.length === 0);
             } catch (error) {
                 console.error('Error fetching winners:', error);
                 setNoDataFound(true);
@@ -60,7 +44,6 @@ const BidHistoryScreen = ({ navigation }) => {
                 setLoading(false);
             }
         };
-
 
         fetchData();
     }, []);

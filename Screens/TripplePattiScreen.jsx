@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -30,9 +30,6 @@ const TripplePattiScreen = ({ navigation, route }) => {
     const [dropdownValue, setDropdownValue] = useState('open');
     const [showDropdownOptions, setShowDropdownOptions] = useState(false);
     const dropdownOptions = ['open', 'close'];
-    const [selectedPoints, setSelectedPoints] = useState(null);
-    const [selectedMarket, setSelectedMarket] = useState('OPEN');
-    const [digitInputs, setDigitInputs] = useState({});
     const currentDate = moment().format('DD / MM / YYYY');
     const [digitValues, setDigitValues] = useState({});
     const [selectedPoint, setSelectedPoint] = useState(null);
@@ -83,8 +80,6 @@ const TripplePattiScreen = ({ navigation, route }) => {
             return;
         }
 
-        const gameType = items.name;
-        const gameDate = moment().format("YYYY-MM-DD");
         const gameIds = items?._id;
         if (!gameIds) {
             alert('Game ID is missing. Please try again.');

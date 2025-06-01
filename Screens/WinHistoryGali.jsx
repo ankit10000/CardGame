@@ -61,25 +61,10 @@ const WinHistoryGali = ({ navigation }) => {
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            const token = await AsyncStorage.getItem('token');
-            const response1 = await axios.get('https://mtka-api.vercel.app/api/auth/profile', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const response1 = await apiService.get('/auth/profile');
             const userId = response1.data._id;
-            if (!token) {
-                console.log('No token found');
-                setLoading(false);
-                return;
-            }
-
-
-            const response = await axios.get('https://mtka-api.vercel.app/api/galidesawar/all-winners', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            
+            const response = await apiService.get('/galidesawar/all-winners');
 
             const allWinners = response.data.winners || [];
             const filteredWinners = allWinners.filter(winner => winner.userId === userId);

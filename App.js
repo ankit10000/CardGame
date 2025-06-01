@@ -1,7 +1,4 @@
-
-
 import 'react-native-gesture-handler';
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -24,7 +21,6 @@ import TripplePattiScreen from './Screens/TripplePattiScreen';
 import HalfSangamScreen from './Screens/HalfSangamScreen';
 import FullSangamScreen from './Screens/FullSangamScreen';
 import SpDpTpScreen from './Screens/SpDpTpScreen';
-
 import MyBidsScreen from './Screens/MyBidsScreen';
 import PaymentDetailsScreen from './Screens/PaymentDetailsScreen';
 import AccountStatementScreen from './Screens/AccountStatementScreen';
