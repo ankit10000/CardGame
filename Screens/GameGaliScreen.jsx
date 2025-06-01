@@ -13,8 +13,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 const GameGaliScreen = ({ navigation }) => {
     const [gameData, setGameData] = useState([]);
@@ -31,15 +31,10 @@ const GameGaliScreen = ({ navigation }) => {
 
     const fetchGamesAndWinners = async () => {
         setRefreshing(true);
-        const token = await AsyncStorage.getItem('token');
         try {
             const [gamesResponse, winnersResponse] = await Promise.all([
-                axios.get('https://mtka-api.vercel.app/api/galidesawar/all-games', {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
-                axios.get('https://mtka-api.vercel.app/api/galidesawar/all-winners', {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
+                apiService.get('/galidesawar/all-games'),
+                apiService.get('/galidesawar/all-winners'),
             ]);
 
             const currentTime = new Date();
