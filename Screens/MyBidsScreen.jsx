@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -13,7 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 const statusColors = {
     Pending: '#FFA500',
@@ -28,28 +28,8 @@ const MyBidsScreen = ({ navigation }) => {
     const fetchBids = async () => {
         setIsLoading(true);
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Token Error', 'Token not found');
-                return;
-            }
-
-            const response = await fetch('http://192.168.1.3:3000/api/starline/bet/all-bets', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to fetch bids');
-            }
-
-            const data = await response.json();
-            const formattedBids = data.data || [];
-
+            const response = await apiService.get('/starline/bet/all-bets');
+            const formattedBids = response.data.data || [];
             setBids(formattedBids);
         } catch (error) {
             console.error("Failed to fetch bid history:", error);

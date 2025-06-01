@@ -14,7 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 
@@ -116,17 +116,7 @@ const DoublePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
 
-                const response = await axios.post(
-                    'http://192.168.1.3:3000/api/starline/bet/place',
-                    payload,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
+                const response = await apiService.post('/starline/bet/place', payload);
                 console.log("Bet Response:", response.data);
             }
 

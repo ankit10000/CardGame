@@ -14,10 +14,9 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon1 from 'react-native-vector-icons/Ionicons';
-
+import apiService from '../services/apiService';
 
 const { width } = Dimensions.get('window');
 const PADDING = 15;
@@ -84,12 +83,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
             return;
         }
 
-        const headers = {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-        };
-
-        const gameType = items.name; // Or use selectedMarket if dynamic
+        const gameType = items.name;
         const gameDate = moment().format("YYYY-MM-DD");
         const gameIds = items?._id;
         if (!gameIds) {
@@ -106,7 +100,7 @@ const TripplePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
 
-                const response = await axios.post('http://192.168.1.3:3000/api/starline/bet/place', payload, { headers });
+                const response = await apiService.post('/starline/bet/place', payload);
                 return response.data;
             }));
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 const statusColors = {
     debit: '#FFA500',
@@ -27,37 +27,17 @@ const AccountStatementScreen = ({ navigation }) => {
     const fetchBids = async () => {
         setIsLoading(true);
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Token Error', 'Token not found');
-                return;
-            }
-
-            const response = await fetch('http://192.168.1.3:3000/api/wallet/get', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to fetch bids');
-            }
-
-            const data = await response.json();
+            const response = await apiService.get('/wallet/get');
             
             // Sort transactions by createdAt DESC (latest first)
-            const sortedTransactions = data.transactions.sort(
+            const sortedTransactions = response.data.transactions.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             );
 
             setBids(sortedTransactions);
-
         } catch (error) {
-            console.error("Failed to fetch bid history:", error);
-            Alert.alert('Error', error.message);
+            console.error('Error fetching transactions:', error);
+            Alert.alert('Error', 'Failed to fetch transaction history');
         } finally {
             setIsLoading(false);
         }

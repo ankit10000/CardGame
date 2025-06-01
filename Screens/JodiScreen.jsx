@@ -14,12 +14,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-
-
+import apiService from '../services/apiService';
 
 const pointsOptions = [5, 10, 20, 50, 100, 200, 500, 1000];
-
 
 const jodiDigits = Array.from({ length: 100 }, (_, i) => i.toString().padStart(2, '00'));
 
@@ -63,20 +60,8 @@ const JodiScreen = ({ navigation, route }) => {
                     amount: Number(amount),
                     betType: 'close',
                 };
-                
 
-
-                const response = await axios.post(
-                    'http://192.168.1.3:3000/api/starline/bet/place',
-                    payload,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
+                const response = await apiService.post('/starline/bet/place', payload);
                 results.push(response.data);
             }
 

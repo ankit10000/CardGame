@@ -17,7 +17,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
@@ -60,11 +60,11 @@ const AddFundsScreen = () => {
 
     const fetchImages = async () => {
         try {
-            const res = await axios.get('http://192.168.1.3:3000/api/homedp/latest-qr');
+            const res = await apiService.get('/homedp/latest-qr');
             console.log('Fetched Image Response:', res.data);
 
             if (res.data && res.data.data) {
-                setImages([res.data.data]); // Wrap the single object in an array
+                setImages([res.data.data]);
             } else {
                 setImages([]);
                 toast.warn('No image found.');
@@ -116,26 +116,10 @@ const AddFundsScreen = () => {
         }
 
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert("Session Expired", "Please login again.");
-                navigation.navigate('Login');
-                return;
-            }
-
-            const response = await axios.post(
-                'http://192.168.1.3:3000/api/wallet/add',
-                {
-                    amount: numericAmount,
-                    note: utrNumber, 
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const response = await apiService.post('/wallet/add', {
+                amount: numericAmount,
+                note: utrNumber,
+            });
 
             if (response.status === 200) {
                 Alert.alert("Success", `₹${numericAmount} added to wallet successfully.`);
@@ -145,8 +129,8 @@ const AddFundsScreen = () => {
                 Alert.alert("Failed", "Something went wrong. Try again.");
             }
         } catch (error) {
-            console.log('Error during payment:', error.response?.data || error.message);
-            Alert.alert("Error", error.response?.data?.message || "Failed to add funds.");
+            console.error('API Error:', error);
+            Alert.alert("Failed", error.response?.data?.message || "Something went wrong. Try again.");
         }
     };
 
@@ -187,7 +171,7 @@ const AddFundsScreen = () => {
                         {images.map((item, index) => (
                             <Image
                                 key={index}
-                                source={{ uri: `http://192.168.1.3:3000/uploads/QRcode/${item.image}` }}
+                                source={{ uri: `https://mtka-api.vercel.app/uploads/QRcode/${item.image}` }}
                                 style={{ width: 200, height: 200, marginBottom: 20 }}
                                 resizeMode="cover"
                             />

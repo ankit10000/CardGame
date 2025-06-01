@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Removed useEffect
+import React, { useState } from 'react';
 import {
     SafeAreaView,
     StatusBar,
@@ -13,37 +13,34 @@ import {
     ScrollView,
     Dimensions,
     Alert,
-    ActivityIndicator // Import ActivityIndicator
+    ActivityIndicator
 } from 'react-native';
-// Removed LinearGradient import
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
-import Icon from 'react-native-vector-icons/Feather'; // For the eye icon
+import apiService from '../services/apiService';
+import Icon from 'react-native-vector-icons/Feather';
 
 const { width, height } = Dimensions.get('window');
 
-// Use the same COLORS object from the updated LoginScreen
 const COLORS = {
-    background: '#3a0d4a', // Dark purple background
-    statusBar: '#2c0a38',  // Slightly darker status bar
+    background: '#3a0d4a',
+    statusBar: '#2c0a38',
     logoBackground: '#a30f0f',
     logoText: '#ffffff',
-    loginTabBackground: '#4d1a63', // Background for the "Sign Up" tab (can reuse loginTab style)
+    loginTabBackground: '#4d1a63',
     loginTabText: '#ffffff',
-    formBorder: '#e6bf55', // Gold border for the form container
-    inputBackground: '#3a0d4a', // Input background matches main bg
-    inputBorder: '#e6bf55', // Gold border for input
-    inputText: '#ffffff', // White text inside input
-    placeholderText: '#b0aeb1', // Light grey placeholder
-    buttonGradientStart: '#ffa500', // Orange color for buttons
-    buttonGradientEnd: '#ff8c00', // Not used if solid color, but keep for consistency if needed later
+    formBorder: '#e6bf55',
+    inputBackground: '#3a0d4a',
+    inputBorder: '#e6bf55',
+    inputText: '#ffffff',
+    placeholderText: '#b0aeb1',
+    buttonGradientStart: '#ffa500',
+    buttonGradientEnd: '#ff8c00',
     buttonText: '#ffffff',
-    secondaryText: '#dcdcdc', // Light grey text
-    activityIndicator: '#ffffff', // White indicator on orange button
+    secondaryText: '#dcdcdc',
+    activityIndicator: '#ffffff',
 };
 
-const SignUpScreen = () => {
-    const navigation = useNavigation();
+const SignUpScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
@@ -51,10 +48,9 @@ const SignUpScreen = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-    const [loading, setLoading] = useState(false); // Added loading state
+    const [loading, setLoading] = useState(false);
 
     const handleSignUp = async () => {
-        // Basic validation
         if (!username || !mobile || !email || !password || !confirmPassword) {
             Alert.alert('Error', 'Please fill all fields');
             return;
@@ -68,7 +64,7 @@ const SignUpScreen = () => {
              Alert.alert('Error', 'Please enter a valid email address');
              return;
         }
-        if (password.length < 6) { // Example: Minimum password length
+        if (password.length < 6) {
             Alert.alert('Error', 'Password must be at least 6 characters long');
             return;
         }
@@ -77,41 +73,34 @@ const SignUpScreen = () => {
             return;
         }
 
-        setLoading(true); // Start loading indicator
+        setLoading(true);
         try {
-            // *** Ensure API endpoint and field names match your backend ***
-            const response = await axios.post('http://192.168.1.3:3000/api/auth/register', {
-                name: username, // Assuming backend expects 'name'
-                number: mobile, // Assuming backend expects 'number'
+            const response = await apiService.post('/auth/register', {
+                name: username,
+                number: mobile,
                 email: email,
                 password: password,
-                // Confirm password might not be needed by backend, but good practice to send if expected
                 confirmPassword: confirmPassword,
-                isAdmin: false, // Make sure this is correct
+                isAdmin: false,
             });
 
             console.log('Registration Success:', response.data);
             Alert.alert('Success', 'Registration successful! Please Login.', [
-                // Navigate to Login screen after successful registration
-                { text: 'OK', onPress: () => navigation.replace('Login') }, // Use replace
+                { text: 'OK', onPress: () => navigation.replace('Login') },
             ]);
         } catch (error) {
             console.error('Registration Error:', error.response?.data || error.message);
-            // Provide more specific error messages if available from backend
             Alert.alert('Registration Failed', error.response?.data?.message || 'An error occurred. Please try again.');
         } finally {
-            setLoading(false); // Stop loading indicator regardless of outcome
+            setLoading(false);
         }
     };
 
     const handleLoginPress = () => {
-        navigation.navigate('Login'); // Navigate back to Login
+        navigation.navigate('Login');
     };
 
-    // Removed the useEffect block that checked for login status
-
     return (
-        // Removed LinearGradient wrapper
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.statusBar} />
             <KeyboardAvoidingView
@@ -125,8 +114,7 @@ const SignUpScreen = () => {
                 >
                     {/* Logo */}
                     <Image
-                        // *** Use the same logo asset as LoginScreen ***
-                        source={require('../assets/icon.jpeg')} // Placeholder path
+                        source={require('../assets/icon.jpeg')}
                         style={styles.logoImage}
                         resizeMode="contain"
                     />
@@ -146,7 +134,7 @@ const SignUpScreen = () => {
                                 placeholderTextColor={COLORS.placeholderText}
                                 value={username}
                                 onChangeText={setUsername}
-                                autoCapitalize="words" // Typically capitalize names
+                                autoCapitalize="words"
                             />
                         </View>
 
@@ -159,7 +147,7 @@ const SignUpScreen = () => {
                                 value={mobile}
                                 onChangeText={setMobile}
                                 keyboardType="phone-pad"
-                                maxLength={10} // Enforce 10 digits
+                                maxLength={10}
                             />
                         </View>
 
@@ -225,9 +213,9 @@ const SignUpScreen = () => {
                         {/* Sign Up Button */}
                         <TouchableOpacity
                             onPress={handleSignUp}
-                            style={[styles.button, styles.signUpButton]} // Added specific margin
+                            style={[styles.button, styles.signUpButton]}
                             activeOpacity={0.8}
-                            disabled={loading} // Disable button when loading
+                            disabled={loading}
                         >
                             {loading ? (
                                 <ActivityIndicator size="small" color={COLORS.activityIndicator} />
@@ -241,9 +229,9 @@ const SignUpScreen = () => {
 
                         <TouchableOpacity
                             onPress={handleLoginPress}
-                            style={styles.button} // Use the same button style
+                            style={styles.button}
                             activeOpacity={0.8}
-                            disabled={loading} // Also disable this when signing up
+                            disabled={loading}
                         >
                             <Text style={styles.buttonText}>Login</Text>
                         </TouchableOpacity>
@@ -254,7 +242,6 @@ const SignUpScreen = () => {
     );
 };
 
-// Combine and adapt styles from LoginScreen and existing SignUpScreen
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
@@ -268,15 +255,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: width * 0.05,
-        paddingBottom: 30, // Ensure space at bottom
-        paddingTop: 20, // Add some space at top if needed
+        paddingBottom: 30,
+        paddingTop: 20,
     },
     logoImage: {
         width: width * 0.55,
         height: height * 0.15,
         marginBottom: 20,
     },
-    loginTab: { // Reusing loginTab style name for consistency
+    loginTab: {
         backgroundColor: COLORS.loginTabBackground,
         paddingHorizontal: 30,
         paddingVertical: 10,
@@ -285,7 +272,7 @@ const styles = StyleSheet.create({
         marginBottom: -1,
         zIndex: 1,
     },
-    loginTabText: { // Reusing loginTabText style name
+    loginTabText: {
         color: COLORS.loginTabText,
         fontSize: 18,
         fontWeight: 'bold',
@@ -297,7 +284,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: COLORS.formBorder,
         paddingHorizontal: 20,
-        paddingTop: 30, // Adjust as needed
+        paddingTop: 30,
         paddingBottom: 25,
         alignItems: 'center',
         marginTop: 0,
@@ -312,7 +299,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: COLORS.inputBorder,
-        marginBottom: 16, // Consistent spacing between inputs
+        marginBottom: 16,
         paddingHorizontal: 5,
     },
     input: {
@@ -355,7 +342,6 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         fontSize: 14,
     },
-    // Removed unused styles like logoTextGama, logoText567, buttonContainer, loginButton (as base style is now used)
 });
 
 export default SignUpScreen;

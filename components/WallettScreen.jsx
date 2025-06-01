@@ -1,8 +1,13 @@
-import { StyleSheet, Text, View, Alert } from 'react-native';
-import {  useState,useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Alert
+} from 'react-native';
+import apiService from '../services/apiService';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const WalletScreen = () => {
     const [balance, setBalance] = useState(0);
@@ -10,32 +15,10 @@ const WalletScreen = () => {
 
     const fetchWallet = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                Alert.alert('Token Error', 'Token not found');
-                setLoading(false);
-                return;
-            }
-
-            console.log('Token:', token);
-
-            const response = await fetch('http://192.168.1.3:3000/api/wallet/get', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log('Error response:', errorData);
-                throw new Error(errorData.message || 'Failed to fetch wallet');
-            }
-
-            const data = await response.json();
-            console.log('Wallet Data:', data);
-            setBalance(data.balance);
+            setLoading(true);
+            const response = await apiService.get('/wallet/get');
+            console.log('Wallet Data:', response.data);
+            setBalance(response.data.balance);
         } catch (error) {
             console.error('Error fetching wallet:', error);
         } finally {

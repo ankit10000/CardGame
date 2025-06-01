@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   Dimensions,
@@ -13,7 +13,7 @@ import {
   Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -95,7 +95,7 @@ const HomeScreen = () => {
  const fetchMarketData = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
-    const res = await axios.get('http://192.168.1.3:3000/api/starline/game/all', {
+    const res = await apiService.get('/starline/game/all', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -160,9 +160,8 @@ const HomeScreen = () => {
 
   const fetchDpImages = async () => {
     try {
-      const res = await axios.get('http://192.168.1.3:3000/api/homedp/all-dpimage');
+      const res = await apiService.get('/homedp/all-dpimage');
       setDpImages(res.data.data);
-
     } catch (err) {
       console.error('Error fetching DP images:', err);
     } finally {
@@ -246,7 +245,7 @@ const HomeScreen = () => {
             {dpImages.map((item, index) => (
               <Image
                 key={index}
-                source={{ uri: `http://192.168.1.3:3000/uploads/homedp/${item.image}` }}
+                source={{ uri: `https://mtka-api.vercel.app/uploads/homedp/${item.image}` }}
                 style={styles.image}
                 resizeMode="cover"
               />

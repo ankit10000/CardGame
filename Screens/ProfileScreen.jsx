@@ -15,6 +15,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 const ProfileScreen = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -41,25 +42,12 @@ const ProfileScreen = ({ navigation }) => {
 
     const fetchProfile = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.3:3000/api/auth/profile', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Something went wrong');
-            }
-
-            const data = await response.json();
-            setName(data.name);
-            setEmail(data.email);
-            setMobile(data.number);
-            await AsyncStorage.setItem('user', JSON.stringify(data));
-
+            const response = await apiService.get('/auth/profile');
+            
+            setName(response.data.name);
+            setEmail(response.data.email);
+            setMobile(response.data.number);
+            await AsyncStorage.setItem('user', JSON.stringify(response.data));
         } catch (error) {
             console.error('Error fetching profile:', error);
             Alert.alert('Error', 'Failed to load profile data');
@@ -68,31 +56,17 @@ const ProfileScreen = ({ navigation }) => {
 
     const handleUpdate = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-            const response = await fetch('http://192.168.1.3:3000/api/auth/update-Password', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    currentPassword: currentPassword,
-                    newPassword: newPassword,
-                }),
+            const response = await apiService.put('/auth/update-Password', {
+                currentPassword: currentPassword,
+                newPassword: newPassword,
             });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || 'Password update failed');
-            }
 
             Alert.alert('Success', 'Password updated successfully!');
             setCurrentPassword('');
             setNewPassword('');
         } catch (error) {
             console.error('Update Error:', error);
-            Alert.alert('Error', error.message || 'Failed to update password');
+            Alert.alert('Error', error.response?.data?.message || 'Failed to update password');
         }
     };
 

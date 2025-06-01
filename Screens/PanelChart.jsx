@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
 
@@ -35,10 +35,9 @@ const COLORS = {
     walletTextColor: '#333',
 };
 
-const PanelChart = ({route}) => {
+const PanelChart = ({ navigation, route }) => {
     const { item } = route.params;
 
-    const navigation = useNavigation();
     const [chartData, setChartData] = useState([]);
 
     useEffect(() => {
@@ -59,23 +58,19 @@ const PanelChart = ({route}) => {
 
     const fetchChartData = async () => {
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) return;
-    
             // 1. Get all starline games
-            const gameListResponse = await axios.get('http://192.168.1.3:3000/api/starline/game/all', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-    
+            const gameListResponse = await apiService.get('/starline/game/all');
+            
             const selectedGame = gameListResponse.data.data.find(g => g.gameName === item.gameName);
             if (!selectedGame) {
                 console.warn('Selected game not found');
                 return;
             }
-            const response = await axios.get('http://192.168.1.3:3000/api/game-result/getAllResults');
+            
+            const response = await apiService.get('/game-result/getAllResults');
             const allResults = response.data;
-    
-            // ✅ Filter data based on the selected game
+            
+            // Filter data based on the selected game
             const filteredResults = allResults.filter(res => res.gameId === selectedGame._id);
     
             const today = new Date();

@@ -14,7 +14,7 @@ import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import moment from 'moment';
 
 
@@ -72,12 +72,12 @@ const SingleAnkScreen = ({ navigation, route }) => {
 
         try {
             const results = [];
-
             const gameIds = items?._id;
             if (!gameIds) {
                 alert('Game ID is missing. Please try again.');
                 return;
             }
+            
             for (let digit of selectedDigits) {
                 const payload = {
                     gameId: gameIds,
@@ -87,18 +87,7 @@ const SingleAnkScreen = ({ navigation, route }) => {
                     betType: dropdownValue,
                 };
 
-
-                const response = await axios.post(
-                    'http://192.168.1.3:3000/api/starline/bet/place',
-                    payload,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
+                const response = await apiService.post('/starline/bet/place', payload);
                 results.push(response.data);
             }
 
@@ -108,10 +97,9 @@ const SingleAnkScreen = ({ navigation, route }) => {
             // Reset state
             setDigitValues({});
             setSelectedPoint(null);
-
         } catch (error) {
-            console.error('Bid submission error:', error?.response?.data || error.message);
-            alert(error?.response?.data?.message || 'Something went wrong!');
+            console.error('API Error:', error);
+            alert('Failed to place bids. Please try again.');
         }
     };
 

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 const formatDateForDisplay = (date) => {
   const options = { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' };
@@ -34,35 +34,26 @@ const RightGameScreen = ({ navigation, route }) => {
   const currentDate = new Date(); 
 
   const handleAddBid = async () => {
-    const token = await AsyncStorage.getItem('token');
     try {
-      const res = await fetch(`http://192.168.1.3:3000/api/galidesawar/place-bet`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          gameId: items.id,
-          betType: 'right',
-          number: leftDigit,
-          amount: amount,
-        }),
+      const response = await apiService.post('/galidesawar/place-bet', {
+        gameId: items.id,
+        betType: 'right',
+        number: leftDigit,
+        amount: amount,
       });
 
-      const data = await res.json();
-      console.log('Response:', data);
+      console.log('Response:', response.data);
 
-      if (res.ok) {
+      if (response.status === 200 || response.status === 201) {
         Alert.alert('Success', 'Bet placed successfully!');
         setLeftDigit('');
         setAmount('');
       } else {
-        Alert.alert('Error', data.message || 'Failed to place bet. Please try again.');
+        Alert.alert('Error', response.data.message || 'Failed to place bet. Please try again.');
       }
     } catch (error) {
       console.error('Error placing bet:', error);
-      Alert.alert('Error', 'Failed to place bet. Please try again.');
+      Alert.alert('Error', error.response?.data?.message || 'Failed to place bet. Please try again.');
     }
   };
 

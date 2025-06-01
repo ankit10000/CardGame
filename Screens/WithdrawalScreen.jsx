@@ -15,6 +15,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
+import apiService from '../services/apiService';
 
 const { width } = Dimensions.get('window');
 const cardPadding = 20;
@@ -60,30 +61,21 @@ const WithdrawalScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://192.168.1.3:3000/api/withdrawal/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          amount: Number(amount),
-          method: method,
-          note: 'withdrawel',
-        }),
+      const response = await apiService.post('/withdrawal/create', {
+        amount: Number(amount),
+        method: method,
+        note: 'withdrawel',
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        Alert.alert('Success', result.message);
+      if (response.data.success) {
+        Alert.alert('Success', response.data.message);
         setAmount('');
       } else {
-        Alert.alert('Failed', result.message || 'Something went wrong');
+        Alert.alert('Failed', response.data.message || 'Something went wrong');
       }
     } catch (error) {
       console.error('API error:', error);
-      Alert.alert('Error', 'Unable to submit request');
+      Alert.alert('Error', error.response?.data?.message || 'Unable to submit request');
     }
   };
 

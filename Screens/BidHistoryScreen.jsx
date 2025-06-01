@@ -31,7 +31,7 @@ const BidHistoryScreen = ({ navigation }) => {
             try {
                 setLoading(true);
                 const token = await AsyncStorage.getItem('token');
-                const response1 = await axios.get('http://192.168.1.3:3000/api/auth/profile', {
+                const response1 = await axios.get('https://mtka-api.vercel.app/api/auth/profile', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -42,7 +42,7 @@ const BidHistoryScreen = ({ navigation }) => {
                     setLoading(false);
                     return;
                 }
-                const response = await axios.get('http://192.168.1.3:3000/api/galidesawar/all-bets', {
+                const response = await axios.get('https://mtka-api.vercel.app/api/galidesawar/all-bets', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

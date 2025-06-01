@@ -20,7 +20,7 @@ import {
 // import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios'; // Keep if you still use axios, otherwise remove
+import apiService from '../services/apiService';
 import Icon from 'react-native-vector-icons/Feather'; // For the eye icon
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // For WhatsApp icon
 
@@ -48,8 +48,7 @@ const COLORS = {
     adminButtonText: '#ffffff',
 };
 
-const LoginScreen = () => {
-    const navigation = useNavigation();
+const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState(''); // Changed from email to mobile
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -77,33 +76,18 @@ const LoginScreen = () => {
         }
         setLoading(true);
         try {
-            // *** IMPORTANT: Update the API endpoint and request body if needed ***
-            // Assuming your API now expects 'mobile' instead of 'email'
-            const response = await fetch('http://192.168.1.3:3000/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email, // Use mobile state variable
-                    password,
-                }),
+            const response = await apiService.post('/auth/login', {
+                email,
+                password,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                const { token, user } = data;
-                await AsyncStorage.setItem('token', token);
-                await AsyncStorage.setItem('user', JSON.stringify(user));
-                Alert.alert('Success', 'Login successful!');
-                navigation.replace('MainDrawer'); // Use replace here as well
-            } else {
-                Alert.alert('Error', data.message || 'Invalid credentials');
-            }
+            const data = response.data;
+            await AsyncStorage.setItem('token', data.token);
+            await AsyncStorage.setItem('user', JSON.stringify(data.user));
+            Alert.alert('Success', 'Login successful!');
+            navigation.replace('MainDrawer');
         } catch (error) {
-            console.log("Login API Error:", error); // Log the specific error
-            Alert.alert('Error', 'An error occurred during login. Please try again.');
+            Alert.alert('Error', error.response?.data?.message || 'Invalid credentials');
         } finally {
             setLoading(false);
         }

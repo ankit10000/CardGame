@@ -1,10 +1,10 @@
-import  { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet, View, Text, ScrollView, Dimensions, TouchableOpacity, ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import WallettScreen from '../components/WallettScreen'; 
 import { useNavigation } from '@react-navigation/native';
 
@@ -63,9 +63,8 @@ walletIcon: '#e5a550',
 walletTextBackground: '#d3d3d3',
 walletTextColor: '#333',
 };
-const GalidesawarChart = ({ route }) => {
+const GalidesawarChart = ({ navigation }) => {
     
-    const navigation = useNavigation();
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -91,17 +90,7 @@ const GalidesawarChart = ({ route }) => {
         setLoading(true);
         setError(null);
         try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                
-                setError("Authentication token not found. Please log in.");
-                setLoading(false);
-                return;
-            }
-
-            const response = await axios.get('http://192.168.1.3:3000/api/galidesawar/all-results', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await apiService.get('/galidesawar/all-results');
 
             if (response.data && Array.isArray(response.data.results)) {
                 const sorted = response.data.results.sort(
@@ -109,11 +98,11 @@ const GalidesawarChart = ({ route }) => {
                 );
                 setResults(sorted);
             } else {
-                setResults([]); 
+                setResults([]);
             }
-        } catch (err) {
-            console.error('Error fetching chart data:', err);
-            setError(err.response?.data?.message || 'Failed to fetch chart data. Please try again.');
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
+            setError('Failed to load chart data. Please try again.');
         } finally {
             setLoading(false);
         }

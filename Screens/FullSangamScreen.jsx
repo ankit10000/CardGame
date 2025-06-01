@@ -15,11 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
-import axios from 'axios'; // add this
-
-
-
-
+import apiService from '../services/apiService';
 
 const FullSangamScreen = ({ navigation, route }) => {
 
@@ -103,35 +99,26 @@ const FullSangamScreen = ({ navigation, route }) => {
                 const [openPana, closePana] = item.sangam.split('-');
                 const openingTime = new Date(); 
                 const gameIds = items?._id;
-            if (!gameIds) {
-                alert('Game ID is missing. Please try again.');
-                return;
-            }
+                if (!gameIds) {
+                    alert('Game ID is missing. Please try again.');
+                    return;
+                }
+                
                 const body = {
                     gameId: gameIds,
                     openPana,
                     closePana,
                     amount: parseInt(item.points),
-                    gameType: gamename, // fallback gameType
+                    gameType: gamename,
                     betType: "close",
                 };
 
-                const response = await axios.post(
-                    'http://192.168.1.3:3000/api/starline/bet/place',
-                    body,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
+                const response = await apiService.post('/starline/bet/place', body);
                 console.log('API Response:', response.data);
             }
 
             Alert.alert("Success", "Full Sangam entry created successfully.");
-            setAddedItems([]); // clear after successful submit
+            setAddedItems([]);
 
         } catch (error) {
             console.error('API Error:', error.response?.data || error.message);

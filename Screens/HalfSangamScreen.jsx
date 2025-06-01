@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     SafeAreaView,
     View,
@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiService from '../services/apiService';
 
 
 
@@ -93,46 +94,37 @@ const HalfSangamScreen = ({ navigation, route }) => {
             }
 
             const gameDate = moment().format('YYYY-MM-DD');
-            const openingTime = new Date(); // Optional: adjust based on your logic
+            const openingTime = new Date();
             const gameIds = items?._id;
             if (!gameIds) {
                 alert('Game ID is missing. Please try again.');
                 return;
             }
+            
             for (let item of addedItems) {
                 const payload = {
                     gameId: gameIds,
                     closeDigit: parseInt(item.sangam.split('-')[1]),
                     openPana: item.sangam.split('-')[0],
                     amount: parseInt(item.points),
-                    gameType: gamename, // fallback gameType
+                    gameType: gamename,
                     betType: "close",
                 };
 
-                const response = await fetch('http://192.168.1.3:3000/api/starline/bet/place', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                });
+                const response = await apiService.post('/starline/bet/place', payload);
 
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Something went wrong');
+                if (!response.status === 200 && !response.status === 201) {
+                    throw new Error(response.data.message || 'Something went wrong');
                 }
 
-                console.log('Response:', result);
+                console.log('Response:', response.data);
             }
 
             Alert.alert('Success', `Successfully submitted ${addedItems.length} bids.`);
             setAddedItems([]);
-
         } catch (error) {
-            console.error('Submit error:', error);
-            Alert.alert('Error', error.message || 'Failed to submit bids.');
+            console.error('API Error:', error);
+            Alert.alert('Error', error.response?.data?.message || 'Failed to submit bids');
         }
     };
 

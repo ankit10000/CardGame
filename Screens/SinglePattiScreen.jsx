@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import WallettScreen from '../components/WallettScreen';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
-import axios from 'axios';
+import apiService from '../services/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -100,8 +100,6 @@ const SinglePattiScreen = ({ navigation, route }) => {
                 return;
             }
 
-            // const gameDate = moment().format('YYYY-MM-DD');
-
             const selectedEntries = Object.entries(digitValues);
             if (selectedEntries.length === 0) {
                 alert("No digits selected!");
@@ -123,17 +121,7 @@ const SinglePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
 
-                const response = await axios.post(
-                    'http://192.168.1.3:3000/api/starline/bet/place',
-                    payload,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
-
+                const response = await apiService.post('/starline/bet/place', payload);
                 console.log('Response:', response.data);
             }
 
