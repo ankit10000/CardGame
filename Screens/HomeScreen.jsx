@@ -245,7 +245,7 @@ const HomeScreen = () => {
             {dpImages.map((item, index) => (
               <Image
                 key={index}
-                source={{ uri: `https://mtka-api.vercel.app/uploads/homedp/${item.image}` }}
+                source={{ uri: `${apiService.getBaseURL()}/uploads/homedp/${item.image}` }}
                 style={styles.image}
                 resizeMode="cover"
               />

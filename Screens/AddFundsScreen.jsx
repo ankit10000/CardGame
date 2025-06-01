@@ -169,7 +169,7 @@ const AddFundsScreen = () => {
                         {images.map((item, index) => (
                             <Image
                                 key={index}
-                                source={{ uri: `https://mtka-api.vercel.app/uploads/QRcode/${item.image}` }}
+                                source={{ uri: `${apiService.getBaseURL()}/uploads/QRcode/${item.image}` }}
                                 style={{ width: 200, height: 200, marginBottom: 20 }}
                                 resizeMode="cover"
                             />
