@@ -121,7 +121,7 @@ const SinglePattiScreen = ({ navigation, route }) => {
                     betType: dropdownValue
                 };
 
-                const response = await apiService.post('/starline/bet/place', payload);
+                const response = await apiService.post('/api/starline/bet/place', payload);
                 console.log('Response:', response.data);
             }
 

@@ -61,7 +61,7 @@ const WithdrawalScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await apiService.post('/withdrawal/create', {
+      const response = await apiService.post('/api/withdrawal/create', {
         amount: Number(amount),
         method: method,
         note: 'withdrawel',

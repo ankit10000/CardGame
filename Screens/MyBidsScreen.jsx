@@ -28,7 +28,7 @@ const MyBidsScreen = ({ navigation }) => {
     const fetchBids = async () => {
         setIsLoading(true);
         try {
-            const response = await apiService.get('/starline/bet/all-bets');
+            const response = await apiService.get('/api/starline/bet/all-bets');
             const formattedBids = response.data.data || [];
             setBids(formattedBids);
         } catch (error) {

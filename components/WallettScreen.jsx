@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -16,7 +16,7 @@ const WalletScreen = () => {
     const fetchWallet = async () => {
         try {
             setLoading(true);
-            const response = await apiService.get('/wallet/get');
+            const response = await apiService.get('/api/wallet/get');
             console.log('Wallet Data:', response.data);
             setBalance(response.data.balance);
         } catch (error) {

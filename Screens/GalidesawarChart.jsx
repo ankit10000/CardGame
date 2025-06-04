@@ -90,7 +90,7 @@ const GalidesawarChart = ({ navigation }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await apiService.get('/galidesawar/all-results');
+            const response = await apiService.get('/api/galidesawar/all-results');
 
             if (response.data && Array.isArray(response.data.results)) {
                 const sorted = response.data.results.sort(

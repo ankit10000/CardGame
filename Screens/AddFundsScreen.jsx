@@ -19,6 +19,7 @@ import WallettScreen from '../components/WallettScreen';
 import { useNavigation } from '@react-navigation/native';
 import apiService from '../services/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import apiConfig from '../config/api';
 
 const { width } = Dimensions.get('window');
 
@@ -60,7 +61,7 @@ const AddFundsScreen = () => {
 
     const fetchImages = async () => {
         try {
-            const res = await apiService.get('/homedp/latest-qr');
+            const res = await apiService.get('/api/homedp/latest-qr');
             console.log('Fetched Image Response:', res.data);
 
             if (res.data && res.data.data) {
@@ -116,7 +117,7 @@ const AddFundsScreen = () => {
         }
 
         try {
-            const response = await apiService.post('/wallet/add', {
+            const response = await apiService.post('/api/wallet/add', {
                 amount: numericAmount,
                 note: utrNumber,
             });
@@ -169,7 +170,7 @@ const AddFundsScreen = () => {
                         {images.map((item, index) => (
                             <Image
                                 key={index}
-                                source={{ uri: `${apiService.getBaseURL()}/uploads/QRcode/${item.image}` }}
+                                source={{ uri: `https://mtka-api.onrender.com/uploads/QRcode/${item.image}` }}
                                 style={{ width: 200, height: 200, marginBottom: 20 }}
                                 resizeMode="cover"
                             />

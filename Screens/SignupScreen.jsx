@@ -75,7 +75,7 @@ const SignUpScreen = ({ navigation }) => {
 
         setLoading(true);
         try {
-            const response = await apiService.post('/auth/register', {
+            const response = await apiService.post('/api/auth/register', {
                 name: username,
                 number: mobile,
                 email: email,

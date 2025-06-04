@@ -111,7 +111,7 @@ const HalfSangamScreen = ({ navigation, route }) => {
                     betType: "close",
                 };
 
-                const response = await apiService.post('/starline/bet/place', payload);
+                const response = await apiService.post('/api/starline/bet/place', payload);
 
                 if (!response.status === 200 && !response.status === 201) {
                     throw new Error(response.data.message || 'Something went wrong');

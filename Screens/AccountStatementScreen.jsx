@@ -27,7 +27,7 @@ const AccountStatementScreen = ({ navigation }) => {
     const fetchBids = async () => {
         setIsLoading(true);
         try {
-            const response = await apiService.get('/wallet/get');
+            const response = await apiService.get('/api/wallet/get');
             
             const sortedTransactions = response.data.transactions.sort(
                 (a, b) => new Date(b.createdAt) - new Date(a.createdAt)

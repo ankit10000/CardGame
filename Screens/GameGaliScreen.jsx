@@ -33,8 +33,8 @@ const GameGaliScreen = ({ navigation }) => {
         setRefreshing(true);
         try {
             const [gamesResponse, winnersResponse] = await Promise.all([
-                apiService.get('/galidesawar/all-games'),
-                apiService.get('/galidesawar/all-winners'),
+                apiService.get('/api/galidesawar/all-games'),
+                apiService.get('/api/galidesawar/all-winners'),
             ]);
 
             const currentTime = new Date();

@@ -35,7 +35,7 @@ const JodiGameScreen = ({ navigation, route }) => { // Assuming navigation prop
 
   const handleAddBid = async () => {
     try {
-      const response = await apiService.post('/galidesawar/place-bet', {
+      const response = await apiService.post('/api/galidesawar/place-bet', {
         gameId: items.id,
         betType: 'jodi',
         number: leftDigit,

@@ -113,7 +113,7 @@ const FullSangamScreen = ({ navigation, route }) => {
                     betType: "close",
                 };
 
-                const response = await apiService.post('/starline/bet/place', body);
+                const response = await apiService.post('/api/starline/bet/place', body);
                 console.log('API Response:', response.data);
             }
 

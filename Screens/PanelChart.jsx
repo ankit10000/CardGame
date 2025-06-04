@@ -59,7 +59,7 @@ const PanelChart = ({ navigation, route }) => {
     const fetchChartData = async () => {
         try {
             // 1. Get all starline games
-            const gameListResponse = await apiService.get('/starline/game/all');
+            const gameListResponse = await apiService.get('/api/starline/game/all');
             
             const selectedGame = gameListResponse.data.data.find(g => g.gameName === item.gameName);
             if (!selectedGame) {
@@ -67,7 +67,7 @@ const PanelChart = ({ navigation, route }) => {
                 return;
             }
             
-            const response = await apiService.get('/game-result/getAllResults');
+            const response = await apiService.get('/api/game-result/getAllResults');
             const allResults = response.data;
             
             // Filter data based on the selected game

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   SafeAreaView,
   Dimensions,
@@ -20,6 +20,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import apiConfig from '../config/api';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -90,12 +91,14 @@ const MarketItem = ({ item, navigation }) => (
 
 const HomeScreen = () => {
   const [marketData, setMarketData] = useState([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const swiperRef = useRef(null);
 
   // const [marketData, setMarketData] = useState([]);
  const fetchMarketData = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
-    const res = await apiService.get('/starline/game/all', {
+    const res = await apiService.get('/api/starline/game/all', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -160,10 +163,20 @@ const HomeScreen = () => {
 
   const fetchDpImages = async () => {
     try {
-      const res = await apiService.get('/homedp/all-dpimage');
-      setDpImages(res.data.data);
+      setLoading(true);
+      const res = await fetch('https://mtka-api.onrender.com/api/homedp/all-dpimage');
+      const data = await res.json();
+      // console.log('Fetched images:', data.data); // Log to verify data structure
+      
+      if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+        setDpImages(data.data);
+      } else {
+        // console.warn('No images or invalid data format received');
+        setDpImages([]);
+      }
     } catch (err) {
-      console.error('Error fetching DP images:', err);
+      // console.error('Error fetching DP images:', err);
+      setDpImages([]);
     } finally {
       setLoading(false);
     }
@@ -174,6 +187,23 @@ const HomeScreen = () => {
     fetchMarketData();
   }, []);
 
+  // Auto-scroll effect for banner
+  useEffect(() => {
+    if (dpImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentBannerIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % dpImages.length;
+          if (swiperRef.current) {
+            swiperRef.current.scrollTo(nextIndex);
+          }
+          return nextIndex;
+        });
+      }, 3000); // 3 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [dpImages.length]);
+
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -183,7 +213,7 @@ const HomeScreen = () => {
           navigation.navigate('Login');
         }
       } catch (error) {
-        console.log('Error checking login status:', error);
+        // console.log('Error checking login status:', error);
       }
     };
     checkLoginStatus();
@@ -240,18 +270,40 @@ const HomeScreen = () => {
       <View style={styles.scrollView} contentContainerStyle={styles.scrollContentContainer}>
 
         <View style={styles.bannerContainer}>
-
-          <Swiper autoplay showsPagination={true} dotColor="#ccc" activeDotColor="#000">
-            {dpImages.map((item, index) => (
-              <Image
-                key={index}
-                source={{ uri: `${apiService.getBaseURL()}/uploads/homedp/${item.image}` }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            ))}
-          </Swiper>
-
+          {dpImages.length > 0 ? (
+            <Swiper 
+              ref={swiperRef}
+              // autoplay={true}
+              showsPagination={true}
+              paginationStyle={styles.paginationStyle}
+              dotStyle={styles.dotStyle}
+              activeDotStyle={styles.activeDotStyle}
+              style={styles.swiperWrapper}
+              height={150}
+              loop={true}
+              horizontal={true}
+              showsButtons={false}
+              removeClippedSubviews={true}
+              containerStyle={styles.swiperContainer}
+              // onIndexChanged={(index) => setCurrentBannerIndex(index)}
+            >
+              {dpImages.map((item, index) => (
+                <View key={`banner-${index}`} style={styles.bannerSlide}>
+                  <Image
+                    source={{ uri: `https://mtka-api.onrender.com/uploads/homedp/${item.image}` }}
+                    style={styles.bannerImage}
+                    resizeMode="cover"
+                    // onLoad={() => console.log(`Image ${index} loaded successfully`)}
+                    // onError={(error) => console.log('Image load error:', error.nativeEvent.error)}
+                  />
+                </View>
+              ))}
+            </Swiper>
+          ) : (
+            <View style={[styles.bannerSlide, styles.noImageContainer]}>
+              <Text>Loading images...</Text>
+            </View>
+          )}
         </View>
         <ImageBackground
           source={require('../assets/bg.jpg')}
@@ -356,14 +408,13 @@ const HomeScreen = () => {
           <FlatList
             data={marketData}
             renderItem={({ item }) => <MarketItem item={item} navigation={navigation} />}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id || item.gameId || String(item.id) || String(Math.random())}
             contentContainerStyle={styles.listContainer}
             scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={true}
             refreshing={refreshing}
             onRefresh={handleRefresh}
-
           />
         </ImageBackground>
       </View>
@@ -373,9 +424,45 @@ const HomeScreen = () => {
 
 
 const styles = StyleSheet.create({
-  image: {
+  swiperWrapper: {
+    height: 150,
+  },
+  
+  swiperContainer: {
+    height: 150,
+  },
+  
+  paginationStyle: {
+    bottom: 10,
+  },
+  
+  dotStyle: {
+    backgroundColor: '#ccc', 
+    width: 8, 
+    height: 8, 
+    borderRadius: 4, 
+    marginLeft: 5, 
+    marginRight: 5,
+  },
+  
+  activeDotStyle: {
+    backgroundColor: '#FF0000', 
+    width: 8, 
+    height: 8, 
+    borderRadius: 4, 
+    marginLeft: 5, 
+    marginRight: 5,
+  },
+
+  bannerSlide: {
     width: width,
     height: 150,
+  },
+  
+  noImageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ccc',
   },
 
   background: {
@@ -456,7 +543,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   bannerContainer: {
-
     marginHorizontal: 0,
     marginTop: 0,
     height: 150,

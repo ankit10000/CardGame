@@ -34,7 +34,7 @@ const LeftGameScreen = ({ navigation, route }) => {
   console.log('Game Data:', items.id);
   const handleLeftGamePress = async () => {
     try {
-      const response = await apiService.post('/galidesawar/place-bet', {
+      const response = await apiService.post('/api/galidesawar/place-bet', {
         gameId: items.id,
         betType: 'left',
         number: leftDigit,

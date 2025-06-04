@@ -27,10 +27,10 @@ const BidHistoryScreen = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response1 = await apiService.get('/auth/profile');
+                const response1 = await apiService.get('/api/auth/profile');
                 const userId = response1.data._id;
                 
-                const response = await apiService.get('/galidesawar/all-bets');
+                const response = await apiService.get('/api/galidesawar/all-bets');
 
                 const allWinners = response.data.allBets || [];
                 const filteredWinners = allWinners.filter(winner => winner.userId === userId);

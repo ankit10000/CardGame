@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
 
     const fetchProfile = async () => {
         try {
-            const response = await apiService.get('/auth/profile');
+            const response = await apiService.get('/api/auth/profile');
             
             setName(response.data.name);
             setEmail(response.data.email);

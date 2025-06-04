@@ -61,10 +61,10 @@ const WinHistoryGali = ({ navigation }) => {
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            const response1 = await apiService.get('/auth/profile');
+            const response1 = await apiService.get('/api/auth/profile');
             const userId = response1.data._id;
             
-            const response = await apiService.get('/galidesawar/all-winners');
+            const response = await apiService.get('/api/galidesawar/all-winners');
 
             const allWinners = response.data.winners || [];
             const filteredWinners = allWinners.filter(winner => winner.userId === userId);
